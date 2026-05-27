@@ -1,0 +1,308 @@
+{
+  "app": {
+    "name": "eye",
+    "tagline": "IOL evaluation — cataract list"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "update": "Update",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "yes": "Yes",
+    "no": "No",
+    "loading": "Loading...",
+    "noData": "No data",
+    "required": "Required",
+    "optional": "Optional",
+    "years": "years",
+    "patients": "patients",
+    "patient": "patient",
+    "specify": "Specify...",
+    "language": "Language"
+  },
+  "operations": {
+    "title": "Operations",
+    "addNew": "Add New Operation",
+    "newOperation": "New Operation",
+    "editOperation": "Edit Operation",
+    "viewOperation": "View Operation",
+    "operationOf": "Operation of",
+    "operationReport": "IOL Planning Report",
+    "deleteConfirm": "Are you sure you want to delete this operation?",
+    "noOperations": "No operations found",
+    "searchPlaceholder": "Search patients..."
+  },
+  "import": {
+    "fromExcel": "Import CSV",
+    "importing": "Importing...",
+    "failed": "Import failed.",
+    "doneSummary": "Import complete.\n\nAdded: {added}\nAlready present: {skipped}\nTotal in file: {total}"
+  },
+  "patients": {
+    "title": "Patients",
+    "addNew": "Add Patient",
+    "editPatient": "Edit Patient",
+    "name": "Patient Name",
+    "dateOfBirth": "Date of Birth",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "noPatients": "No patients found",
+    "addHint": "Add an operation to see patients here"
+  },
+  "generalInfo": {
+    "operationDate": "Operation Date",
+    "patient": "Patient",
+    "ageAtSurgery": "Age",
+    "eye": "Eye",
+    "selectEye": "Select eye",
+    "target": "Target"
+  },
+  "eye": {
+    "right": "Right",
+    "left": "Left",
+    "both": "Both",
+    "linked": "Linked",
+    "switchTo": "Switch to",
+    "leftEye": "Left Eye",
+    "rightEye": "Right Eye"
+  },
+  "notes": {
+    "systemic": "Systemic Notes",
+    "ocular": "Ocular Notes",
+    "generic": "Notes",
+    "additionalSystemic": "Additional systemic notes...",
+    "additionalOcular": "Additional surgeries and notes...",
+    "noSystemic": "No systemic conditions detected",
+    "noOcular": "No ocular conditions detected",
+    "noNotes": "No notes",
+    "previousOperations": "Previous Ocular Surgeries",
+    "ocularConditions": "Ocular Conditions",
+    "systemicConditions": "Systemic Conditions",
+    "notePlaceholder": "Enter oculist notes..."
+  },
+  "severity": {
+    "mild": "Mild",
+    "moderate": "Moderate",
+    "severe": "Severe",
+    "mildShort": "+",
+    "moderateShort": "++",
+    "severeShort": "+++"
+  },
+  "sections": {
+    "bcdva": "BCDVA",
+    "ocularParameters": "Ocular Parameters",
+    "keratometry": "Keratometry",
+    "biometry": "Biometry",
+    "iolModel": "IOL Model",
+    "iolTypeSuggestion": "IOL Type Valuation",
+    "note": "Notes"
+  },
+  "ocularParams": {
+    "corneal": "Corneal",
+    "pupil": "Pupil",
+    "endothelialCells": "Endot. Cells/mm²",
+    "offsetLimbus": "Offset Limbus",
+    "offsetPupil": "Offset Pupil",
+    "cornealAstigm": "Corneal Astigm."
+  },
+  "keratometry": {
+    "title": "Keratometry",
+    "avgKm": "Avg K",
+    "cylinder": "SimK Astigmatism",
+    "cylinderAxis": "SimK Axis",
+    "cylinderTotal": "Total Astigmatism",
+    "axisTotal": "Total Axis"
+  },
+  "endothelial": {
+    "title": "Endothelial Cell Count"
+  },
+  "biometry": {
+    "title": "Biometry",
+    "axialLength": "Axial Length",
+    "acDepth": "AC Depth",
+    "lensThickness": "Lens Thick."
+  },
+  "bcdva": {
+    "sph": "Sph",
+    "cyl": "Cyl",
+    "ax": "Ax",
+    "va": "VA"
+  },
+  "iol": {
+    "spherical": "IOL",
+    "toric": "Toric IOL",
+    "postLVC": "Post LVC IOL",
+    "power": "IOL Power",
+    "residual": "Residual",
+    "residualCyl": "Residual Cyl",
+    "tModel": "T",
+    "selectModel": "Select IOL model...",
+    "addNewModel": "Add new model...",
+    "addNewModelPlaceholder": "Enter new model name...",
+    "modelBrand": "Model / Brand",
+    "customModel": "Custom model",
+    "notSelected": "Not selected",
+    "systemicConditionsNoted": "Systemic Conditions Noted",
+    "manageModels": "Manage IOL Models"
+  },
+  "iolType": {
+    "title": "IOL Type Valuation",
+    "intro": "The suitability score starts at 100% and decreases when parameters are outside acceptable ranges. Premium IOLs (multifocal, EDOF) have stricter requirements than monofocal.",
+    "score": "Score",
+    "compatibility": "Compatibility",
+    "outsideRange": "outside range",
+    "outside": "outside",
+    "range": "range",
+    "totalDeduction": "Total deduction",
+    "notEvaluable": "Not Evaluable",
+    "affectedBy": "Affected by:",
+    "monofocaleStandard": "Monofocal",
+    "monofocalePlus": "Monofocal Plus",
+    "edof": "EDOF",
+    "multifocal": "Multifocal",
+    "systemicConditionsNoted": "Systemic Conditions Noted",
+    "ocularConditionsNoted": "Ocular Conditions Noted",
+    "toricIOLIndicated": "Attention - Corneal Astigmatism",
+    "toricIOLMessage": "Corneal astigmatism is {value}D (> 0.75D). A toric IOL is recommended to correct the astigmatism.",
+    "normalRange": "normal range",
+    "sphericalIOLStrong": "Spherical IOL strongly recommended",
+    "sphericalIOLConsider": "Consider spherical IOL",
+    "notCompatible": "is not compatible at all"
+  },
+  "actions": {
+    "importJson": "Import JSON",
+    "exportJson": "Export Setting",
+    "printPdf": "Print PDF",
+    "addPatient": "Add Patient"
+  },
+  "csoImport": {
+    "title": "New Data from CSO",
+    "message": "New operation data has arrived from CSO. Do you want to import it?",
+    "import": "Import"
+  },
+  "messages": {
+    "operationSaved": "Operation saved successfully",
+    "operationDeleted": "Operation deleted",
+    "patientAdded": "Patient added",
+    "errorSaving": "Error saving",
+    "errorLoading": "Error loading",
+    "confirmDelete": "Confirm deletion"
+  },
+  "empty": {
+    "noPatients": "No patients found",
+    "addOperationHint": "Add an operation to see patients here"
+  },
+  "sidebar": {
+    "patients": "Patients",
+    "interventions": "Operations",
+    "filterByDate": "Filter by date"
+  },
+  "settings": {
+    "title": "Settings",
+    "normalRange": "Normal Range",
+    "warningRange": "Warning Range",
+    "noLimit": "No limit",
+    "resetToDefault": "Reset to default",
+    "resetAll": "Reset All to Defaults",
+    "confirmResetAll": "Are you sure you want to reset all settings to default values? This cannot be undone."
+  },
+  "iolRulesSettings": {
+    "title": "IOL Score Rules",
+    "condition": "Condition",
+    "addRule": "Add Rule",
+    "addRuleTop": "Add Row at Top",
+    "addRuleBottom": "Add Row at Bottom",
+    "insertAbove": "Insert row above",
+    "deleteRow": "Delete row",
+    "removeLastRule": "Remove Last Rule",
+    "resetAll": "Reset All to Defaults",
+    "resetParam": "Reset Parameter",
+    "saveAndClose": "Save and Close",
+    "export": "Export Setting",
+    "minimumLimit": "Minimum limit",
+    "maximumLimit": "Maximum limit",
+    "breakpoint": "Breakpoint",
+    "addBreakpoint": "Add Breakpoint",
+    "valuesBelowLimit": "Values below this limit will show \"out of normal limit\" in score card",
+    "valuesExceedingLimit": "Values exceeding this limit will show \"out of normal limit\" in score card"
+  },
+  "noteOptions": {
+    "previousEyeOperations": {
+      "contralateral_pseudophakic": "Contralateral eye pseudophakic",
+      "refractive_surgery": "Refractive surgery",
+      "corneal_surgery": "Corneal surgery",
+      "vitreoretinal_surgery": "Vitreoretinal surgery",
+      "strabismus_surgery": "Strabismus surgery",
+      "other_surgery": "Other"
+    },
+    "eyeConditions": {
+      "ocular_trauma": "Previous ocular trauma",
+      "motility_problem": "Ocular motility problem",
+      "eyelid_problem": "Eyelid problem",
+      "osd": "OSD",
+      "corneal_problem": "Corneal problem",
+      "iris_pupil_problem": "Iris/pupil problem",
+      "lens_problem": "Lens problem",
+      "retinal_problem": "Retinal problem",
+      "glaucoma": "Glaucoma"
+    },
+    "systemicConditions": {
+      "high_expectation": "High expectation patient",
+      "allergy": "Allergy",
+      "diabetes": "Diabetes",
+      "autoimmune_inflammatory": "Autoimmune/inflammatory disease",
+      "neurologic_pathology": "Neurologic pathology",
+      "neuropsychiatric_disorder": "Neuropsychiatric disorder",
+      "alpha_agonist_therapy": "Alpha agonist therapy",
+      "antiplatelet_therapy": "Antiplatelet therapy"
+    }
+  },
+  "parameterInfo": {
+    "cylinderTotal": "Sum of anterior and posterior corneal surface astigmatism.",
+    "axisTotal": "True orientation of corneal astigmatism, considering both anterior and posterior corneal surfaces.",
+    "offsetLimbus": "Distance between the geometric center of the limbus and the center of the pupil. Clinically relevant values: > 0.75 mm.",
+    "offsetPupil": "Distance between the pupil center and the corneal optical center/visual axis (related to angle kappa or chord mu). Clinically relevant values: > 0.50 mm.",
+    "sri": "Surface Regularity Index: average curvature differences between neighboring points in the central cornea, quantifying local regularity. No universal formula exists; each topographer uses different interpolation, smoothing, and weighting. Clinically relevant values: > 0.70.",
+    "sai": "Surface Asymmetry Index: average curvature differences between opposite points, measuring asymmetry of the corneal surface around the central axis. Clinically relevant values: > 0.50.",
+    "cornealSa": "Corneal spherical aberration: aberration caused by different refraction of peripheral versus central rays. It interacts with IOL design and can reduce contrast and visual quality, especially in mesopic/scotopic conditions. Clinically relevant values for a 4 mm pupil: < -0.20 or > 0.25 µ.",
+    "cornealComa": "Corneal coma: aberration caused by corneal asymmetry, producing distorted and elongated images. It is a major cause of reduced non-correctable visual quality. Clinically relevant values for a 4 mm pupil: > 0.20 µ.",
+    "cornealHoa": "Corneal higher-order aberrations: imperfections of the corneal surface that distort image quality. Clinically relevant values for a 4 mm pupil: > 0.20 µ.",
+    "pupilPhotopic": "Pupil diameter determines how much of the IOL optic is used and is a key factor in photic phenomena and postoperative visual quality. Clinically relevant values: > 4.5 mm.",
+    "pupilMesopic": "Pupil diameter determines how much of the IOL optic is used and is a key factor in photic phenomena and postoperative visual quality. Clinically relevant values: > 5.5 mm.",
+    "pupilScotopic": "Pupil diameter determines how much of the IOL optic is used and is a key factor in photic phenomena and postoperative visual quality. Clinically relevant values: > 6.0 mm.",
+    "axialLength": "Axial Length: influences calculation predictability, risk of IOL decentration/tilt, and visual quality. Clinically relevant values: < 21 mm or > 26.0 mm.",
+    "acDepth": "One of the main factors in estimating final IOL position, and therefore refractive precision and postoperative visual quality. Clinically relevant values: < 2.0 mm or > 4.5 mm.",
+    "lensThickness": "Lens Thickness: does not directly affect IOL optics, but affects effective lens position (ELP), stability, refractive outcome, and final visual quality. Clinically relevant values: > 5.0 mm."
+  },
+  "license": {
+    "title": "License Verification Required",
+    "subtitle": "Enter your license key and machine ID to continue using Smart IOL.",
+    "licenseKey": "License key",
+    "machineId": "Machine ID",
+    "validateAndContinue": "Validate and Continue",
+    "validating": "Validating...",
+    "errors": {
+      "invalid_format": "License key format is invalid. Use 6 uppercase letters/numbers.",
+      "unknown_key": "License key not found.",
+      "revoked": "This license key has been revoked.",
+      "seats_exhausted": "Maximum activated machines reached for this license.",
+      "missing_client_secret": "License service is not configured (missing client secret).",
+      "network_error": "Unable to reach the license server. Check your network and try again.",
+      "api_error": "License server returned an error. Please try again.",
+      "service_unavailable": "License service is currently unavailable.",
+      "generic": "License validation failed."
+    }
+  },
+  "warnings": {
+    "title": "Warnings & Alerts",
+    "noWarnings": "No warnings or alerts at this time",
+    "outOfNormalRange": "Out of Normal Range",
+    "normalRange": "Normal range",
+    "incompatibility": "IOL Type Incompatibility"
+  }
+}

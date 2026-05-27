@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "description": "IOL Power Calculation Formulas Configuration",
+    "version": "2.0.0",
+    "lastUpdated": "2026-01-23",
+    "note": "Most modern IOL formulas are proprietary. This config contains formula metadata and reference information."
+  },
+
+  "sferica": {
+    "title": "IOL (Spherical IOL)",
+    "description": "Standard monofocal/multifocal IOL power calculations",
+    "calculators": {
+      "iol_evo2": {
+        "name": "EVO 2.0",
+        "shortName": "EVO 2.0",
+        "author": "Tiziano Bellini et al.",
+        "year": 2021,
+        "type": "machine-learning",
+        "description": "Uses artificial intelligence and emmetropia verifying optical (EVO) formula. Version 2.0 includes enhanced ML algorithms.",
+        "requiredInputs": ["K1", "K2", "AXL"],
+        "optionalInputs": ["ACD", "LT", "CCT", "WtoW", "age", "gender"],
+        "website": "https://www.evoiolcalculator.com/"
+      },
+      "iol_hoffer_qst": {
+        "name": "Hoffer QST",
+        "shortName": "Hoffer QST",
+        "author": "Kenneth Hoffer, MD & Giacomo Savini, MD",
+        "year": 2020,
+        "type": "theoretical-optimized",
+        "description": "Optimized Hoffer Q formula using Sum-of-Segments (SS) axial length and Total Keratometry (TK).",
+        "requiredInputs": ["K1", "K2", "AXL"],
+        "optionalInputs": ["ACD", "pACD"],
+        "website": "https://www.iolcalc.com/"
+      },
+      "iol_kane": {
+        "name": "Kane Formula",
+        "shortName": "Kane",
+        "author": "Jack Kane, MD",
+        "year": 2019,
+        "type": "hybrid-ai",
+        "description": "Combines theoretical optics with artificial intelligence and regression analysis.",
+        "requiredInputs": ["K1", "K2", "AXL", "ACD"],
+        "optionalInputs": ["LT", "CCT", "gender", "axK1", "axK2"],
+        "website": "https://www.iolformula.com/"
+      },
+      "iol_pearl_dgs": {
+        "name": "PEARL-DGS",
+        "shortName": "Pearl DGS",
+        "author": "Debellemanière G, Gatinel D, Saad A",
+        "year": 2021,
+        "type": "machine-learning",
+        "description": "PhacoEmulsification Assessment Rational Learning. Uses deep learning trained on large dataset.",
+        "requiredInputs": ["K1", "K2", "AXL"],
+        "optionalInputs": ["ACD", "LT", "CCT", "WtoW", "age", "gender"],
+        "website": "https://iolsolver.com/"
+      }
+    }
+  },
+
+  "torica": {
+    "title": "Toric IOL",
+    "description": "Toric IOL calculations for astigmatism correction",
+    "calculators": {
+      "iol_evo_toric": {
+        "name": "EVO Toric",
+        "shortName": "EVO Toric",
+        "author": "Tiziano Bellini et al.",
+        "year": 2022,
+        "type": "machine-learning-toric",
+        "description": "Toric adaptation of EVO formula using AI for cylinder power and axis prediction.",
+        "requiredInputs": ["K1", "K2", "axK1", "axK2", "AXL"],
+        "optionalInputs": ["ACD", "LT", "SIA", "posterior_K"],
+        "website": "https://www.evoiolcalculator.com/"
+      },
+      "iol_hoffer_qst_toric": {
+        "name": "Hoffer QST Toric",
+        "shortName": "Hoffer QST Toric",
+        "author": "Kenneth Hoffer, MD & Giacomo Savini, MD",
+        "year": 2021,
+        "type": "theoretical-toric",
+        "description": "Toric adaptation of Hoffer QST with vector analysis for astigmatism.",
+        "requiredInputs": ["K1", "K2", "axK1", "axK2", "AXL"],
+        "optionalInputs": ["ACD", "SIA", "incision_meridian"],
+        "website": "https://www.iolcalc.com/"
+      },
+      "iol_kane_toric": {
+        "name": "Kane Toric",
+        "shortName": "Kane Toric",
+        "author": "Jack Kane, MD",
+        "year": 2020,
+        "type": "hybrid-ai-toric",
+        "description": "Toric version combining Kane formula with AI-driven astigmatism correction.",
+        "requiredInputs": ["K1", "K2", "axK1", "axK2", "AXL", "ACD"],
+        "optionalInputs": ["LT", "CCT", "SIA", "posterior_K1", "posterior_K2"],
+        "website": "https://www.iolformula.com/"
+      }
+    }
+  },
+
+  "postLVC": {
+    "title": "IOL Post LVC (Post Laser Vision Correction)",
+    "description": "IOL calculations for eyes that have undergone previous refractive surgery (LASIK, PRK, RK)",
+    "calculators": {
+      "iol_evo2_post": {
+        "name": "EVO 2.0 Post-LVC",
+        "shortName": "EVO 2.0 Post",
+        "author": "Tiziano Bellini et al.",
+        "year": 2022,
+        "type": "machine-learning",
+        "description": "EVO 2.0 formula adapted for post-refractive surgery eyes.",
+        "requiredInputs": ["K1", "K2", "AXL"],
+        "optionalInputs": ["ACD", "LT", "preOp_refraction", "preOp_K"],
+        "website": "https://www.evoiolcalculator.com/"
+      },
+      "iol_pearl_dgs_post": {
+        "name": "PEARL-DGS Post-LVC",
+        "shortName": "Pearl DGS Post",
+        "author": "Debellemanière G, Gatinel D, Saad A",
+        "year": 2022,
+        "type": "deep-learning",
+        "description": "PEARL-DGS formula adapted for post-refractive surgery eyes.",
+        "requiredInputs": ["K1", "K2", "AXL"],
+        "optionalInputs": ["ACD", "LT", "preOp_refraction", "preOp_K"],
+        "website": "https://iolsolver.com/"
+      },
+      "iol_ray_tracing": {
+        "name": "Ray Tracing",
+        "shortName": "Ray Tracing",
+        "author": "Various (Okulix, Sirius, Pentacam)",
+        "year": 2010,
+        "type": "physical-optics",
+        "description": "Uses actual ray tracing through measured corneal surfaces. Traces light rays from retina through the entire optical system.",
+        "requiredInputs": ["corneal_topography", "AXL", "ACD"],
+        "optionalInputs": ["LT", "pupil_size", "angle_kappa"],
+        "devices": ["Pentacam (Oculus)", "Sirius (CSO)", "Okulix", "Galilei"]
+      }
+    }
+  },
+
+  "inputParameters": {
+    "K1": {
+      "name": "Flat Keratometry",
+      "unit": "D (diopters)",
+      "description": "Flatter corneal meridian power",
+      "normalRange": { "min": 40.0, "max": 47.0 }
+    },
+    "K2": {
+      "name": "Steep Keratometry",
+      "unit": "D (diopters)",
+      "description": "Steeper corneal meridian power",
+      "normalRange": { "min": 40.0, "max": 48.0 }
+    },
+    "AXL": {
+      "name": "Axial Length",
+      "unit": "mm",
+      "description": "Distance from corneal apex to retina",
+      "normalRange": { "min": 22.0, "max": 25.0 }
+    },
+    "ACD": {
+      "name": "Anterior Chamber Depth",
+      "unit": "mm", 
+      "description": "Distance from corneal endothelium to anterior lens surface",
+      "normalRange": { "min": 2.5, "max": 4.0 }
+    },
+    "LT": {
+      "name": "Lens Thickness",
+      "unit": "mm",
+      "description": "Crystalline lens thickness",
+      "normalRange": { "min": 4.0, "max": 5.5 }
+    }
+  }
+}

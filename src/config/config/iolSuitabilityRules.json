@@ -1,0 +1,900 @@
+{
+  "description": "IOL Type Suitability Calculation Rules",
+  "howItWorks": {
+    "summary": "Each IOL type starts with a base score of 100 percent. Points are deducted when measured parameters fall outside the acceptable range for that IOL type.",
+    "scoring": [
+      "Score starts at 100 percent for each IOL type",
+      "Each parameter that is out of range deducts points from the score",
+      "More demanding IOL types have stricter acceptable ranges and larger deductions",
+      "The final score is clamped between 0 and 100"
+    ],
+    "interpretation": [
+      "90-100: Excellent candidate",
+      "70-89: Good candidate with minor concerns",
+      "50-69: Fair candidate, consider alternatives",
+      "Below 50: Poor candidate, significant concerns"
+    ]
+  },
+  "scoreDeductions": {
+    "description": "Points deducted from 100 base score when parameters are out of acceptable range",
+    "OffsetLimbus": {
+      "description": "Limbus center offset - affects IOL centration",
+      "minimumLimit": 0,
+      "maximumLimit": 1,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.2",
+          "monofocaleStandard": -1,
+          "monofocalePlus": -1,
+          "edof": -1,
+          "multifocal": -1
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.3",
+          "monofocaleStandard": -2,
+          "monofocalePlus": -2,
+          "edof": -3,
+          "multifocal": -4
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.4",
+          "monofocaleStandard": -3,
+          "monofocalePlus": -3,
+          "edof": -5,
+          "multifocal": -8
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.5",
+          "monofocaleStandard": -4,
+          "monofocalePlus": -4,
+          "edof": -8,
+          "multifocal": -12
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.6",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -6,
+          "edof": -11,
+          "multifocal": -18
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.7",
+          "monofocaleStandard": -7,
+          "monofocalePlus": -9,
+          "edof": -14,
+          "multifocal": -25
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.8",
+          "monofocaleStandard": -9,
+          "monofocalePlus": -12,
+          "edof": -18,
+          "multifocal": -33
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.9",
+          "monofocaleStandard": -12,
+          "monofocalePlus": -16,
+          "edof": -23,
+          "multifocal": -41
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "1.0",
+          "monofocaleStandard": -15,
+          "monofocalePlus": -20,
+          "edof": -29,
+          "multifocal": -50
+        }
+      ]
+    },
+    "OffsetPupil": {
+      "description": "Pupil center offset - affects optical performance",
+      "minimumLimit": 0,
+      "maximumLimit": 0.8,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.2",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": -1,
+          "multifocal": -2
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.3",
+          "monofocaleStandard": -1,
+          "monofocalePlus": -2,
+          "edof": -3,
+          "multifocal": -6
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.4",
+          "monofocaleStandard": -3,
+          "monofocalePlus": -5,
+          "edof": -8,
+          "multifocal": -12
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.5",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -9,
+          "edof": -14,
+          "multifocal": -20
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.6",
+          "monofocaleStandard": -9,
+          "monofocalePlus": -14,
+          "edof": -21,
+          "multifocal": -29
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.7",
+          "monofocaleStandard": -14,
+          "monofocalePlus": -21,
+          "edof": -30,
+          "multifocal": -39
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.8",
+          "monofocaleStandard": -20,
+          "monofocalePlus": -30,
+          "edof": -40,
+          "multifocal": -50
+        }
+      ]
+    },
+    "AbSph": {
+      "description": "Spherical Aberration - affects image quality",
+      "minimumLimit": -0.5,
+      "maximumLimit": 0.5,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "-0.5",
+          "monofocaleStandard": -15,
+          "monofocalePlus": -30,
+          "edof": -35,
+          "multifocal": -60
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "-0.4",
+          "monofocaleStandard": -8,
+          "monofocalePlus": -18,
+          "edof": -20,
+          "multifocal": -40
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "-0.3",
+          "monofocaleStandard": -4,
+          "monofocalePlus": -10,
+          "edof": -12,
+          "multifocal": -25
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "-0.2",
+          "monofocaleStandard": -2,
+          "monofocalePlus": -5,
+          "edof": -8,
+          "multifocal": -20
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "-0.1",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.1",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.2",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -2,
+          "edof": -2,
+          "multifocal": -10
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.3",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -5,
+          "edof": -5,
+          "multifocal": -20
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.4",
+          "monofocaleStandard": -20,
+          "monofocalePlus": -15,
+          "edof": -10,
+          "multifocal": -40
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.5",
+          "monofocaleStandard": -35,
+          "monofocalePlus": -25,
+          "edof": -20,
+          "multifocal": -60
+        }
+      ]
+    },
+    "Coma": {
+      "description": "Coma aberration - causes asymmetric blur",
+      "minimumLimit": 0,
+      "maximumLimit": 0.5,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.1",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": -1,
+          "multifocal": -2
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.2",
+          "monofocaleStandard": 0,
+          "monofocalePlus": -2,
+          "edof": -5,
+          "multifocal": -10
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.3",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -10,
+          "edof": -15,
+          "multifocal": -25
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.4",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -20,
+          "edof": -30,
+          "multifocal": -40
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.5",
+          "monofocaleStandard": -15,
+          "monofocalePlus": -30,
+          "edof": -40,
+          "multifocal": -55
+        }
+      ]
+    },
+    "HOA": {
+      "description": "Higher Order Aberrations - affects visual quality with premium IOLs",
+      "minimumLimit": 0,
+      "maximumLimit": 0.6,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.1",
+          "monofocaleStandard": 0,
+          "monofocalePlus": -2,
+          "edof": -2,
+          "multifocal": -5
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.2",
+          "monofocaleStandard": -2,
+          "monofocalePlus": -5,
+          "edof": -6,
+          "multifocal": -10
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.3",
+          "monofocaleStandard": -4,
+          "monofocalePlus": -8,
+          "edof": -10,
+          "multifocal": -17
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.4",
+          "monofocaleStandard": -6,
+          "monofocalePlus": -11,
+          "edof": -15,
+          "multifocal": -25
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.5",
+          "monofocaleStandard": -8,
+          "monofocalePlus": -15,
+          "edof": -22,
+          "multifocal": -34
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.6",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -20,
+          "edof": -30,
+          "multifocal": -45
+        }
+      ]
+    },
+    "SRI": {
+      "description": "Surface Regularity Index - corneal regularity",
+      "minimumLimit": 0,
+      "maximumLimit": 1,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.6",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.61",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": -1,
+          "multifocal": -2
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.7",
+          "monofocaleStandard": -2,
+          "monofocalePlus": -4,
+          "edof": -6,
+          "multifocal": -10
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.8",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -10,
+          "edof": -15,
+          "multifocal": -25
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.9",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -20,
+          "edof": -30,
+          "multifocal": -40
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "1",
+          "monofocaleStandard": -15,
+          "monofocalePlus": -30,
+          "edof": -40,
+          "multifocal": -55
+        }
+      ]
+    },
+    "SAI": {
+      "description": "Surface Asymmetry Index - corneal symmetry",
+      "minimumLimit": 0,
+      "maximumLimit": 0.8,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.4",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.5",
+          "monofocaleStandard": -2,
+          "monofocalePlus": -5,
+          "edof": -6,
+          "multifocal": -10
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.6",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -10,
+          "edof": -15,
+          "multifocal": -25
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.7",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -20,
+          "edof": -30,
+          "multifocal": -40
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "0.8",
+          "monofocaleStandard": -15,
+          "monofocalePlus": -30,
+          "edof": -45,
+          "multifocal": -60
+        }
+      ]
+    },
+    "PupilPhotopic": {
+      "description": "Photopic pupil diameter - daytime vision",
+      "minimumLimit": 2,
+      "maximumLimit": 5.5,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "2",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "3.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "3.5",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": -2,
+          "multifocal": -2
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "4.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": -2,
+          "edof": -2,
+          "multifocal": -4
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "4.5",
+          "monofocaleStandard": -2,
+          "monofocalePlus": -5,
+          "edof": -7,
+          "multifocal": -11
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "5.0",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -8,
+          "edof": -15,
+          "multifocal": -21
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "5.5",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -12,
+          "edof": -25,
+          "multifocal": -35
+        }
+      ]
+    },
+    "PupilMesopic": {
+      "description": "Mesopic pupil diameter - twilight vision",
+      "minimumLimit": 2.5,
+      "maximumLimit": 6,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "2.5",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": -2,
+          "multifocal": -2
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "3.1",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "4.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "4.5",
+          "monofocaleStandard": 0,
+          "monofocalePlus": -2,
+          "edof": -2,
+          "multifocal": -4
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "5.0",
+          "monofocaleStandard": -2,
+          "monofocalePlus": -5,
+          "edof": -7,
+          "multifocal": -10
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "5.5",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -8,
+          "edof": -15,
+          "multifocal": -20
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "6.0",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -12,
+          "edof": -23,
+          "multifocal": -35
+        }
+      ]
+    },
+    "PupilScotopic": {
+      "description": "Scotopic pupil diameter - night vision, larger pupils cause halos",
+      "minimumLimit": 3.5,
+      "maximumLimit": 6.5,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "3.5",
+          "monofocaleStandard": -2,
+          "monofocalePlus": -3,
+          "edof": -6,
+          "multifocal": -9
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "4.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": -2,
+          "edof": -4,
+          "multifocal": -6
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "5.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "5.5",
+          "monofocaleStandard": 0,
+          "monofocalePlus": -1,
+          "edof": -2,
+          "multifocal": -3
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "6.0",
+          "monofocaleStandard": -3,
+          "monofocalePlus": -6,
+          "edof": -8,
+          "multifocal": -12
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "6.5",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -15,
+          "edof": -20,
+          "multifocal": -30
+        }
+      ]
+    },
+    "AxialLength": {
+      "description": "Axial length of eye - extreme values affect IOL power predictability",
+      "minimumLimit": 19,
+      "maximumLimit": 32,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "19",
+          "monofocaleStandard": -20,
+          "monofocalePlus": -30,
+          "edof": -40,
+          "multifocal": -55
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "21.0",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -15,
+          "edof": -22,
+          "multifocal": -30
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "22.0",
+          "monofocaleStandard": -3,
+          "monofocalePlus": -5,
+          "edof": -8,
+          "multifocal": -12
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "22.1",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "24.5",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "26.0",
+          "monofocaleStandard": -2,
+          "monofocalePlus": -5,
+          "edof": -5,
+          "multifocal": -8
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "28.0",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -10,
+          "edof": -15,
+          "multifocal": -20
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "30.0",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -18,
+          "edof": -25,
+          "multifocal": -35
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "32.0",
+          "monofocaleStandard": -20,
+          "monofocalePlus": -30,
+          "edof": -40,
+          "multifocal": -55
+        }
+      ]
+    },
+    "ACDepth": {
+      "description": "Anterior Chamber Depth - affects IOL position stability",
+      "minimumLimit": 1.7,
+      "maximumLimit": 5,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "1.7",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -15,
+          "edof": -25,
+          "multifocal": -35
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "2",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -5,
+          "edof": -12,
+          "multifocal": -20
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "2.6",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "4",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "4.5",
+          "monofocaleStandard": -2,
+          "monofocalePlus": -5,
+          "edof": -7,
+          "multifocal": -12
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "5.0",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -10,
+          "edof": -15,
+          "multifocal": -25
+        }
+      ]
+    },
+    "LensThickness": {
+      "description": "Lens Thickness - affects effective lens position calculation",
+      "minimumLimit": 3,
+      "maximumLimit": 6,
+      "thresholds": [
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "3.5",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "4.5",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": 0,
+          "multifocal": 0
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "5.0",
+          "monofocaleStandard": 0,
+          "monofocalePlus": 0,
+          "edof": -2,
+          "multifocal": -2
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "5.5",
+          "monofocaleStandard": -5,
+          "monofocalePlus": -8,
+          "edof": -12,
+          "multifocal": -20
+        },
+        {
+          "conditionType": "breakpoint",
+          "conditionMax": "6.0",
+          "monofocaleStandard": -10,
+          "monofocalePlus": -15,
+          "edof": -25,
+          "multifocal": -35
+        }
+      ]
+    }
+  },
+  "formFieldMapping": {
+    "description": "Maps parameter names to form field names in the application",
+    "OffsetLimbus": "offsetLimbus",
+    "OffsetPupil": "offsetPupilla",
+    "Cylinder": "cil",
+    "SRI": "SRI",
+    "SAI": "SAI",
+    "AbSph": "AbS",
+    "Coma": "Coma",
+    "HOA": "HOA",
+    "PupilPhotopic": "pupillaPhotopic",
+    "PupilMesopic": "pupillaMesopica",
+    "PupilScotopic": "pupillaScotopic",
+    "AxialLength": "cso_AXL",
+    "ACDepth": "cso_ACD",
+    "LensThickness": "cso_LT"
+  },
+  "warnings": {
+    "toricIOL": {
+      "field": "cilTotal",
+      "condition": "greaterThan",
+      "threshold": 0.75,
+      "message": "Toric IOL indicated",
+      "description": "When total astigmatism exceeds 0.75D, a toric IOL should be considered to correct the astigmatism"
+    },
+    "sphericalIOL": {
+      "field": "AbS",
+      "iolType": "monofocaleStandard",
+      "thresholds": [
+        {
+          "condition": "lessThan",
+          "value": -0.3,
+          "message": "Spherical IOL strongly recommended",
+          "description": "High negative spherical aberration - spherical IOL design preferred"
+        },
+        {
+          "condition": "lessThan",
+          "value": -0.2,
+          "message": "Consider spherical IOL",
+          "description": "Moderate negative spherical aberration - spherical IOL design may be beneficial"
+        }
+      ]
+    }
+  }
+}

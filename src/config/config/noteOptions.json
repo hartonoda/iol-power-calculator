@@ -1,0 +1,31 @@
+{
+  "previousEyeOperations": [
+    { "value": "contralateral_pseudophakic", "labelKey": "noteOptions.previousEyeOperations.contralateral_pseudophakic" },
+    { "value": "refractive_surgery", "labelKey": "noteOptions.previousEyeOperations.refractive_surgery" },
+    { "value": "corneal_surgery", "labelKey": "noteOptions.previousEyeOperations.corneal_surgery" },
+    { "value": "vitreoretinal_surgery", "labelKey": "noteOptions.previousEyeOperations.vitreoretinal_surgery" },
+    { "value": "strabismus_surgery", "labelKey": "noteOptions.previousEyeOperations.strabismus_surgery" },
+    { "value": "other_surgery", "labelKey": "noteOptions.previousEyeOperations.other_surgery", "hasInput": true }
+  ],
+  "eyeConditions": [
+    { "value": "ocular_trauma", "labelKey": "noteOptions.eyeConditions.ocular_trauma" },
+    { "value": "motility_problem", "labelKey": "noteOptions.eyeConditions.motility_problem" },
+    { "value": "eyelid_problem", "labelKey": "noteOptions.eyeConditions.eyelid_problem" },
+    { "value": "osd", "labelKey": "noteOptions.eyeConditions.osd" },
+    { "value": "corneal_problem", "labelKey": "noteOptions.eyeConditions.corneal_problem" },
+    { "value": "iris_pupil_problem", "labelKey": "noteOptions.eyeConditions.iris_pupil_problem" },
+    { "value": "lens_problem", "labelKey": "noteOptions.eyeConditions.lens_problem" },
+    { "value": "retinal_problem", "labelKey": "noteOptions.eyeConditions.retinal_problem" },
+    { "value": "glaucoma", "labelKey": "noteOptions.eyeConditions.glaucoma" }
+  ],
+  "systemicConditions": [
+    { "value": "high_expectation", "labelKey": "noteOptions.systemicConditions.high_expectation" },
+    { "value": "allergy", "labelKey": "noteOptions.systemicConditions.allergy", "hasInput": true },
+    { "value": "diabetes", "labelKey": "noteOptions.systemicConditions.diabetes" },
+    { "value": "autoimmune_inflammatory", "labelKey": "noteOptions.systemicConditions.autoimmune_inflammatory" },
+    { "value": "neurologic_pathology", "labelKey": "noteOptions.systemicConditions.neurologic_pathology" },
+    { "value": "neuropsychiatric_disorder", "labelKey": "noteOptions.systemicConditions.neuropsychiatric_disorder" },
+    { "value": "alpha_agonist_therapy", "labelKey": "noteOptions.systemicConditions.alpha_agonist_therapy" },
+    { "value": "antiplatelet_therapy", "labelKey": "noteOptions.systemicConditions.antiplatelet_therapy" }
+  ]
+}

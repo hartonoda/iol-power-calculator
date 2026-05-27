@@ -1,0 +1,32 @@
+{
+  "systemicConditions": [
+    { "value": "nessuna", "label": "Nessuna" },
+    { "value": "allergy", "label": "Allergia a:", "hasInput": true },
+    { "value": "diabetes", "label": "Diabete" },
+    { "value": "neuropsychiatric", "label": "Disordini neuropsichiatrici" },
+    { "value": "autoimmune", "label": "Patologia autoimmune/infiammatoria" },
+    { "value": "neurologic", "label": "Patologia neurologica" },
+    { "value": "respiratory", "label": "Patologia respiratoria" },
+    { "value": "anxious", "label": "Paziente molto ansioso" },
+    { "value": "alpha_agonists", "label": "Uso di alfa-agonisti" },
+    { "value": "anticoagulants", "label": "Uso di antiaggreganti-anticoagulanti" },
+    { "value": "other", "label": "Altro:", "hasInput": true }
+  ],
+  "previousEyeOperations": [
+    { "value": "nessuna", "label": "Nessuna" },
+    { "value": "ocular_trauma", "label": "Pregresso trauma oculare" },
+    { "value": "refractive_surgery", "label": "Pregressa chirurgia refrattiva" },
+    { "value": "corneal_surgery", "label": "Pregressa chirurgia corneale" },
+    { "value": "vitreoretinal_surgery", "label": "Pregressa chirurgia vitreo-retinica" }
+  ],
+  "eyeConditions": [
+    { "value": "motility", "label": "Problema di motilità:", "optionsKey": "eyeProblemMotility" },
+    { "value": "eyelid", "label": "Problema palpebrale:", "optionsKey": "eyeProblemEyelid" },
+    { "value": "corneal", "label": "Problema corneale:", "optionsKey": "eyeProblemCorneal" },
+    { "value": "iris_pupil", "label": "Problema iride/pupilla:", "optionsKey": "eyeProblemIrisPupil" },
+    { "value": "lens", "label": "Problema cristallino:", "optionsKey": "eyeProblemLens" },
+    { "value": "retinal", "label": "Problema retinico:", "optionsKey": "eyeProblemRetinal" },
+    { "value": "glaucoma", "label": "Glaucoma" },
+    { "value": "osd", "label": "OSD" }
+  ]
+}

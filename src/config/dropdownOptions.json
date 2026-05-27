@@ -1,0 +1,80 @@
+{
+  "interventoDi": [
+    "Ecce + IOL",
+    "Faco + IOL",
+    "Riposizionamento IOL",
+    "Sostituzione IOL",
+    "Impianto di IOL fachica",
+    "Trabeculectomia",
+    "Intervento per strabismo"
+  ],
+  "contralateralEye": [
+    "Pseudofachico",
+    "Fachico",
+    "Afachico"
+  ],
+  "eyeProblemMotility": [
+    "Nistagmo",
+    "Orbitopatia tiroidea",
+    "Paresi",
+    "Strabismo ampio"
+  ],
+  "eyeProblemEyelid": [
+    "Blefarospasmo",
+    "Ptosi severa",
+    "Rima stretta"
+  ],
+  "eyeProblemCorneal": [
+    "ECD bassa/Fuchs",
+    "KC avanzato",
+    "Neovasi",
+    "Opacità centrale",
+    "OSD severa"
+  ],
+  "eyeProblemIrisPupil": [
+    "IFIS probabile",
+    "Iride atrofica",
+    "Miosi",
+    "PEX",
+    "Sinechie"
+  ],
+  "eyeProblemLens": [
+    "Capsula fibrotica",
+    "Cataratta ipermatura",
+    "Cristallino voluminoso",
+    "Sublussazione",
+    "Post traumatica"
+  ],
+  "eyeProblemRetinal": [
+    "DMLE",
+    "Maculopatia",
+    "Miopia elevata",
+    "Pregressa VVPP",
+    "Retinopatia Diabetica",
+    "OVBCR"
+  ],
+  "iolModels": [
+    "Alcon MA60MA (+/-5)",
+    "Alcon MA60AC",
+    "Alcon SA60AT",
+    "Alcon SN60WF",
+    "Alcon SN6AT",
+    "Alcon Clareon",
+    "Alcon Clareon T",
+    "Alcon Vivity",
+    "Alcon Vivity T",
+    "Alcon Panoptix",
+    "Alcon Panoptix T",
+    "J&J Eyhance",
+    "J&J Eyhance T",
+    "J&J Puresee",
+    "Luxsmart",
+    "Luxsmart T",
+    "Sifi Evolux",
+    "Artisan",
+    "Artiflex",
+    "IPCL",
+    "ICL",
+    "BVI isopure serenity"
+  ]
+}

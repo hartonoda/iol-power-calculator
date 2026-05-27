@@ -1,0 +1,17 @@
+{
+  "models": [
+    { "value": "alcon_acrysof_iq", "label": "Alcon AcrySof IQ", "brand": "Alcon" },
+    { "value": "alcon_acrysof_iq_toric", "label": "Alcon AcrySof IQ Toric", "brand": "Alcon" },
+    { "value": "alcon_panoptix", "label": "Alcon PanOptix", "brand": "Alcon" },
+    { "value": "alcon_vivity", "label": "Alcon Vivity", "brand": "Alcon" },
+    { "value": "jj_tecnis", "label": "J&J Tecnis", "brand": "Johnson & Johnson" },
+    { "value": "jj_tecnis_symfony", "label": "J&J Tecnis Symfony", "brand": "Johnson & Johnson" },
+    { "value": "jj_tecnis_synergy", "label": "J&J Tecnis Synergy", "brand": "Johnson & Johnson" },
+    { "value": "zeiss_at_lisa", "label": "Zeiss AT LISA", "brand": "Zeiss" },
+    { "value": "zeiss_at_lara", "label": "Zeiss AT LARA", "brand": "Zeiss" },
+    { "value": "bausch_enVista", "label": "Bausch+Lomb enVista", "brand": "Bausch+Lomb" },
+    { "value": "hoya_vivinex", "label": "Hoya Vivinex", "brand": "Hoya" },
+    { "value": "physiol_fine_vision", "label": "PhysIOL FineVision", "brand": "PhysIOL" },
+    { "value": "sifi_miniwell", "label": "SIFI MiniWell", "brand": "SIFI" }
+  ]
+}

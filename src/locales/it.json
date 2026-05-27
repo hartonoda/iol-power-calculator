@@ -1,0 +1,308 @@
+{
+  "app": {
+    "name": "eye",
+    "tagline": "Valutazione IOL — Lista cataratte"
+  },
+  "common": {
+    "save": "Salva",
+    "cancel": "Annulla",
+    "update": "Aggiorna",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "add": "Aggiungi",
+    "search": "Cerca",
+    "yes": "Sì",
+    "no": "No",
+    "loading": "Caricamento...",
+    "noData": "Nessun dato",
+    "required": "Obbligatorio",
+    "optional": "Opzionale",
+    "years": "anni",
+    "patients": "pazienti",
+    "patient": "paziente",
+    "specify": "Specificare...",
+    "language": "Lingua"
+  },
+  "operations": {
+    "title": "Interventi",
+    "addNew": "Aggiungi Nuovo Intervento",
+    "newOperation": "Nuovo Intervento",
+    "editOperation": "Modifica Intervento",
+    "viewOperation": "Visualizza Intervento",
+    "operationOf": "Intervento di",
+    "operationReport": "Report Pianificazione IOL",
+    "deleteConfirm": "Sei sicuro di voler eliminare questo intervento?",
+    "noOperations": "Nessun intervento trovato",
+    "searchPlaceholder": "Cerca pazienti..."
+  },
+  "import": {
+    "fromExcel": "Importa CSV",
+    "importing": "Importazione...",
+    "failed": "Importazione non riuscita.",
+    "doneSummary": "Importazione completata.\n\nAggiunti: {added}\nGià presenti: {skipped}\nTotale nel file: {total}"
+  },
+  "patients": {
+    "title": "Pazienti",
+    "addNew": "Aggiungi Paziente",
+    "editPatient": "Modifica Paziente",
+    "name": "Nome Paziente",
+    "dateOfBirth": "Data di Nascita",
+    "gender": "Sesso",
+    "male": "Maschio",
+    "female": "Femmina",
+    "other": "Altro",
+    "noPatients": "Nessun paziente trovato",
+    "addHint": "Aggiungi un intervento per vedere i pazienti qui"
+  },
+  "generalInfo": {
+    "operationDate": "Data Intervento",
+    "patient": "Paziente",
+    "ageAtSurgery": "Età del Paziente",
+    "eye": "Occhio",
+    "selectEye": "Seleziona occhio",
+    "target": "Obiettivo"
+  },
+  "eye": {
+    "right": "Destro",
+    "left": "Sinistro",
+    "both": "Entrambi",
+    "linked": "Collegato",
+    "switchTo": "Passa a",
+    "leftEye": "Occhio Sinistro",
+    "rightEye": "Occhio Destro"
+  },
+  "notes": {
+    "systemic": "Note Sistemiche",
+    "ocular": "Note Oculari",
+    "generic": "Note",
+    "additionalSystemic": "Note sistemiche aggiuntive...",
+    "additionalOcular": "Ulteriori Interventi e Note aggiuntive...",
+    "noSystemic": "Nessuna condizione sistemica rilevata",
+    "noOcular": "Nessuna condizione oculare rilevata",
+    "noNotes": "Nessuna nota",
+    "previousOperations": "Interventi Oculari Precedenti",
+    "ocularConditions": "Condizioni Oculari",
+    "systemicConditions": "Condizioni Sistemiche",
+    "notePlaceholder": "Inserisci note dell'oculista..."
+  },
+  "severity": {
+    "mild": "Lieve",
+    "moderate": "Moderato",
+    "severe": "Grave",
+    "mildShort": "+",
+    "moderateShort": "++",
+    "severeShort": "+++"
+  },
+  "sections": {
+    "bcdva": "BCDVA",
+    "ocularParameters": "Parametri Oculari",
+    "keratometry": "Cheratometria",
+    "biometry": "Biometria",
+    "iolModel": "Modello IOL",
+    "iolTypeSuggestion": "Suggerimento Tipo IOL",
+    "note": "Note"
+  },
+  "ocularParams": {
+    "corneal": "Corneale",
+    "pupil": "Pupilla",
+    "endothelialCells": "Cell. Endot./mm²",
+    "offsetLimbus": "Offset Limbus",
+    "offsetPupil": "Offset Pupilla",
+    "cornealAstigm": "Astigm. Corneale"
+  },
+  "keratometry": {
+    "title": "Cheratometria",
+    "avgKm": "Avg K",
+    "cylinder": "Astigmatismo SimK",
+    "cylinderAxis": "Asse SimK",
+    "cylinderTotal": "Astigmatismo Totale",
+    "axisTotal": "Asse Totale"
+  },
+  "endothelial": {
+    "title": "Conta cellule endoteliali"
+  },
+  "biometry": {
+    "title": "Biometria",
+    "axialLength": "Lung. Assiale",
+    "acDepth": "Prof. CA",
+    "lensThickness": "Spess. Crist."
+  },
+  "bcdva": {
+    "sph": "Sph",
+    "cyl": "Cyl",
+    "ax": "Ax",
+    "va": "VA"
+  },
+  "iol": {
+    "spherical": "IOL",
+    "toric": "IOL Torica",
+    "postLVC": "IOL Post LVC",
+    "power": "Potere IOL",
+    "residual": "Residuo",
+    "residualCyl": "Residuo Cyl",
+    "tModel": "T",
+    "selectModel": "Seleziona modello IOL...",
+    "addNewModel": "Aggiungi nuovo modello...",
+    "addNewModelPlaceholder": "Inserisci nome nuovo modello...",
+    "modelBrand": "Modello / Brand",
+    "customModel": "Modello personalizzato",
+    "notSelected": "Non selezionato",
+    "systemicConditionsNoted": "Condizioni Sistemiche Rilevate",
+    "manageModels": "Gestisci Modelli IOL"
+  },
+  "iolType": {
+    "title": "Suggerimento Tipo IOL",
+    "intro": "Il punteggio di idoneità parte da 100% e diminuisce quando i parametri sono fuori dai range accettabili. Le IOL premium (multifocale, EDOF) hanno requisiti più stringenti delle monofocali.",
+    "score": "Punt.",
+    "compatibility": "Compatibilità",
+    "outsideRange": "fuori intervallo",
+    "outside": "fuori",
+    "range": "intervallo",
+    "totalDeduction": "Deduzione totale",
+    "notEvaluable": "Non valutabile",
+    "affectedBy": "Influenzato da:",
+    "monofocaleStandard": "Monofocale Standard",
+    "monofocalePlus": "Monofocale Plus",
+    "edof": "EDOF",
+    "multifocal": "Multifocale",
+    "systemicConditionsNoted": "Condizioni Sistemiche Rilevate",
+    "ocularConditionsNoted": "Condizioni Oculari Rilevate",
+    "toricIOLIndicated": "Attenzione - Irregolarità Superficie Corneale",
+    "toricIOLMessage": "Astigmatismo totale è {value}D (> 0.75D). Si raccomanda una IOL torica per correggere l'astigmatismo.",
+    "normalRange": "range normale",
+    "sphericalIOLStrong": "IOL sferica fortemente raccomandata",
+    "sphericalIOLConsider": "Considerare IOL sferica",
+    "notCompatible": "non e compatibile"
+  },
+  "actions": {
+    "importJson": "Importa JSON",
+    "exportJson": "Esporta JSON",
+    "printPdf": "Stampa PDF",
+    "addPatient": "Aggiungi Paziente"
+  },
+  "csoImport": {
+    "title": "Nuovi Dati da CSO",
+    "message": "Sono arrivati nuovi dati di intervento da CSO. Vuoi importarli?",
+    "import": "Importa"
+  },
+  "messages": {
+    "operationSaved": "Intervento salvato con successo",
+    "operationDeleted": "Intervento eliminato",
+    "patientAdded": "Paziente aggiunto",
+    "errorSaving": "Errore durante il salvataggio",
+    "errorLoading": "Errore durante il caricamento",
+    "confirmDelete": "Conferma eliminazione"
+  },
+  "empty": {
+    "noPatients": "Nessun paziente trovato",
+    "addOperationHint": "Aggiungi un intervento per vedere i pazienti qui"
+  },
+  "sidebar": {
+    "patients": "Pazienti",
+    "interventions": "Interventi",
+    "filterByDate": "Filtra per data"
+  },
+  "settings": {
+    "title": "Impostazioni",
+    "normalRange": "Range Normale",
+    "warningRange": "Range di Attenzione",
+    "noLimit": "Nessun limite",
+    "resetToDefault": "Ripristina predefinito",
+    "resetAll": "Ripristina Tutto ai Valori Predefiniti",
+    "confirmResetAll": "Sei sicuro di voler ripristinare tutte le impostazioni ai valori predefiniti? Questa azione non può essere annullata."
+  },
+  "iolRulesSettings": {
+    "title": "Regole Idoneità IOL",
+    "condition": "Condizione",
+    "addRule": "Aggiungi Regola",
+    "addRuleTop": "Aggiungi Riga in Alto",
+    "addRuleBottom": "Aggiungi Riga in Basso",
+    "insertAbove": "Inserisci riga sopra",
+    "deleteRow": "Elimina riga",
+    "removeLastRule": "Rimuovi Ultima Regola",
+    "resetAll": "Ripristina Tutto ai Valori Predefiniti",
+    "resetParam": "Ripristina Parametro",
+    "saveAndClose": "Salva e Chiudi",
+    "export": "Esporta",
+    "minimumLimit": "Limite minimo",
+    "maximumLimit": "Limite massimo",
+    "breakpoint": "Punto di interruzione",
+    "addBreakpoint": "Aggiungi punto di interruzione",
+    "valuesBelowLimit": "I valori sotto questo limite mostreranno \"fuori limite normale\" nella scheda punteggio",
+    "valuesExceedingLimit": "I valori che superano questo limite mostreranno \"fuori limite normale\" nella scheda punteggio"
+  },
+  "noteOptions": {
+    "previousEyeOperations": {
+      "contralateral_pseudophakic": "Occhio controlaterale pseudofachico",
+      "refractive_surgery": "Chirurgia refrattiva",
+      "corneal_surgery": "Chirurgia corneale",
+      "vitreoretinal_surgery": "Chirurgia vitreoretinica",
+      "strabismus_surgery": "Chirurgia dello strabismo",
+      "other_surgery": "Altro"
+    },
+    "eyeConditions": {
+      "ocular_trauma": "Pregresso trauma oculare",
+      "motility_problem": "Problema di motilita oculare",
+      "eyelid_problem": "Problema palpebrale",
+      "osd": "OSD",
+      "corneal_problem": "Problema corneale",
+      "iris_pupil_problem": "Problema iride/pupilla",
+      "lens_problem": "Problema del cristallino",
+      "retinal_problem": "Problema retinico",
+      "glaucoma": "Glaucoma"
+    },
+    "systemicConditions": {
+      "high_expectation": "Paziente con alte aspettative",
+      "allergy": "Allergia",
+      "diabetes": "Diabete",
+      "autoimmune_inflammatory": "Patologia autoimmune/infiammatoria",
+      "neurologic_pathology": "Patologia neurologica",
+      "neuropsychiatric_disorder": "Disturbo neuropsichiatrico",
+      "alpha_agonist_therapy": "Terapia con agonisti alfa",
+      "antiplatelet_therapy": "Terapia antiaggregante"
+    }
+  },
+  "parameterInfo": {
+    "cylinderTotal": "Somma dell'astigmatismo della superficie anteriore e posteriore della cornea.",
+    "axisTotal": "Orientamento reale dell'astigmatismo corneale, ottenuto considerando sia la superficie anteriore che quella posteriore della cornea.",
+    "offsetLimbus": "Distanza tra il centro geometrico del limbus e il centro della pupilla. Valori clinicamente rilevanti: > 0.75 mm.",
+    "offsetPupil": "Distanza tra il centro della pupilla e il centro ottico/asse visivo della cornea; collegata ad angolo kappa o chord mu. Valori clinicamente rilevanti: > 0.50 mm.",
+    "sri": "Surface Regularity Index: media delle differenze di curvatura tra punti vicini della cornea centrale, che quantifica la regolarita locale della superficie corneale. Non esiste una formula universale standardizzata identica per tutti: ogni topografo usa interpolazioni, smoothing e pesi diversi. Valori clinicamente rilevanti: > 0.70.",
+    "sai": "Surface Asymmetry Index: media delle differenze di curvatura tra punti opposti; misura quanto la superficie corneale e asimmetrica rispetto all'asse centrale. Valori clinicamente rilevanti: > 0.50.",
+    "cornealSa": "Aberrazione sferica corneale: aberrazione dovuta alla diversa rifrazione dei raggi periferici rispetto a quelli centrali. Interagisce con il design della IOL e riduce contrasto e qualita visiva, soprattutto in condizioni mesopiche/scotopiche. Valori clinicamente rilevanti per una pupilla di 4 mm: < -0,20 o > 0.25 µ.",
+    "cornealComa": "Coma corneale: aberrazione causata da asimmetria corneale, che genera immagini distorte e allungate. E una delle principali cause di riduzione della qualita visiva non correggibile. Valori clinicamente rilevanti per una pupilla di 4 mm: > 0.20 µ.",
+    "cornealHoa": "Aberrazioni corneali di alto ordine (HOA): imperfezioni della superficie corneale che deformano l'immagine. Valori clinicamente rilevanti per una pupilla di 4 mm: > 0.20 µ.",
+    "pupilPhotopic": "Il diametro pupillare determina quanta parte dell'ottica della IOL viene utilizzata ed e uno dei principali fattori nella comparsa di fenomeni fotici e nella qualita visiva postoperatoria. Valori clinicamente rilevanti: > 4,5 mm.",
+    "pupilMesopic": "Il diametro pupillare determina quanta parte dell'ottica della IOL viene utilizzata ed e uno dei principali fattori nella comparsa di fenomeni fotici e nella qualita visiva postoperatoria. Valori clinicamente rilevanti: > 5,5 mm.",
+    "pupilScotopic": "Il diametro pupillare determina quanta parte dell'ottica della IOL viene utilizzata ed e uno dei principali fattori nella comparsa di fenomeni fotici e nella qualita visiva postoperatoria. Valori clinicamente rilevanti: > 6,0 mm.",
+    "axialLength": "Lunghezza assiale: influenza la prevedibilita del calcolo, il rischio di decentramento e tilt della IOL e la qualita visiva. Valori clinicamente rilevanti: < 21 mm o > 26,0 mm.",
+    "acDepth": "Profondita camera anteriore: uno dei principali fattori per stimare la posizione finale della IOL e quindi la precisione refrattiva e la qualita visiva postoperatoria. Valori clinicamente rilevanti: < 2,0 mm o > 4,5 mm.",
+    "lensThickness": "Spessore del cristallino: non influenza direttamente l'ottica della IOL, ma ne condiziona la posizione effettiva (ELP), la stabilita e quindi il risultato refrattivo e la qualita visiva finale. Valori clinicamente rilevanti: > 5,0 mm."
+  },
+  "license": {
+    "title": "Verifica licenza richiesta",
+    "subtitle": "Inserisci la chiave licenza e il Machine ID per continuare a usare Smart IOL.",
+    "licenseKey": "Chiave licenza",
+    "machineId": "Machine ID",
+    "validateAndContinue": "Valida e continua",
+    "validating": "Validazione in corso...",
+    "errors": {
+      "invalid_format": "Formato chiave licenza non valido. Usa 6 caratteri alfanumerici maiuscoli.",
+      "unknown_key": "Chiave licenza non trovata.",
+      "revoked": "Questa licenza e stata revocata.",
+      "seats_exhausted": "Numero massimo di macchine attivate raggiunto per questa licenza.",
+      "missing_client_secret": "Servizio licenza non configurato (client secret mancante).",
+      "network_error": "Impossibile raggiungere il server licenze. Controlla la rete e riprova.",
+      "api_error": "Il server licenze ha restituito un errore. Riprova.",
+      "service_unavailable": "Servizio licenza al momento non disponibile.",
+      "generic": "Validazione licenza non riuscita."
+    }
+  },
+  "warnings": {
+    "title": "Avvisi e allerte",
+    "noWarnings": "Nessun avviso o allerta al momento",
+    "outOfNormalRange": "Fuori intervallo normale",
+    "normalRange": "Intervallo normale",
+    "incompatibility": "Incompatibilita tipo IOL"
+  }
+}
