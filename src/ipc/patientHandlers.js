@@ -223,6 +223,7 @@ export function registerPatientHandlers(patientRepo, operationRepo, appDatabase)
     let importedOperations = 0;
     let skippedOperations = 0;
     let notSelectedOperations = 0;
+    const importedMeta = [];
 
     for (const candidate of candidates) {
       if (!candidate.selected) {
@@ -234,9 +235,21 @@ export function registerPatientHandlers(patientRepo, operationRepo, appDatabase)
         continue;
       }
       const opResult = operationRepo.add(candidate.mapped);
-      if (opResult.success) importedOperations += 1;
+      if (opResult.success) {
+        importedOperations += 1;
+        importedMeta.push({
+          id: Number(opResult.id),
+          operationDate: String(candidate.operationDate || ''),
+        });
+      }
       else skippedOperations += 1;
     }
+
+    const latestImportedOperationId = importedMeta
+      .sort((a, b) => {
+        if (a.operationDate === b.operationDate) return b.id - a.id;
+        return b.operationDate.localeCompare(a.operationDate);
+      })[0]?.id || null;
 
     if (appDatabase) appDatabase.fallbackBackup();
     return {
@@ -246,6 +259,8 @@ export function registerPatientHandlers(patientRepo, operationRepo, appDatabase)
       importedOperations,
       skippedOperations,
       notSelectedOperations,
+      lastImportedOperationId: importedMeta.length ? importedMeta[importedMeta.length - 1].id : null,
+      latestImportedOperationId,
     };
   });
 }

@@ -183,8 +183,24 @@ const handlePatientUpdated = async () => {
 const handleSmartIolPatientImported = async (result) => {
     await loadPatients();
     await loadOperations();
+    const importedOpId = Number(
+        result?.latestImportedOperationId || result?.lastImportedOperationId || 0,
+    );
+    if (importedOpId) {
+        // Fetch directly by id to avoid timing issues with list refresh order.
+        const freshOperation = await window.api.operation.getById(importedOpId);
+        if (freshOperation?.id) {
+            await formActions.selectOperation(freshOperation);
+            return;
+        }
+        const importedOp = operations.value.find((op) => Number(op.id) === importedOpId);
+        if (importedOp) {
+            await formActions.selectOperation(importedOp);
+            return;
+        }
+    }
     if (result?.id) {
-        form.value.patientId = result.id;
+        form.value.patientId = Number(result.id);
     }
 };
 
