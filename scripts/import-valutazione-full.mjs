@@ -1,13 +1,13 @@
 /**
  * One-shot full import:
- * valutazione.csv -> patients + operations in patient_data.sqlite
+ * valutazione.csv -> patients + operations in iol-calculator-patient-data.sqlite
  *
  * Usage:
  *   node scripts/import-valutazione-full.mjs [csvPath] [dbPath]
  *
  * If dbPath is omitted, imports into:
- *   1) <project>/patient_data.sqlite
- *   2) %APPDATA%/IOL Power Calculator/database/patient_data.sqlite (if exists)
+ *   1) <project>/iol-calculator-patient-data.sqlite
+ *   2) %APPDATA%/IOL Power Calculator/database/iol-calculator-patient-data.sqlite (if exists)
  */
 import fs from 'fs';
 import os from 'os';
@@ -400,8 +400,8 @@ function inferDbPaths() {
   if (explicitDbPath) return [explicitDbPath];
 
   const candidatePaths = [
-    path.join(projectRoot, 'patient_data.sqlite'),
-    path.join(os.homedir(), 'AppData', 'Roaming', 'IOL Power Calculator', 'database', 'patient_data.sqlite'),
+    path.join(projectRoot, 'iol-calculator-patient-data.sqlite'),
+    path.join(os.homedir(), 'AppData', 'Roaming', 'IOL Power Calculator', 'database', 'iol-calculator-patient-data.sqlite'),
   ];
 
   return candidatePaths.filter((p, idx) => idx === 0 || fs.existsSync(p));

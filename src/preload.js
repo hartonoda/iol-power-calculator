@@ -28,11 +28,6 @@ contextBridge.exposeInMainWorld('api', {
   database: {
     getInfo: () => ipcRenderer.invoke('database:getInfo'),
   },
-  import: {
-    valutazioneCsv: (filePath) => ipcRenderer.invoke('import:valutazioneCsv', filePath),
-    /** @deprecated */
-    valutazioneXls: (filePath) => ipcRenderer.invoke('import:valutazioneCsv', filePath),
-  },
   iolModel: {
     getAll: () => ipcRenderer.invoke('iolModel:getAll'),
     getById: (id) => ipcRenderer.invoke('iolModel:getById', id),

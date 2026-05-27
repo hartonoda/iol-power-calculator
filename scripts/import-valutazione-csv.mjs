@@ -1,5 +1,5 @@
 /**
- * One-shot import: valutazione.csv → patient_data.sqlite
+ * One-shot import: valutazione.csv → iol-calculator-patient-data.sqlite
  * Usage: node scripts/import-valutazione-csv.mjs [csvPath] [dbPath]
  */
 import fs from 'fs';
@@ -18,7 +18,7 @@ const csvPath = process.argv[2] || DEFAULT_CSV_PATH;
 const dbPath =
   process.argv[3] ||
   process.env.IOL_DB_PATH ||
-  path.join(projectRoot, 'patient_data.sqlite');
+  path.join(projectRoot, 'iol-calculator-patient-data.sqlite');
 
 if (!fs.existsSync(csvPath)) {
   console.error('CSV not found:', csvPath);

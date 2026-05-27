@@ -3,8 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import Database from 'better-sqlite3';
 
-const DB_NAME = 'patient_data.sqlite';
-const OLD_DB_NAME = 'operation-eye.sqlite'; // For migration from old name
+const DB_NAME = 'iol-calculator-patient-data.sqlite';
+const LEGACY_DB_NAMES = ['patient_data.sqlite', 'operation-eye.sqlite'];
 const DB_VERSION = 6; // Increment this when adding new migrations
 
 // Legacy folder for backward compatibility (old app used operation-eye)
@@ -15,21 +15,23 @@ class AppDatabase {
         // AppData\Roaming\SmartIOL\database - backup location (userData = SmartIOL from productName)
         this.appDataPath = path.join(app.getPath('userData'), 'database');
         this.appDataDbPath = path.join(this.appDataPath, DB_NAME);
+        this.appDataLegacyDbPaths = LEGACY_DB_NAMES.map((name) => path.join(this.appDataPath, name));
 
         // Exe folder path (Program Files is read-only - we must use AppData there)
         this.exeDbPath = process.env.NODE_ENV === 'development'
             ? path.join(app.getAppPath(), DB_NAME)
             : path.join(path.dirname(process.execPath), DB_NAME);
-        this.exeOldDbPath = process.env.NODE_ENV === 'development'
-            ? path.join(app.getAppPath(), OLD_DB_NAME)
-            : path.join(path.dirname(process.execPath), OLD_DB_NAME);
+        this.exeLegacyDbPaths = LEGACY_DB_NAMES.map((name) => (
+            process.env.NODE_ENV === 'development'
+                ? path.join(app.getAppPath(), name)
+                : path.join(path.dirname(process.execPath), name)
+        ));
 
         // Primary database preference:
         // - Use exe folder database as the main working DB when writable.
         // - Use AppData only as backup (and as fallback when exe folder is not writable).
         this.exeFolderWritable = this.checkExeFolderWritable();
         this.primaryDbPath = this.exeFolderWritable ? this.exeDbPath : this.appDataDbPath;
-        this.oldPrimaryDbPath = this.exeFolderWritable ? this.exeOldDbPath : path.join(this.appDataPath, OLD_DB_NAME);
 
         if (!this.exeFolderWritable) {
             console.log('Exe folder not writable (e.g. Program Files) - using AppData as runtime fallback');
@@ -69,28 +71,61 @@ class AppDatabase {
         }
     }
 
-    copyAppDataToPrimary() {
-        fs.copyFileSync(this.appDataDbPath, this.primaryDbPath);
-        const backupWal = this.appDataDbPath + '-wal';
-        const backupShm = this.appDataDbPath + '-shm';
-        if (fs.existsSync(backupWal)) {
-            fs.copyFileSync(backupWal, this.primaryDbPath + '-wal');
+    copyDbFamily(src, dst) {
+        fs.copyFileSync(src, dst);
+        const srcWal = src + '-wal';
+        const srcShm = src + '-shm';
+        if (fs.existsSync(srcWal)) fs.copyFileSync(srcWal, dst + '-wal');
+        if (fs.existsSync(srcShm)) fs.copyFileSync(srcShm, dst + '-shm');
+    }
+
+    renameDbFamily(src, dst) {
+        const moveOrCopy = (from, to) => {
+            try {
+                fs.renameSync(from, to);
+            } catch (err) {
+                // If locked (EBUSY/EPERM), fallback to copy to avoid startup failure.
+                if (err.code === 'EBUSY' || err.code === 'EPERM') {
+                    fs.copyFileSync(from, to);
+                } else {
+                    throw err;
+                }
+            }
+        };
+        moveOrCopy(src, dst);
+        const srcWal = src + '-wal';
+        const srcShm = src + '-shm';
+        if (fs.existsSync(srcWal)) moveOrCopy(srcWal, dst + '-wal');
+        if (fs.existsSync(srcShm)) moveOrCopy(srcShm, dst + '-shm');
+    }
+
+    firstExisting(paths) {
+        return paths.find((p) => fs.existsSync(p)) || null;
+    }
+
+    normalizeLegacyDbNames() {
+        const appDataLegacy = this.firstExisting(this.appDataLegacyDbPaths);
+        if (!fs.existsSync(this.appDataDbPath) && appDataLegacy) {
+            console.log('Migrating legacy AppData DB name:', appDataLegacy);
+            this.renameDbFamily(appDataLegacy, this.appDataDbPath);
         }
-        if (fs.existsSync(backupShm)) {
-            fs.copyFileSync(backupShm, this.primaryDbPath + '-shm');
+        if (this.exeFolderWritable) {
+            const exeLegacy = this.firstExisting(this.exeLegacyDbPaths);
+            if (!fs.existsSync(this.exeDbPath) && exeLegacy) {
+                console.log('Migrating legacy exe DB name:', exeLegacy);
+                this.renameDbFamily(exeLegacy, this.exeDbPath);
+            }
         }
     }
 
     initializeDatabase() {
+        this.normalizeLegacyDbNames();
+
         let primaryExists = fs.existsSync(this.primaryDbPath);
-        let oldPrimaryExists = fs.existsSync(this.oldPrimaryDbPath);
         const appDataExists = fs.existsSync(this.appDataDbPath);
-        const exeDbExists = fs.existsSync(this.exeDbPath);
-        const exeOldExists = fs.existsSync(this.exeOldDbPath);
 
         console.log('Database check:', {
             primaryExists,
-            oldPrimaryExists,
             appDataExists,
             exeFolderWritable: this.exeFolderWritable,
             primaryPath: this.primaryDbPath,
@@ -98,79 +133,46 @@ class AppDatabase {
         });
 
         if (this.exeFolderWritable) {
-            // 1) Migrate old exe DB name if needed
-            if (!primaryExists && oldPrimaryExists) {
-                console.log('Found old exe database name, migrating to new name...');
-                fs.renameSync(this.oldPrimaryDbPath, this.primaryDbPath);
-                const oldWal = this.oldPrimaryDbPath + '-wal';
-                const oldShm = this.oldPrimaryDbPath + '-shm';
-                const newWal = this.primaryDbPath + '-wal';
-                const newShm = this.primaryDbPath + '-shm';
-                if (fs.existsSync(oldWal)) fs.renameSync(oldWal, newWal);
-                if (fs.existsSync(oldShm)) fs.renameSync(oldShm, newShm);
-            }
-
-            // 2) Startup restore policy (exe DB is main runtime DB):
-            // - Copy AppData backup to exe DB ONLY when exe DB file does not exist.
-            // - If exe DB already exists, keep it as the latest working DB.
-            const exeNowExists = fs.existsSync(this.primaryDbPath);
-            const shouldRestoreFromBackup = appDataExists && !exeNowExists;
-            if (shouldRestoreFromBackup) {
-                console.log('AppData backup found and exe DB missing - restoring backup to exe DB');
+            // SmartIOL-like behavior:
+            // 1) If AppData DB exists and exe DB does not, copy AppData -> exe.
+            // 2) If AppData DB does not exist, create fresh DB in exe folder.
+            if (!primaryExists && appDataExists) {
+                console.log('AppData DB found and exe DB missing - restoring backup to exe folder');
                 try {
-                    this.copyAppDataToPrimary();
+                    this.copyDbFamily(this.appDataDbPath, this.primaryDbPath);
+                    primaryExists = true;
                 } catch (err) {
                     console.error('Failed to copy AppData backup to exe DB:', err);
                 }
-            } else if (!exeNowExists) {
+            } else if (!primaryExists) {
                 console.log('No AppData backup found - exe DB will be created fresh');
             } else {
                 console.log('Exe DB exists - skipping startup restore from AppData');
             }
-        } else if ((exeDbExists || exeOldExists) && !appDataExists) {
-            // Exe path cannot be used at runtime, but migrate existing exe DB into AppData once.
-            const srcPath = exeDbExists ? this.exeDbPath : this.exeOldDbPath;
-            console.log('Migrating exe DB to AppData fallback location:', srcPath);
-            try {
-                fs.copyFileSync(srcPath, this.appDataDbPath);
-                const wal = srcPath + '-wal';
-                const shm = srcPath + '-shm';
-                if (fs.existsSync(wal)) fs.copyFileSync(wal, this.appDataDbPath + '-wal');
-                if (fs.existsSync(shm)) fs.copyFileSync(shm, this.appDataDbPath + '-shm');
-            } catch (err) {
-                console.error('Failed to migrate exe DB to AppData fallback:', err);
+        } else {
+            // Fallback only when exe folder is not writable.
+            if (!primaryExists && appDataExists) {
+                primaryExists = true;
+            } else if (!primaryExists) {
+                const legacyExe = this.firstExisting([this.exeDbPath, ...this.exeLegacyDbPaths]);
+                if (legacyExe) {
+                    console.log('Exe folder not writable - seeding AppData DB from exe DB');
+                    this.copyDbFamily(legacyExe, this.appDataDbPath);
+                    primaryExists = true;
+                }
             }
         }
 
-        // Refresh existence checks after migration/copy steps above.
         primaryExists = fs.existsSync(this.primaryDbPath);
-        oldPrimaryExists = fs.existsSync(this.oldPrimaryDbPath);
+        const appDataNowExists = fs.existsSync(this.appDataDbPath);
 
-        // Priority 1: Primary database exists
-        if (!this.db && primaryExists) {
+        if (this.exeFolderWritable && primaryExists) {
             console.log('Using existing primary database at', this.primaryDbPath);
             this.db = new Database(this.primaryDbPath);
-        }
-        // Priority 2: Old named database exists - rename and use
-        else if (!this.db && oldPrimaryExists) {
-            console.log('Found old database, migrating to new name...');
-            fs.renameSync(this.oldPrimaryDbPath, this.primaryDbPath);
-            const oldWal = this.oldPrimaryDbPath + '-wal';
-            const oldShm = this.oldPrimaryDbPath + '-shm';
-            const newWal = this.primaryDbPath + '-wal';
-            const newShm = this.primaryDbPath + '-shm';
-            if (fs.existsSync(oldWal)) fs.renameSync(oldWal, newWal);
-            if (fs.existsSync(oldShm)) fs.renameSync(oldShm, newShm);
-            this.db = new Database(this.primaryDbPath);
-            console.log('Database renamed from', OLD_DB_NAME, 'to', DB_NAME);
-        }
-        // Priority 3: AppData has backup but primary missing/unavailable - use AppData directly
-        else if (!this.db && appDataExists) {
+        } else if (appDataNowExists) {
             console.log('Using AppData database');
             this.db = new Database(this.appDataDbPath);
-        }
-        // Priority 4: No database anywhere - create new
-        else if (!this.db) {
+        } else {
             console.log('No database found - creating new at', this.primaryDbPath);
             this.db = new Database(this.primaryDbPath);
         }
@@ -185,7 +187,10 @@ class AppDatabase {
         const candidates = [
             path.join(this.legacyAppDataDir, DB_NAME),
             path.join(this.legacyAppDataDir, 'database', DB_NAME),
-            path.join(this.legacyAppDataDir, OLD_DB_NAME),
+            ...LEGACY_DB_NAMES.flatMap((name) => ([
+                path.join(this.legacyAppDataDir, name),
+                path.join(this.legacyAppDataDir, 'database', name),
+            ])),
         ];
         for (const p of candidates) {
             if (fs.existsSync(p)) {
