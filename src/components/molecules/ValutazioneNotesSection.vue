@@ -73,10 +73,6 @@
             </label>
           </template>
         </div>
-        <label class="endothelial-label">
-          Endotelio corneale cell/mm²
-          <input v-model="form.cellEndotelio" type="text" class="endothelial-input" :disabled="disabled" />
-        </label>
       </div>
     </div>
   </div>
@@ -321,19 +317,5 @@ function onSystemicChange(value) {
   padding: 3px 6px;
   border: 1px solid #1f2937;
   font-size: 12px;
-}
-.endothelial-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  font-size: 12px;
-  color: #1e40af;
-  font-weight: 600;
-}
-.endothelial-input {
-  width: 100px;
-  padding: 4px 6px;
-  border: 1px solid #1f2937;
 }
 </style>

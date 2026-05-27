@@ -5,6 +5,7 @@
             :operations="operations"
             :patients="patients"
             :selected-id="selectedId"
+            :smartiol-available="smartiolAvailable"
             @select="handleSelectOperation"
             @add="formActions.resetForm()"
             @add-operation-for-patient="patient => formActions.resetForm(patient.id)"
@@ -12,6 +13,7 @@
             @delete-patient="deleteActions.confirmDeletePatient"
             @delete-operation="deleteActions.confirmDeleteOperation"
             @refresh="handleRefreshFromDatabase"
+            @open-smartiol-import="openSmartIolImportModal"
         />
 
         <!-- Right Panel: Form / Details -->
@@ -61,6 +63,12 @@
             @patient-added="handlePatientAdded"
             @patient-updated="handlePatientUpdated"
         />
+
+        <SmartIolImportModal
+            :show="modals.smartIolImport"
+            @close="modals.smartIolImport = false"
+            @imported="handleSmartIolPatientImported"
+        />
     </div>
 </template>
 
@@ -69,6 +77,7 @@ import { reactive, ref, watch, onMounted } from 'vue';
 import OperationsList from '@/components/organisms/OperationsList.vue';
 import OperationDetail from '@/components/organisms/OperationDetail.vue';
 import AddPatientModal from '@/components/molecules/AddPatientModal.vue';
+import SmartIolImportModal from '@/components/molecules/SmartIolImportModal.vue';
 import ConfirmModal from '@/components/atoms/ConfirmModal.vue';
 import { useOperationsData } from '@/composables/useOperationsData';
 import { useOperationForm } from '@/composables/useOperationForm';
@@ -94,7 +103,9 @@ const deleteActions = useDeleteConfirmation(operations, linkedOperation);
 const modals = reactive({
     addPatient: false,
     patientToEdit: null,
+    smartIolImport: false,
 });
+const smartiolAvailable = ref(false);
 
 // Clear form errors on field changes
 watch(() => form.value.patientId, (val) => {
@@ -153,6 +164,10 @@ const openEditPatientModal = (patient) => {
     modals.addPatient = true;
 };
 
+const openSmartIolImportModal = () => {
+    modals.smartIolImport = true;
+};
+
 const handlePatientAdded = async (newPatient) => {
     await loadPatients();
     if (newPatient?.id) {
@@ -165,9 +180,27 @@ const handlePatientUpdated = async () => {
     await loadOperations();
 };
 
+const handleSmartIolPatientImported = async (result) => {
+    await loadPatients();
+    await loadOperations();
+    if (result?.id) {
+        form.value.patientId = result.id;
+    }
+};
+
+const loadSmartIolStatus = async () => {
+    if (!window.api?.patient?.smartiolStatus) {
+        smartiolAvailable.value = false;
+        return;
+    }
+    const status = await window.api.patient.smartiolStatus();
+    smartiolAvailable.value = !!status?.available;
+};
+
 onMounted(async () => {
     await loadAll();
     await loadIolModels();
+    await loadSmartIolStatus();
 
     // Set up sync handlers (no-op in standalone app)
     setupSyncHandlers({

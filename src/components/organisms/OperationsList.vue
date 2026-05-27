@@ -55,6 +55,7 @@
             :patients="patients"
             :operations="operations"
             :selected-id="selectedId"
+            :smartiol-available="smartiolAvailable"
             :search-placeholder="t('operations.searchPlaceholder')"
             :empty-message="t('empty.noPatients')"
             @select="$emit('select', $event)"
@@ -63,6 +64,7 @@
             @delete-patient="$emit('delete-patient', $event)"
             @delete-operation="$emit('delete-operation', $event)"
             @refresh="$emit('refresh')"
+            @open-smartiol-import="$emit('open-smartiol-import')"
         />
 
         <InterventiTab
@@ -91,10 +93,20 @@ const { t, locale, setLocale, availableLocales } = useI18n();
 const props = defineProps({
     operations: { type: Array, default: () => [] },
     patients: { type: Array, default: () => [] },
-    selectedId: { type: [Number, null], default: null }
+    selectedId: { type: [Number, null], default: null },
+    smartiolAvailable: { type: Boolean, default: false },
 });
 
-defineEmits(['select', 'add', 'add-operation-for-patient', 'edit-patient', 'delete-patient', 'delete-operation', 'refresh']);
+defineEmits([
+    'select',
+    'add',
+    'add-operation-for-patient',
+    'edit-patient',
+    'delete-patient',
+    'delete-operation',
+    'refresh',
+    'open-smartiol-import',
+]);
 
 // Tab state
 const activeTab = ref('pazienti');

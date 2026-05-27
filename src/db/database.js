@@ -5,7 +5,7 @@ import Database from 'better-sqlite3';
 
 const DB_NAME = 'iol-calculator-patient-data.sqlite';
 const LEGACY_DB_NAMES = ['patient_data.sqlite', 'operation-eye.sqlite'];
-const DB_VERSION = 6; // Increment this when adding new migrations
+const DB_VERSION = 8; // Increment this when adding new migrations
 
 // Legacy folder for backward compatibility (old app used operation-eye)
 const LEGACY_APP_DATA = 'operation-eye';
@@ -458,6 +458,10 @@ class AppDatabase {
                 iol_pearl_dgs_res TEXT,
                 
                 -- IOL Torica (EVO Toric, Hoffer QST Toric, Kane Toric)
+                compat_monofocale_standard TEXT,
+                compat_monofocale_plus TEXT,
+                compat_edof TEXT,
+                compat_multifocal TEXT,
                 iol_evo_toric TEXT,
                 iol_evo_toric_pwr TEXT,
                 iol_evo_toric_res TEXT,
@@ -588,6 +592,19 @@ class AppDatabase {
                 this.addNativeCalculatorColumns();
                 this.setVersion(6);
             }
+
+            if (currentVersion < 7) {
+                console.log('Running migration 7: Compatibility score fields');
+                this.addCompatibilityScoreColumns();
+                this.setVersion(7);
+            }
+
+            if (currentVersion < 8) {
+                // Keep compatibility columns idempotent in case of version drift
+                console.log('Running migration 8: Ensure compatibility score columns');
+                this.addCompatibilityScoreColumns();
+                this.setVersion(8);
+            }
         });
 
         try {
@@ -670,6 +687,21 @@ class AppDatabase {
         }
     }
 
+    addCompatibilityScoreColumns() {
+        const newCols = [
+            'compat_monofocale_standard',
+            'compat_monofocale_plus',
+            'compat_edof',
+            'compat_multifocal',
+        ];
+        const existing = new Set(this.db.pragma('table_info(operations)').map((c) => c.name));
+        for (const col of newCols) {
+            if (!existing.has(col)) {
+                this.db.exec(`ALTER TABLE operations ADD COLUMN ${col} TEXT`);
+            }
+        }
+    }
+
     migrateLegacyIolResiduals() {
         // Copy existing CSO power fields into residual columns where residual empty
         const pairs = [
@@ -740,16 +772,77 @@ class AppDatabase {
 
     // Get database info for debugging
     getDatabaseInfo() {
+        const smartIolDbPath = this.getSmartIolDbPath();
         return {
             primaryPath: this.primaryDbPath,
             backupPath: this.appDataDbPath,
             userDataPath: app.getPath('userData'),
             legacyOperationEyePath: this.legacyAppDataDir,
             legacyDbFound: !!this.findLegacyDbInOperationEye(),
+            smartIolDbPath,
+            smartIolDbFound: !!smartIolDbPath,
             version: this.getCurrentVersion(),
             primaryExists: fs.existsSync(this.primaryDbPath),
             backupExists: fs.existsSync(this.appDataDbPath)
         };
+    }
+
+    getSmartIolDbPath() {
+        const smartIolDir = path.join(app.getPath('appData'), 'SmartIOL', 'database');
+        const names = [DB_NAME, ...LEGACY_DB_NAMES];
+        for (const name of names) {
+            const p = path.join(smartIolDir, name);
+            if (fs.existsSync(p)) return p;
+        }
+        return null;
+    }
+
+    listSmartIolPatients(search = '') {
+        const dbPath = this.getSmartIolDbPath();
+        if (!dbPath) return [];
+        let extDb;
+        try {
+            extDb = new Database(dbPath, { readonly: true });
+            const term = `%${String(search || '').trim()}%`;
+            return extDb.prepare(`
+                SELECT id, name, dateOfBirth, gender
+                FROM patients
+                WHERE deletedAt IS NULL
+                  AND (? = '%%' OR name LIKE ? COLLATE NOCASE)
+                ORDER BY name ASC
+                LIMIT 500
+            `).all(term, term);
+        } catch (err) {
+            console.error('Failed to list SmartIOL patients:', err);
+            return [];
+        } finally {
+            if (extDb) {
+                try { extDb.close(); } catch (_) {}
+            }
+        }
+    }
+
+    listSmartIolOperationsByPatientId(patientId) {
+        const dbPath = this.getSmartIolDbPath();
+        if (!dbPath || !patientId) return [];
+        let extDb;
+        try {
+            extDb = new Database(dbPath, { readonly: true });
+            return extDb.prepare(`
+                SELECT *
+                FROM operations
+                WHERE patientId = ?
+                  AND deletedAt IS NULL
+                ORDER BY operationDate DESC, id DESC
+            `).all(patientId);
+        } catch (err) {
+            console.error('Failed to list SmartIOL operations:', err);
+            return [];
+        } finally {
+            if (extDb) {
+                try { extDb.close(); } catch (_) {}
+            }
+        }
     }
 
     getConnection() {

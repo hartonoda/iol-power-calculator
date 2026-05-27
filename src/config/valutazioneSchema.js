@@ -18,6 +18,7 @@ export const VALUTAZIONE_DB_FIELDS = [
   'iol_evo2_res', 'iol_hoffer_qst_res', 'iol_kane_res', 'iol_pearl_dgs_res',
   'iol_argos_barrett_toric_res', 'iol_argos_barrett_toric_t', 'iol_argos_barrett_toric_axis',
   'iol_tomey_barrett_toric_res', 'iol_tomey_barrett_toric_t', 'iol_tomey_barrett_toric_axis',
+  'compat_monofocale_standard', 'compat_monofocale_plus', 'compat_edof', 'compat_multifocal',
   'iol_evo_toric_res', 'iol_evo_toric', 'iol_evo_toric_rescyl',
   'iol_hoffer_qst_toric_res', 'iol_hoffer_qst_toric', 'iol_hoffer_qst_toric_rescyl',
   'iol_kane_toric_res', 'iol_kane_toric', 'iol_kane_toric_rescyl',

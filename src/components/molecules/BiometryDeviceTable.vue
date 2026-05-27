@@ -1,5 +1,11 @@
 <template>
   <div class="biometry-block">
+    <div class="top-meta-row">
+      <label class="meta-field">
+        <span class="meta-label">Endotelio corneale cell/mm²</span>
+        <BioCell v-model="form.cellEndotelio" :disabled="disabled" />
+      </label>
+    </div>
     <table class="bio-table">
       <thead>
         <tr>
@@ -143,6 +149,24 @@ const metricWarnings = computed(() => {
   border-top: 2px solid #2563eb;
   padding-top: 10px;
   margin-top: 10px;
+}
+.top-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+  padding: 0 2px 2px;
+}
+.meta-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.meta-label {
+  color: #1e40af;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
 }
 .bio-table {
   width: 100%;

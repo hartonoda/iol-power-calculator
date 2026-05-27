@@ -16,7 +16,7 @@ export function registerAllHandlers({
   configRepo,
   iolRulesRepo,
 }) {
-  registerPatientHandlers(patientRepo, appDatabase);
+  registerPatientHandlers(patientRepo, operationRepo, appDatabase);
   registerOperationHandlers(operationRepo, appDatabase);
   registerIolModelHandlers(iolModelRepo, appDatabase);
   registerConfigHandlers(configRepo);

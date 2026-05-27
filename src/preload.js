@@ -8,6 +8,10 @@ contextBridge.exposeInMainWorld('api', {
     getAll: () => ipcRenderer.invoke('patient:getAll'),
     getById: (id) => ipcRenderer.invoke('patient:getById', id),
     checkExists: (name, dateOfBirth) => ipcRenderer.invoke('patient:checkExists', name, dateOfBirth),
+    smartiolStatus: () => ipcRenderer.invoke('patient:smartiolStatus'),
+    listFromSmartiol: (search) => ipcRenderer.invoke('patient:listFromSmartiol', search),
+    listOperationsFromSmartiol: (patient) => ipcRenderer.invoke('patient:listOperationsFromSmartiol', patient),
+    importFromSmartiol: (patient) => ipcRenderer.invoke('patient:importFromSmartiol', patient),
   },
   operation: {
     add: (operation) => ipcRenderer.invoke('operation:add', operation),

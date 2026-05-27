@@ -1,8 +1,20 @@
 <template>
   <div class="calc-block">
+    
+
+    <div class="compat-row-wrap">
+      <div class="compat-row-title">Compatibilita IOL</div>
+      <div class="compat-row">
+        <label v-for="row in compatibilityScores" :key="row.key" class="compat-item">
+          <span class="compat-label">{{ row.label }}</span>
+          <input v-model="form[row.key]" type="text" :disabled="disabled" />
+        </label>
+      </div>
+    </div>
+
     <div class="warning-banner">
       {{ formulaSources.warningBanner }}
-    </div>
+    </div> 
 
     <div class="calc-header">
       <label class="field formula-field">
@@ -88,6 +100,12 @@ const props = defineProps({
 });
 
 const formulas = formulaSources.formulas;
+const compatibilityScores = [
+  { label: 'Monofocale standard', key: 'compat_monofocale_standard' },
+  { label: 'Monofocale plus', key: 'compat_monofocale_plus' },
+  { label: 'EDOF', key: 'compat_edof' },
+  { label: 'Multifocal', key: 'compat_multifocal' },
+];
 
 if (!props.form.iolCalcFormula) props.form.iolCalcFormula = 'srk2';
 if (!props.form.iolCalcAConstant) props.form.iolCalcAConstant = '118.4';
@@ -174,6 +192,39 @@ function applyResult() {
   border-radius: 6px;
   font-size: 12px;
 }
+.compat-row-wrap {
+  margin-top: 2px;
+  padding: 8px 0 10px;
+  border-bottom: 2px solid #2563eb;
+}
+.compat-row-title {
+  font-weight: 600;
+  color: #1e40af;
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.compat-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+.compat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.compat-label {
+  font-size: 12px;
+  color: #1f2937;
+  white-space: nowrap;
+}
+.compat-item input {
+  width: 74px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-size: 13px;
+}
 .calc-header {
   display: flex;
   align-items: end;
@@ -259,6 +310,9 @@ function applyResult() {
   font-size: 12px;
 }
 @media (max-width: 1200px) {
+  .compat-row {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
   .constants-grid,
   .result-grid {
     grid-template-columns: repeat(2, minmax(120px, 1fr));

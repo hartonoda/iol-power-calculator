@@ -16,6 +16,14 @@
                 <button type="button" class="search-action-btn" @click="emit('refresh')">
                     Refresh
                 </button>
+                <button
+                    v-if="smartiolAvailable"
+                    type="button"
+                    class="search-action-btn smartiol-btn"
+                    @click="emit('open-smartiol-import')"
+                >
+                    Importa da SmartIOL
+                </button>
             </div>
         </div>
 
@@ -121,10 +129,19 @@ const props = defineProps({
     operations: { type: Array, default: () => [] },
     selectedId: { type: [Number, null], default: null },
     searchPlaceholder: { type: String, default: 'Cerca pazienti...' },
-    emptyMessage: { type: String, default: 'Nessun paziente trovato' }
+    emptyMessage: { type: String, default: 'Nessun paziente trovato' },
+    smartiolAvailable: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['select', 'add-operation-for-patient', 'edit-patient', 'delete-patient', 'delete-operation', 'refresh']);
+const emit = defineEmits([
+    'select',
+    'add-operation-for-patient',
+    'edit-patient',
+    'delete-patient',
+    'delete-operation',
+    'refresh',
+    'open-smartiol-import',
+]);
 
 const search = ref('');
 const sortByName = ref(false);
@@ -265,6 +282,13 @@ const formatAge = (dateString) => {
 .search-action-btn:hover {
     border-color: #9ca3af;
     background: #f9fafb;
+}
+.search-action-btn.smartiol-btn {
+    border-color: #2563eb;
+    color: #1d4ed8;
+}
+.search-action-btn.smartiol-btn:hover {
+    background: #eff6ff;
 }
 
 .search-box svg {
