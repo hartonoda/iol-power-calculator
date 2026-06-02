@@ -1,11 +1,5 @@
 <template>
   <div class="biometry-block">
-    <div class="top-meta-row">
-      <label class="meta-field">
-        <span class="meta-label">Endotelio corneale cell/mm²</span>
-        <BioCell v-model="form.cellEndotelio" :disabled="disabled" />
-      </label>
-    </div>
     <table class="bio-table">
       <thead>
         <tr>
@@ -35,12 +29,15 @@
       </thead>
       <tbody>
         <tr class="ciltot-row">
-          <td class="row-label">cil. tot. (CSO)</td>
+          <td class="row-label">tot. (CSO)</td>
           <td class="ciltot-spacer"></td>
           <td>
             <BioCell v-model="form.cilTotal" :disabled="disabled" />
           </td>
-          <td class="ciltot-spacer" colspan="4"></td>
+          <td>
+            <BioCell v-model="form.axConclusion" :disabled="disabled" />
+          </td>
+          <td class="ciltot-spacer" colspan="3"></td>
         </tr>
         <tr v-for="device in deviceRows" :key="device.key">
           <td class="row-label">{{ device.label }}</td>
@@ -140,24 +137,6 @@ const metricWarnings = computed(() => {
   border-top: 2px solid #2563eb;
   padding-top: 10px;
   margin-top: 10px;
-}
-.top-meta-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  margin-bottom: 8px;
-  padding: 0 2px 2px;
-}
-.meta-field {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.meta-label {
-  color: #1e40af;
-  font-weight: 600;
-  font-size: 12px;
-  white-space: nowrap;
 }
 .bio-table {
   width: 100%;

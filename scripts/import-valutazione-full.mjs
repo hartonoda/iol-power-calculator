@@ -15,6 +15,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { DatabaseSync } from 'node:sqlite';
 import XLSX from 'xlsx';
+import { formatCostoImport, formatVisus } from '../src/utils/numberUtils.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, '..');
@@ -436,6 +437,42 @@ function scaledDecimal(v, threshold, divisor = 100) {
   return formatNumberForDb(scaled, 2);
 }
 
+/**
+ * FileMaker valutazione.csv biometry layout (per device):
+ * - CSO: Km ms39, Astig (cil. tot.), Ast 2 (cil.), asse 3 (Ax), AXL ms39, ACD MS, LT CSO
+ * - Tomey: Km tomey, cil 1 Copia (cil.), Asse 4 Copia (Ax), Axl, ACD Copia, LT
+ * - Argos: Km argos, Ast 1 (cil.), Asse 1 (Ax), Axl Copia2, ACD Copia2, LT Copia
+ * - Total axis (CSO TK): Asse 2
+ */
+function mapBiometryFromCsv(read) {
+  return {
+    cso_avgKm: scaledDecimal(read('Km ms39'), 100),
+    cilTotal: scaledDecimal(read('Astig'), 20),
+    axConclusion: toNullIfEmpty(read('Asse 2')),
+    cso_cil: scaledDecimal(read('Ast 2'), 20),
+    cso_ax: toNullIfEmpty(read('asse 3')),
+    cso_AXL: scaledDecimal(read('AXL ms39'), 100),
+    cso_ACD: scaledDecimal(read('ACD MS'), 20),
+    cso_LT: scaledDecimal(read('LT CSO'), 20),
+
+    tomey_avgKm: scaledDecimal(read('Km tomey'), 100),
+    tomey_cilTotal: null,
+    tomey_cil: scaledDecimal(read('cil 1 Copia'), 20),
+    tomey_ax: toNullIfEmpty(read('Asse 4 Copia')) || toNullIfEmpty(read('Asse 4')),
+    tomey_AXL: scaledDecimal(read('Axl'), 100),
+    tomey_ACD: scaledDecimal(read('ACD Copia'), 20),
+    tomey_LT: scaledDecimal(read('LT'), 20),
+
+    argos_avgKm: scaledDecimal(read('Km argos'), 100),
+    argos_cilTotal: null,
+    argos_cil: scaledDecimal(read('Ast 1'), 20),
+    argos_ax: toNullIfEmpty(read('Asse 1')),
+    argos_AXL: scaledDecimal(read('Axl Copia2'), 100),
+    argos_ACD: scaledDecimal(read('ACD Copia2'), 20),
+    argos_LT: scaledDecimal(read('LT Copia'), 20),
+  };
+}
+
 function normalizeBiometryDecimals(db) {
   const updates = [
     { col: 'cso_avgKm', threshold: 100 },
@@ -502,7 +539,7 @@ function importIntoDatabase(dbPath, rows, profiles) {
       operationDate, patientId, age, eye,
       interventoDi, costo, noteIntervento, noteSistemic, noteEye, cellEndotelio,
       bcdva_sph, bcdva_cyl, bcdva_ax, bcdva_va, refSf, target, contralateralEye,
-      cso_avgKm, cilTotal, cso_cil, cso_ax, cso_AXL, cso_ACD, cso_LT,
+      cso_avgKm, cilTotal, axConclusion, cso_cil, cso_ax, cso_AXL, cso_ACD, cso_LT,
       tomey_avgKm, tomey_cilTotal, tomey_cil, tomey_ax, tomey_AXL, tomey_ACD, tomey_LT,
       argos_avgKm, argos_cilTotal, argos_cil, argos_ax, argos_AXL, argos_ACD, argos_LT,
       iol_argos_barrett_res, iol_tomey_barrett_res, iol_evo2_res, iol_hoffer_qst_res, iol_kane_res, iol_pearl_dgs_res,
@@ -519,7 +556,7 @@ function importIntoDatabase(dbPath, rows, profiles) {
     VALUES (
       ?, ?, ?, ?,
       ?, ?, ?, ?, ?, ?,
-      ?, ?, ?, ?, ?, ?, ?,
+      ?, ?, ?, ?, ?, ?, ?, ?,
       ?, ?, ?, ?, ?, ?, ?,
       ?, ?, ?, ?, ?, ?, ?,
       ?, ?, ?, ?, ?, ?, ?,
@@ -583,31 +620,12 @@ function importIntoDatabase(dbPath, rows, profiles) {
       const noteIntervento = buildInterventionNotes(read);
 
       for (const eye of eyes) {
-        const csoAvgKm = scaledDecimal(read('Km ms39'), 100);
-        const csoCilTot = scaledDecimal(read('Astig'), 20);
-        const csoCil = scaledDecimal(read('cil 1 Copia')) ?? scaledDecimal(read('cilindro'), 20);
-        const csoAxl = scaledDecimal(read('AXL ms39'), 100);
-        const csoAcd = scaledDecimal(read('ACD MS'), 20);
-        const csoLt = scaledDecimal(read('LT CSO'), 20);
-
-        const tomeyAvgKm = scaledDecimal(read('Km tomey'), 100);
-        const tomeyCilTot = scaledDecimal(read('Ast 2'), 20);
-        const tomeyCil = scaledDecimal(read('Ast 2'), 20);
-        const tomeyAxl = scaledDecimal(read('Axl Copia2'), 100);
-        const tomeyAcd = scaledDecimal(read('ACD Copia2'), 20);
-        const tomeyLt = scaledDecimal(read('LT Copia'), 20);
-
-        const argosAvgKm = scaledDecimal(read('Km argos'), 100);
-        const argosCilTot = scaledDecimal(read('Ast 1'), 20);
-        const argosCil = scaledDecimal(read('Ast 1'), 20);
-        const argosAxl = scaledDecimal(read('Axl'), 100);
-        const argosAcd = scaledDecimal(read('ACD Copia'), 20);
-        const argosLt = scaledDecimal(read('LT'), 20);
+        const bio = mapBiometryFromCsv(read);
 
         insertOperationStmt.run(
           opDate, patientId, toNullIfEmpty(read('Eta')), eye,
           toNullIfEmpty(read('tipo di intervento')) || 'Faco + IOL',
-          toNullIfEmpty(read('Costo int')),
+          formatCostoImport(read('Costo int')) || null,
           toNullIfEmpty(noteIntervento),
           toNullIfEmpty(noteSistemic),
           toNullIfEmpty(noteEye),
@@ -615,31 +633,32 @@ function importIntoDatabase(dbPath, rows, profiles) {
           toNullIfEmpty(read('sfera')),
           toNullIfEmpty(read('cilindro')),
           toNullIfEmpty(read('asse')),
-          toNullIfEmpty(read('decimi')),
+          formatVisus(read('decimi')) || null,
           toNullIfEmpty(read('RR')),
           toNullIfEmpty(read('Target')),
           toNullIfEmpty(read('Occhio controlaterale')),
-          csoAvgKm,
-          csoCilTot,
-          csoCil,
-          toNullIfEmpty(read('Asse 1')) || toNullIfEmpty(read('asse')),
-          csoAxl,
-          csoAcd,
-          csoLt,
-          tomeyAvgKm,
-          tomeyCilTot,
-          tomeyCil,
-          toNullIfEmpty(read('Asse 2')),
-          tomeyAxl,
-          tomeyAcd,
-          tomeyLt,
-          argosAvgKm,
-          argosCilTot,
-          argosCil,
-          toNullIfEmpty(read('asse 3')),
-          argosAxl,
-          argosAcd,
-          argosLt,
+          bio.cso_avgKm,
+          bio.cilTotal,
+          bio.axConclusion,
+          bio.cso_cil,
+          bio.cso_ax,
+          bio.cso_AXL,
+          bio.cso_ACD,
+          bio.cso_LT,
+          bio.tomey_avgKm,
+          bio.tomey_cilTotal,
+          bio.tomey_cil,
+          bio.tomey_ax,
+          bio.tomey_AXL,
+          bio.tomey_ACD,
+          bio.tomey_LT,
+          bio.argos_avgKm,
+          bio.argos_cilTotal,
+          bio.argos_cil,
+          bio.argos_ax,
+          bio.argos_AXL,
+          bio.argos_ACD,
+          bio.argos_LT,
           toNullIfEmpty(read('residuo1')) || toNullIfEmpty(read('res ref2')),
           toNullIfEmpty(read('residuo')) || toNullIfEmpty(read('res ref3')),
           toNullIfEmpty(read('Evo 2.0 cso')),

@@ -18,7 +18,7 @@ export function importFromJson(jsonData, form) {
             const eyeFields = [
                 'noteSistemic', 'noteEye', 'offsetLimbus', 'offsetPupilla',
                 'SDP', 'SRI', 'SAI', 'AbS', 'Coma', 'HOA',
-                'pupillaPhotopic', 'pupillaMesopica', 'pupillaScotopic', 'cellEndotelio'
+                'pupillaPhotopic', 'pupillaMesopica', 'pupillaScotopic', 'cellEndotelio', 'cellEndotelioNote'
             ];
             eyeFields.forEach(field => {
                 if (jsonData.eyeInfo[field] !== undefined) {
@@ -80,7 +80,8 @@ export function exportAsJson(form, patients) {
             pupillaPhotopic: form.pupillaPhotopic,
             pupillaMesopica: form.pupillaMesopica,
             pupillaScotopic: form.pupillaScotopic,
-            cellEndotelio: form.cellEndotelio
+            cellEndotelio: form.cellEndotelio,
+            cellEndotelioNote: form.cellEndotelioNote
         },
         keratometry: {
             K1: form.cso_K1,

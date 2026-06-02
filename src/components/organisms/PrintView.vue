@@ -64,7 +64,7 @@
                 </div>
                 <div class="param-cell">
                     <span class="label">Endothelial</span>
-                    <span class="value" :class="getValueClass('cellEndotelio')">{{ form.cellEndotelio || '—' }}</span>
+                    <span class="value" :class="getValueClass('cellEndotelio')">{{ endothelialDisplay }}</span>
                 </div>
             </div>
 
@@ -430,6 +430,13 @@ const formatDate = (dateStr) => {
 };
 
 const hasNotes = computed(() => props.form.noteSistemic || props.form.noteEye);
+
+const endothelialDisplay = computed(() => {
+  const count = props.form.cellEndotelio?.trim();
+  const note = props.form.cellEndotelioNote?.trim();
+  if (count && note) return `${count} — ${note}`;
+  return count || note || '—';
+});
 
 // Calculated keratometry values
 const calculatedK2Axis = computed(() => {

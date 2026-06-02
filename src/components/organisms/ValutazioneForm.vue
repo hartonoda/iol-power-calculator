@@ -76,8 +76,16 @@
         <input v-model="form.bcdva_ax" type="text" class="mini" :disabled="disabled" />
       </label>
       <span class="eq">=</span>
-      <label class="inline">
-        <input v-model="form.bcdva_va" type="text" class="mini" placeholder="/10" :disabled="disabled" />
+      <label class="inline va-field">
+        <div class="va-input-wrap">
+          <select v-model="form.bcdva_va" class="mini va-select" :disabled="disabled">
+            <option value="">—</option>
+            <option v-for="opt in visusOptions" :key="opt" :value="opt">
+              {{ visusOptionLabel(opt) }}
+            </option>
+          </select>
+          <span class="va-suffix">/10</span>
+        </div>
       </label>
       <label class="inline"><span class="lbl">Target:</span>
         <input
@@ -139,7 +147,13 @@
 <script setup>
 import { computed, watch } from 'vue';
 import PatientAutocomplete from '@/components/atoms/PatientAutocomplete.vue';
-import { normalizeDecimal, formatDiopter, formatDiopterFields } from '@/utils/numberUtils';
+import {
+  normalizeDecimal,
+  formatDiopter,
+  formatDiopterFields,
+  formatVisusFields,
+  VISUS_VA_OPTIONS,
+} from '@/utils/numberUtils';
 import FmSelect from '@/components/atoms/FmSelect.vue';
 import ValutazioneNotesSection from '@/components/molecules/ValutazioneNotesSection.vue';
 import BiometryDeviceTable from '@/components/molecules/BiometryDeviceTable.vue';
@@ -169,9 +183,17 @@ watch(
   () => props.form.id,
   () => {
     formatDiopterFields(props.form);
+    formatVisusFields(props.form);
   },
   { immediate: true },
 );
+
+const visusOptions = VISUS_VA_OPTIONS;
+
+function visusOptionLabel(opt) {
+  if (opt === 'PL' || opt === 'CD') return opt;
+  return opt.replace('/10', '');
+}
 
 const displayAge = computed(() => {
   const patient = props.patients.find((p) => p.id === Number(props.form.patientId));
@@ -269,6 +291,20 @@ const displayAge = computed(() => {
   padding: 4px;
   border: 1px solid #cbd5e1;
   text-align: center;
+}
+.va-input-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.va-select {
+  min-width: 52px;
+  max-width: 64px;
+}
+.va-suffix {
+  color: #374151;
+  font-size: 12px;
+  font-weight: 600;
 }
 .eq {
   font-weight: 600;

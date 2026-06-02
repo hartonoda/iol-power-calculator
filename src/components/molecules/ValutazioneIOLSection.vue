@@ -1,5 +1,6 @@
 <template>
   <div class="iol-block">
+    <SmartIolCompatibilitySection :form="form" :disabled="disabled" />
     <div class="iol-panels">
       <div class="iol-panel">
         <div class="panel-title">IOL sferica</div>
@@ -64,6 +65,7 @@
 
 <script setup>
 import BioCell from '@/components/atoms/BioCell.vue';
+import SmartIolCompatibilitySection from '@/components/molecules/SmartIolCompatibilitySection.vue';
 
 defineProps({
   form: { type: Object, required: true },

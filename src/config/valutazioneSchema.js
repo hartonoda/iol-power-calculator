@@ -8,10 +8,10 @@ export const getTodayDate = () => new Date().toISOString().split('T')[0];
 export const VALUTAZIONE_DB_FIELDS = [
   'operationDate', 'patientId', 'age', 'eye',
   'interventoDi', 'costo', 'noteIntervento',
-  'noteSistemic', 'noteEye', 'cellEndotelio',
+  'noteSistemic', 'noteEye', 'cellEndotelio', 'cellEndotelioNote',
   'bcdva_sph', 'bcdva_cyl', 'bcdva_ax', 'bcdva_va',
   'refSf', 'target', 'contralateralEye',
-  'cso_avgKm', 'cilTotal', 'cso_cil', 'cso_ax', 'cso_AXL', 'cso_ACD', 'cso_LT',
+  'cso_avgKm', 'cilTotal', 'axConclusion', 'cso_cil', 'cso_ax', 'cso_AXL', 'cso_ACD', 'cso_LT',
   'tomey_avgKm', 'tomey_cilTotal', 'tomey_cil', 'tomey_ax', 'tomey_AXL', 'tomey_ACD', 'tomey_LT',
   'argos_avgKm', 'argos_cilTotal', 'argos_cil', 'argos_ax', 'argos_AXL', 'argos_ACD', 'argos_LT',
   'iol_argos_barrett_res', 'iol_tomey_barrett_res',

@@ -603,6 +603,12 @@ class AppDatabase {
                 this.addCompatibilityScoreColumns();
                 this.setVersion(8);
             }
+
+            if (currentVersion < 9) {
+                console.log('Running migration 9: Endothelial cell note field');
+                this.addCellEndotelioNoteColumn();
+                this.setVersion(9);
+            }
         });
 
         try {
@@ -682,6 +688,13 @@ class AppDatabase {
             if (!existing.has(col)) {
                 this.db.exec(`ALTER TABLE operations ADD COLUMN ${col} TEXT`);
             }
+        }
+    }
+
+    addCellEndotelioNoteColumn() {
+        const existing = new Set(this.db.pragma('table_info(operations)').map((c) => c.name));
+        if (!existing.has('cellEndotelioNote')) {
+            this.db.exec('ALTER TABLE operations ADD COLUMN cellEndotelioNote TEXT');
         }
     }
 
