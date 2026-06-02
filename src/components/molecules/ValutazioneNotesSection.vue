@@ -66,6 +66,20 @@
                 placeholder="—"
               />
             </div>
+            <div v-else-if="opt.hasInput" class="problem-row">
+              <label class="checkbox-item">
+                <input type="checkbox" :value="opt.value" v-model="selectedEye" :disabled="disabled" />
+                <span class="cb-box" :class="{ checked: selectedEye.includes(opt.value) }"></span>
+                <span>{{ opt.label }}</span>
+              </label>
+              <input
+                v-if="selectedEye.includes(opt.value)"
+                v-model="eyeInputs[opt.value]"
+                type="text"
+                class="inline-input"
+                :disabled="disabled"
+              />
+            </div>
             <label v-else class="checkbox-item">
               <input type="checkbox" :value="opt.value" v-model="selectedEye" :disabled="disabled" />
               <span class="cb-box" :class="{ checked: selectedEye.includes(opt.value) }"></span>
@@ -98,6 +112,7 @@ const selectedSystemic = ref([]);
 const selectedPrev = ref([]);
 const selectedEye = ref([]);
 const systemicInputs = reactive({});
+const eyeInputs = reactive({});
 const eyeDropdowns = reactive({
   motility: '',
   eyelid: '',
@@ -115,6 +130,9 @@ function resetParsedState() {
   selectedEye.value = [];
   Object.keys(systemicInputs).forEach((k) => {
     systemicInputs[k] = '';
+  });
+  Object.keys(eyeInputs).forEach((k) => {
+    eyeInputs[k] = '';
   });
   Object.keys(eyeDropdowns).forEach((k) => {
     eyeDropdowns[k] = '';
@@ -155,6 +173,9 @@ function buildEye() {
     if (opt.optionsKey) {
       const val = eyeDropdowns[opt.value]?.trim();
       parts.push(val ? `${opt.label} ${val}` : opt.label);
+    } else if (opt.hasInput) {
+      const spec = eyeInputs[opt.value]?.trim();
+      parts.push(spec ? `${opt.label} ${spec}` : opt.label);
     } else {
       parts.push(opt.label);
     }
@@ -176,7 +197,16 @@ function parseEyeNote(stored) {
       if (val) eyeDropdowns[opt.value] = val;
     }
   });
-  eyeConditions.filter((o) => !o.optionsKey).forEach((opt) => {
+  eyeConditions.filter((o) => o.hasInput).forEach((opt) => {
+    const re = new RegExp(`${escapeRegex(opt.label)}\\s*([^;]*)`, 'i');
+    const m = stored.match(re);
+    if (m) {
+      selectedEye.value.push(opt.value);
+      const val = (m[1] || '').trim();
+      if (val) eyeInputs[opt.value] = val;
+    }
+  });
+  eyeConditions.filter((o) => !o.optionsKey && !o.hasInput).forEach((opt) => {
     if (stored.includes(opt.label)) selectedEye.value.push(opt.value);
   });
   previousEyeOperations.forEach((opt) => {
@@ -205,7 +235,7 @@ function parseSystemic(stored) {
   });
 }
 
-watch([selectedSystemic, selectedPrev, selectedEye, systemicInputs, eyeDropdowns], () => {
+watch([selectedSystemic, selectedPrev, selectedEye, systemicInputs, eyeInputs, eyeDropdowns], () => {
   if (parsing) return;
   props.form.noteSistemic = buildSystemic();
   props.form.noteEye = buildEye();

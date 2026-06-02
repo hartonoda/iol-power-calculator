@@ -79,7 +79,6 @@
 
     <ValutazioneNotesSection :form="form" :disabled="disabled" />
     <BiometryDeviceTable :form="form" :disabled="disabled" />
-    <IolCalculatorPanel :form="form" :disabled="disabled" />
     <ValutazioneIOLSection :form="form" :disabled="disabled" />
 
     <!-- Footer -->
@@ -119,7 +118,6 @@ import PatientAutocomplete from '@/components/atoms/PatientAutocomplete.vue';
 import FmSelect from '@/components/atoms/FmSelect.vue';
 import ValutazioneNotesSection from '@/components/molecules/ValutazioneNotesSection.vue';
 import BiometryDeviceTable from '@/components/molecules/BiometryDeviceTable.vue';
-import IolCalculatorPanel from '@/components/molecules/IolCalculatorPanel.vue';
 import ValutazioneIOLSection from '@/components/molecules/ValutazioneIOLSection.vue';
 import dropdownOptions from '@/config/dropdownOptions.json';
 

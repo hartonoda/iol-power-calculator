@@ -27,6 +27,7 @@
     { "value": "lens", "label": "Problema cristallino:", "optionsKey": "eyeProblemLens" },
     { "value": "retinal", "label": "Problema retinico:", "optionsKey": "eyeProblemRetinal" },
     { "value": "glaucoma", "label": "Glaucoma" },
-    { "value": "osd", "label": "OSD" }
+    { "value": "osd", "label": "OSD" },
+    { "value": "other", "label": "Altro:", "hasInput": true }
   ]
 }

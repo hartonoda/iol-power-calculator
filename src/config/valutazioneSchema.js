@@ -24,10 +24,6 @@ export const VALUTAZIONE_DB_FIELDS = [
   'iol_kane_toric_res', 'iol_kane_toric', 'iol_kane_toric_rescyl',
   'iol_argos_barrett_tk_res', 'iol_tomey_barrett_tk_res', 'iol_tomey_oculix_res',
   'iol_ray_tracing_res', 'iol_evo2_post_res', 'iol_pearl_dgs_post_res',
-  'iolCalcFormula', 'iolCalcAConstant', 'iolCalcSurgeonFactor',
-  'iolCalcA0', 'iolCalcA1', 'iolCalcA2',
-  'iolCalcRecommendedPower', 'iolCalcPredictedResidual',
-  'iolCalcKUsed', 'iolCalcAlUsed', 'iolCalcAcdUsed',
   'tunnel', 'iolModelSelected', 'iolT', 'iolAx', 'iolPower',
 ];
 

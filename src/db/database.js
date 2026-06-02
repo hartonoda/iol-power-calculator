@@ -588,8 +588,6 @@ class AppDatabase {
             }
 
             if (currentVersion < 6) {
-                console.log('Running migration 6: Native IOL calculator fields');
-                this.addNativeCalculatorColumns();
                 this.setVersion(6);
             }
 
@@ -663,21 +661,6 @@ class AppDatabase {
             'iol_tomey_barrett_toric_res', 'iol_tomey_barrett_toric_t', 'iol_tomey_barrett_toric_axis',
             'iol_argos_barrett_tk_res', 'iol_tomey_barrett_tk_res', 'iol_tomey_oculix_res',
             'tunnel', 'iolT', 'iolAx', 'iolPower',
-        ];
-        const existing = new Set(this.db.pragma('table_info(operations)').map((c) => c.name));
-        for (const col of newCols) {
-            if (!existing.has(col)) {
-                this.db.exec(`ALTER TABLE operations ADD COLUMN ${col} TEXT`);
-            }
-        }
-    }
-
-    addNativeCalculatorColumns() {
-        const newCols = [
-            'iolCalcFormula', 'iolCalcAConstant', 'iolCalcSurgeonFactor',
-            'iolCalcA0', 'iolCalcA1', 'iolCalcA2',
-            'iolCalcRecommendedPower', 'iolCalcPredictedResidual',
-            'iolCalcKUsed', 'iolCalcAlUsed', 'iolCalcAcdUsed',
         ];
         const existing = new Set(this.db.pragma('table_info(operations)').map((c) => c.name));
         for (const col of newCols) {
