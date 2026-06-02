@@ -17,12 +17,6 @@
             </div>
           </th>
           <th>
-            <div class="th-title">cil. tot.</div>
-            <div class="tol-hint" :class="{ alert: metricWarnings.cilTot.alert }">
-              {{ metricWarnings.cilTot.label }}
-            </div>
-          </th>
-          <th>
             <div class="th-title">cil.</div>
             <div class="tol-hint" :class="{ alert: metricWarnings.cil.alert }">
               {{ metricWarnings.cil.label }}
@@ -40,13 +34,18 @@
         </tr>
       </thead>
       <tbody>
+        <tr class="ciltot-row">
+          <td class="row-label">cil. tot. (CSO)</td>
+          <td class="ciltot-spacer"></td>
+          <td>
+            <BioCell v-model="form.cilTotal" :disabled="disabled" />
+          </td>
+          <td class="ciltot-spacer" colspan="4"></td>
+        </tr>
         <tr v-for="device in deviceRows" :key="device.key">
           <td class="row-label">{{ device.label }}</td>
           <td :class="{ 'alert-cell': metricWarnings.avgKm.alert }">
             <BioCell v-model="form[device.avgKm]" :disabled="disabled" />
-          </td>
-          <td :class="{ 'alert-cell': metricWarnings.cilTot.alert }">
-            <BioCell v-model="form[device.cilTot]" :disabled="disabled" />
           </td>
           <td :class="{ 'alert-cell': metricWarnings.cil.alert }">
             <BioCell v-model="form[device.cil]" :disabled="disabled" />
@@ -78,7 +77,6 @@ const deviceRows = [
     key: 'cso',
     label: 'CSO',
     avgKm: 'cso_avgKm',
-    cilTot: 'cilTotal',
     cil: 'cso_cil',
     ax: 'cso_ax',
     axl: 'cso_AXL',
@@ -89,7 +87,6 @@ const deviceRows = [
     key: 'tomey',
     label: 'Tomey',
     avgKm: 'tomey_avgKm',
-    cilTot: 'tomey_cilTotal',
     cil: 'tomey_cil',
     ax: 'tomey_ax',
     axl: 'tomey_AXL',
@@ -100,7 +97,6 @@ const deviceRows = [
     key: 'argos',
     label: 'Argos',
     avgKm: 'argos_avgKm',
-    cilTot: 'argos_cilTotal',
     cil: 'argos_cil',
     ax: 'argos_ax',
     axl: 'argos_AXL',
@@ -119,7 +115,6 @@ function maxDeviceDiff(a, b, c) {
 
 const metricWarnings = computed(() => {
   const avgKmDiff = maxDeviceDiff('cso_avgKm', 'tomey_avgKm', 'argos_avgKm');
-  const cilTotDiff = maxDeviceDiff('cilTotal', 'tomey_cilTotal', 'argos_cilTotal');
   const cilDiff = maxDeviceDiff('cso_cil', 'tomey_cil', 'argos_cil');
   const axDiff = maxDeviceDiff('cso_ax', 'tomey_ax', 'argos_ax');
 
@@ -128,13 +123,9 @@ const metricWarnings = computed(() => {
       label: toleranceLabel(avgKmDiff, 0.3),
       alert: avgKmDiff !== null && avgKmDiff > 0.3,
     },
-    cilTot: {
-      label: toleranceLabel(cilTotDiff, 0.3),
-      alert: cilTotDiff !== null && cilTotDiff > 0.3,
-    },
     cil: {
-      label: toleranceLabel(cilDiff, 0.1),
-      alert: cilDiff !== null && cilDiff > 0.1,
+      label: toleranceLabel(cilDiff, 0.3),
+      alert: cilDiff !== null && cilDiff > 0.3,
     },
     ax: {
       label: toleranceLabel(axDiff, 0.1, '°'),
@@ -188,6 +179,18 @@ const metricWarnings = computed(() => {
   text-align: left;
   padding: 6px 10px 6px 0;
   white-space: nowrap;
+}
+.ciltot-row .row-label {
+  font-size: 12px;
+  font-style: italic;
+}
+.ciltot-row td {
+  vertical-align: bottom;
+  padding-bottom: 2px;
+  border-bottom: 1px dashed #bfdbfe;
+}
+.ciltot-spacer {
+  border-bottom: 1px dashed #bfdbfe;
 }
 .th-title {
   line-height: 1.1;

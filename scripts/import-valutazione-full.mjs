@@ -138,19 +138,23 @@ function buildSystemicNote(read) {
       continue;
     }
     if (n.includes('neuropsich')) {
-      addUnique('Disordini neuropsichiatrici');
+      const detail = cleanText(line.replace(/disordini neuropsichiatrici[:\s-]*/i, ''));
+      addUnique(detail ? `Disordini neuropsichiatrici: ${detail}` : 'Disordini neuropsichiatrici:');
       continue;
     }
     if (n.includes('autoimmun') || n.includes('infiammat')) {
-      addUnique('Patologia autoimmune/infiammatoria');
+      const detail = cleanText(line.replace(/patologia autoimmune\/infiammatoria[:\s-]*/i, ''));
+      addUnique(detail ? `Patologia autoimmune/infiammatoria: ${detail}` : 'Patologia autoimmune/infiammatoria:');
       continue;
     }
     if (n.includes('neurolog')) {
-      addUnique('Patologia neurologica');
+      const detail = cleanText(line.replace(/patologia neurologica[:\s-]*/i, ''));
+      addUnique(detail ? `Patologia neurologica: ${detail}` : 'Patologia neurologica:');
       continue;
     }
     if (n.includes('respirat')) {
-      addUnique('Patologia respiratoria');
+      const detail = cleanText(line.replace(/patologia respiratoria[:\s-]*/i, ''));
+      addUnique(detail ? `Patologia respiratoria: ${detail}` : 'Patologia respiratoria:');
       continue;
     }
     if (n.includes('ansios')) {

@@ -4,6 +4,7 @@
 
 import { ref, computed } from 'vue';
 import { getEmptyForm, getTodayDate } from '@/config/formSchema';
+import { formatDiopterFields } from '@/utils/numberUtils';
 import { useBothEyesMode } from './useBothEyesMode';
 
 export function useOperationForm() {
@@ -63,6 +64,7 @@ export function useOperationForm() {
                 }
             }
         });
+        formatDiopterFields(form.value);
     };
     
     // Select an operation

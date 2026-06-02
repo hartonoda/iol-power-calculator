@@ -224,15 +224,32 @@ function parseSystemic(stored) {
     selectedSystemic.value = ['nessuna'];
     return;
   }
-  systemicConditions.forEach((opt) => {
-    if (stored.includes(opt.label.replace(':', '')) || stored.includes(opt.label)) {
-      selectedSystemic.value.push(opt.value);
-      if (opt.hasInput) {
-        const m = stored.match(new RegExp(`${escapeRegex(opt.label)}\\s*([^;]+)`, 'i'));
-        if (m) systemicInputs[opt.value] = m[1].trim();
+
+  const matched = new Set();
+  const tryMatch = (opt) => {
+    const labelPlain = opt.label.replace(':', '').trim();
+    const labelWithColon = opt.label.endsWith(':') ? opt.label : `${opt.label}:`;
+    const found =
+      stored.includes(labelWithColon)
+      || stored.includes(labelPlain)
+      || stored.includes(opt.label);
+    if (!found || matched.has(opt.value)) return;
+    matched.add(opt.value);
+    selectedSystemic.value.push(opt.value);
+    if (opt.hasInput) {
+      const patterns = [opt.label, labelWithColon, labelPlain];
+      for (const pattern of patterns) {
+        const m = stored.match(new RegExp(`${escapeRegex(pattern)}\\s*([^;]+)`, 'i'));
+        if (m) {
+          systemicInputs[opt.value] = m[1].trim();
+          break;
+        }
       }
     }
-  });
+  };
+
+  systemicConditions.filter((o) => o.hasInput).forEach(tryMatch);
+  systemicConditions.filter((o) => !o.hasInput).forEach(tryMatch);
 }
 
 watch([selectedSystemic, selectedPrev, selectedEye, systemicInputs, eyeInputs, eyeDropdowns], () => {

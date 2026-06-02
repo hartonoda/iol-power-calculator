@@ -12,6 +12,7 @@
                         <input 
                             :value="form.bcdva_sph" 
                             @input="form.bcdva_sph = normalizeDecimal($event.target.value)"
+                            @blur="form.bcdva_sph = formatDiopter(form.bcdva_sph)"
                             :disabled="disabled"
                             placeholder="-"
                         />
@@ -31,6 +32,7 @@
                         <input 
                             :value="form.bcdva_cyl" 
                             @input="form.bcdva_cyl = normalizeDecimal($event.target.value)"
+                            @blur="form.bcdva_cyl = formatDiopter(form.bcdva_cyl)"
                             :disabled="disabled"
                             placeholder="-"
                         />
@@ -70,7 +72,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useI18n } from '@/composables/useI18n';
-import { normalizeDecimal } from '@/utils/numberUtils';
+import { normalizeDecimal, formatDiopter } from '@/utils/numberUtils';
 
 const { t } = useI18n();
 

@@ -27,7 +27,7 @@
           <option value="OS">OS</option>
         </select>
       </label>
-      <label class="field">
+      <label class="field intervento-field">
         <span class="lbl">Intervento di:</span>
         <FmSelect
           v-model="form.interventoDi"
@@ -36,7 +36,7 @@
           placeholder="—"
         />
       </label>
-      <label class="field narrow">
+      <label class="field costo-field">
         <span class="lbl">Costo:</span>
         <input v-model="form.costo" type="text" :disabled="disabled" />
       </label>
@@ -51,10 +51,26 @@
     <div class="refraction-row">
       <span class="section-label">Refrazione e visus:</span>
       <label class="inline"><span class="lbl">sf.:</span>
-        <input v-model="form.bcdva_sph" type="text" class="mini" :disabled="disabled" />
+        <input
+          :value="form.bcdva_sph"
+          type="text"
+          class="mini"
+          :disabled="disabled"
+          inputmode="decimal"
+          @input="form.bcdva_sph = normalizeDecimal($event.target.value)"
+          @blur="form.bcdva_sph = formatDiopter(form.bcdva_sph)"
+        />
       </label>
       <label class="inline"><span class="lbl">cil.:</span>
-        <input v-model="form.bcdva_cyl" type="text" class="mini" :disabled="disabled" />
+        <input
+          :value="form.bcdva_cyl"
+          type="text"
+          class="mini"
+          :disabled="disabled"
+          inputmode="decimal"
+          @input="form.bcdva_cyl = normalizeDecimal($event.target.value)"
+          @blur="form.bcdva_cyl = formatDiopter(form.bcdva_cyl)"
+        />
       </label>
       <label class="inline"><span class="lbl">ax:</span>
         <input v-model="form.bcdva_ax" type="text" class="mini" :disabled="disabled" />
@@ -64,7 +80,15 @@
         <input v-model="form.bcdva_va" type="text" class="mini" placeholder="/10" :disabled="disabled" />
       </label>
       <label class="inline"><span class="lbl">Target:</span>
-        <input v-model="form.target" type="text" class="mini" :disabled="disabled" />
+        <input
+          :value="form.target"
+          type="text"
+          class="mini"
+          :disabled="disabled"
+          inputmode="decimal"
+          @input="form.target = normalizeDecimal($event.target.value)"
+          @blur="form.target = formatDiopter(form.target)"
+        />
       </label>
       <label class="inline grow contralateral-field">
         <span class="lbl">Occhio controlaterale:</span>
@@ -113,8 +137,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import PatientAutocomplete from '@/components/atoms/PatientAutocomplete.vue';
+import { normalizeDecimal, formatDiopter, formatDiopterFields } from '@/utils/numberUtils';
 import FmSelect from '@/components/atoms/FmSelect.vue';
 import ValutazioneNotesSection from '@/components/molecules/ValutazioneNotesSection.vue';
 import BiometryDeviceTable from '@/components/molecules/BiometryDeviceTable.vue';
@@ -139,6 +164,14 @@ const iolModelOptions = computed(() => {
 });
 
 defineEmits(['add-new-patient']);
+
+watch(
+  () => props.form.id,
+  () => {
+    formatDiopterFields(props.form);
+  },
+  { immediate: true },
+);
 
 const displayAge = computed(() => {
   const patient = props.patients.find((p) => p.id === Number(props.form.patientId));
@@ -176,11 +209,20 @@ const displayAge = computed(() => {
 }
 .header-grid {
   display: grid;
-  grid-template-columns: 140px 1fr 60px 70px 1fr 80px;
+  grid-template-columns: 140px 1fr 60px 70px minmax(130px, 11rem) minmax(100px, 8.5rem);
   gap: 10px 12px;
   align-items: end;
   border-bottom: 2px solid #2563eb;
   padding-bottom: 10px;
+}
+.intervento-field {
+  min-width: 0;
+}
+.intervento-field :deep(.fm-select) {
+  max-width: 11rem;
+}
+.costo-field input {
+  min-width: 6.5rem;
 }
 .field {
   display: flex;
