@@ -3,19 +3,11 @@
     <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
       <div class="settings-dialog">
         <div class="dialog-header">
-          <h3>Modelli IOL e costanti</h3>
+          <h3>Modelli IOL</h3>
           <button type="button" class="icon-btn" title="Chiudi" @click="$emit('close')">
             <SvgIcon name="close" :size="20" />
           </button>
         </div>
-
-        <p class="source-note">
-          Costanti da
-          <a href="https://iolcon.org/lensesTable.php" target="_blank" rel="noopener noreferrer">
-            iolcon.org/lensesTable.php
-          </a>
-          — Nominal (A), Hoffer Q/QST (ottimizzata se disponibile), Barrett (LF / DF).
-        </p>
 
         <div class="dialog-body">
           <div class="toolbar-row">
@@ -42,53 +34,13 @@
               <thead>
                 <tr>
                   <th class="col-name">Modello</th>
-                  <th>Nominal (A)</th>
-                  <th>Hoffer Q / QST</th>
-                  <th>Barrett (LF / DF)</th>
                   <th class="col-actions"></th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="row in editableRows" :key="row.id">
                   <td class="col-name">
-                    <input v-model="row.name" type="text" class="text-input compact" />
-                  </td>
-                  <td>
-                    <input
-                      v-model="row.nominalA"
-                      type="text"
-                      class="num-input wide"
-                      inputmode="decimal"
-                      placeholder="—"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      v-model="row.hofferPacd"
-                      type="text"
-                      class="num-input wide"
-                      inputmode="decimal"
-                      placeholder="—"
-                    />
-                  </td>
-                  <td>
-                    <div class="barrett-pair">
-                      <input
-                        v-model="row.barrett"
-                        type="text"
-                        class="num-input"
-                        inputmode="decimal"
-                        placeholder="LF"
-                      />
-                      <span class="barrett-sep">/</span>
-                      <input
-                        v-model="row.barrettDf"
-                        type="text"
-                        class="num-input"
-                        inputmode="decimal"
-                        placeholder="DF"
-                      />
-                    </div>
+                    <input v-model="row.name" type="text" class="text-input" />
                   </td>
                   <td class="col-actions">
                     <div class="action-btns">
@@ -142,7 +94,6 @@
 import { ref, watch } from 'vue';
 import ConfirmModal from '@/components/atoms/ConfirmModal.vue';
 import SvgIcon from '@/components/atoms/SvgIcon.vue';
-import { IOL_CONSTANT_FIELDS } from '@/config/iolModelConstantsDefaults.js';
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -160,26 +111,10 @@ const modelToDelete = ref(null);
 const localeSort = (a, b) =>
   (a.name || '').localeCompare(b.name || '', 'it', { sensitivity: 'base' });
 
-function toEditable(model) {
-  const row = { id: model.id, name: model.name };
-  for (const key of IOL_CONSTANT_FIELDS) {
-    const val = model[key];
-    row[key] = val == null ? '' : String(val);
-  }
-  return row;
-}
-
-function rowToPayload(row) {
-  const payload = { name: row.name.trim() };
-  for (const key of IOL_CONSTANT_FIELDS) {
-    const raw = String(row[key] ?? '').trim();
-    payload[key] = raw === '' ? null : Number(raw);
-  }
-  return payload;
-}
-
 function syncRows() {
-  editableRows.value = props.models.map(toEditable).sort(localeSort);
+  editableRows.value = props.models
+    .map((m) => ({ id: m.id, name: m.name }))
+    .sort(localeSort);
 }
 
 function sortAlphabetically() {
@@ -244,8 +179,9 @@ const saveAll = async () => {
   saving.value = true;
   try {
     for (const row of editableRows.value) {
-      if (!row.name?.trim()) continue;
-      await window.api.iolModel.update(row.id, rowToPayload(row));
+      const name = row.name?.trim();
+      if (!name) continue;
+      await window.api.iolModel.update(row.id, { name });
     }
     emit('saved');
     emit('close');
@@ -272,7 +208,7 @@ const saveAll = async () => {
 .settings-dialog {
   background: white;
   border-radius: 12px;
-  width: min(1100px, 96vw);
+  width: min(560px, 96vw);
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -291,17 +227,6 @@ const saveAll = async () => {
   margin: 0;
   font-size: 18px;
   color: #1a1a2e;
-}
-
-.source-note {
-  margin: 0;
-  padding: 10px 20px 0;
-  font-size: 12px;
-  color: #64748b;
-}
-
-.source-note a {
-  color: #2563eb;
 }
 
 .dialog-body {
@@ -355,12 +280,12 @@ const saveAll = async () => {
 .models-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .models-table th,
 .models-table td {
-  padding: 6px 8px;
+  padding: 8px 10px;
   border-bottom: 1px solid #f1f5f9;
   text-align: left;
 }
@@ -375,7 +300,7 @@ const saveAll = async () => {
 }
 
 .col-name {
-  min-width: 160px;
+  width: 100%;
 }
 
 .col-actions {
@@ -390,39 +315,13 @@ const saveAll = async () => {
   gap: 4px;
 }
 
-.text-input,
-.num-input {
+.text-input {
   width: 100%;
   box-sizing: border-box;
-  padding: 5px 6px;
+  padding: 6px 8px;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
-  font-size: 12px;
-}
-
-.num-input {
-  min-width: 52px;
-  max-width: 68px;
-}
-
-.num-input.wide {
-  min-width: 72px;
-  max-width: 88px;
-}
-
-.barrett-pair {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.barrett-sep {
-  color: #94a3b8;
-  font-size: 12px;
-}
-
-.text-input.compact {
-  min-width: 140px;
+  font-size: 13px;
 }
 
 .btn-add {

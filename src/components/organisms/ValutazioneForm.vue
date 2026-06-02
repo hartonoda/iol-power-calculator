@@ -38,7 +38,22 @@
       </label>
       <label class="field costo-field">
         <span class="lbl">Costo:</span>
-        <input v-model="form.costo" type="text" :disabled="disabled" />
+        <input
+          v-if="costoCustomMode"
+          v-model="form.costo"
+          type="text"
+          class="costo-input"
+          :disabled="disabled"
+          placeholder="Valore personalizzato…"
+        />
+        <FmSelect
+          v-else
+          v-model="form.costo"
+          :options="costoSelectOptions"
+          :disabled="disabled"
+          placeholder="—"
+          @update:model-value="onCostoSelect"
+        />
       </label>
     </div>
 
@@ -110,6 +125,7 @@
     </div>
 
     <ValutazioneNotesSection :form="form" :disabled="disabled" />
+    <ValutazioneEndothelialSection :form="form" :disabled="disabled" />
     <BiometryDeviceTable :form="form" :disabled="disabled" />
     <SmartIolCompatibilitySection :form="form" :disabled="disabled" />
     <IolModelSection
@@ -124,7 +140,7 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import PatientAutocomplete from '@/components/atoms/PatientAutocomplete.vue';
 import {
   normalizeDecimal,
@@ -135,6 +151,7 @@ import {
 } from '@/utils/numberUtils';
 import FmSelect from '@/components/atoms/FmSelect.vue';
 import ValutazioneNotesSection from '@/components/molecules/ValutazioneNotesSection.vue';
+import ValutazioneEndothelialSection from '@/components/molecules/ValutazioneEndothelialSection.vue';
 import BiometryDeviceTable from '@/components/molecules/BiometryDeviceTable.vue';
 import SmartIolCompatibilitySection from '@/components/molecules/SmartIolCompatibilitySection.vue';
 import ValutazioneIOLSection from '@/components/molecules/ValutazioneIOLSection.vue';
@@ -151,13 +168,45 @@ const props = defineProps({
 
 defineEmits(['add-new-patient', 'iol-models-changed']);
 
+const COSTO_EDIT_OPTION = 'Edit...';
+const costoPresetOptions = dropdownOptions.costo.filter((o) => o !== COSTO_EDIT_OPTION);
+const costoSelectOptions = [...costoPresetOptions, COSTO_EDIT_OPTION];
+const costoCustomMode = ref(false);
+
+function syncCostoInputMode() {
+  const value = String(props.form.costo || '').trim();
+  costoCustomMode.value = Boolean(value && !costoPresetOptions.includes(value));
+}
+
+function onCostoSelect(value) {
+  if (value === COSTO_EDIT_OPTION) {
+    costoCustomMode.value = true;
+    props.form.costo = '';
+    return;
+  }
+  costoCustomMode.value = false;
+  props.form.costo = value;
+}
+
 watch(
   () => props.form.id,
   () => {
     formatDiopterFields(props.form);
     formatVisusFields(props.form);
+    syncCostoInputMode();
   },
   { immediate: true },
+);
+
+watch(
+  () => props.form.costo,
+  () => {
+    if (costoCustomMode.value && !String(props.form.costo || '').trim()) {
+      costoCustomMode.value = false;
+      return;
+    }
+    if (!costoCustomMode.value) syncCostoInputMode();
+  },
 );
 
 const visusOptions = VISUS_VA_OPTIONS;
@@ -215,8 +264,10 @@ const displayAge = computed(() => {
 .intervento-field :deep(.fm-select) {
   max-width: 11rem;
 }
-.costo-field input {
+.costo-field .costo-input,
+.costo-field :deep(.fm-select) {
   min-width: 6.5rem;
+  max-width: 9rem;
 }
 .field {
   display: flex;

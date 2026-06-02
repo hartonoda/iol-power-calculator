@@ -18,7 +18,7 @@
 
             class="settings-btn"
 
-            title="Gestisci modelli IOL e costanti"
+            title="Gestisci modelli IOL"
 
             @click="showSettings = true"
 

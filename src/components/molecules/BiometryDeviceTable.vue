@@ -30,13 +30,19 @@
       </thead>
       <tbody>
         <tr class="ciltot-row">
-          <td class="row-label">tot. (CSO)</td>
+          <td class="row-label">CSO</td>
           <td class="ciltot-spacer"></td>
           <td>
-            <BioCell v-model="form.cilTotal" :disabled="disabled" />
+            <div class="ciltot-field">
+              <span class="ciltot-static">tot.</span>
+              <BioCell v-model="form.cilTotal" :disabled="disabled" />
+            </div>
           </td>
           <td>
-            <BioCell v-model="form.axConclusion" :disabled="disabled" />
+            <div class="ciltot-field">
+              <span class="ciltot-static">tot.</span>
+              <BioCell v-model="form.axConclusion" :disabled="disabled" />
+            </div>
           </td>
           <td class="ciltot-spacer"></td>
           <td class="ciltot-spacer" colspan="3"></td>
@@ -269,6 +275,23 @@ const metricWarnings = computed(() => {
 }
 .ciltot-spacer {
   border-bottom: 1px dashed #bfdbfe;
+}
+.ciltot-field {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+}
+.ciltot-static {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e40af;
+  font-style: italic;
+  white-space: nowrap;
+}
+.ciltot-field :deep(.bio-cell) {
+  min-width: 0;
 }
 .th-title {
   line-height: 1.1;

@@ -87,26 +87,6 @@
             </label>
           </template>
         </div>
-
-        <div class="endothelial-row">
-          <span class="endothelial-label">Endotelio corneale</span>
-          <input
-            :value="form.cellEndotelio"
-            type="text"
-            class="endothelial-count"
-            inputmode="decimal"
-            placeholder="cell/mm²"
-            :disabled="disabled"
-            @input="form.cellEndotelio = normalizeDecimal($event.target.value)"
-          />
-          <input
-            v-model="form.cellEndotelioNote"
-            type="text"
-            class="endothelial-note"
-            placeholder="Note"
-            :disabled="disabled"
-          />
-        </div>
       </div>
     </div>
   </div>
@@ -117,8 +97,6 @@ import { ref, watch, onMounted, reactive } from 'vue';
 import noteOptions from '@/config/noteOptions.json';
 import dropdownOptions from '@/config/dropdownOptions.json';
 import FmSelect from '@/components/atoms/FmSelect.vue';
-import { normalizeDecimal } from '@/utils/numberUtils';
-
 const props = defineProps({
   form: { type: Object, required: true },
   disabled: { type: Boolean, default: false },
@@ -385,30 +363,5 @@ function onSystemicChange(value) {
   padding: 3px 6px;
   border: 1px solid #1f2937;
   font-size: 12px;
-}
-.endothelial-row {
-  display: grid;
-  grid-template-columns: auto 5.5rem 1fr;
-  gap: 8px;
-  align-items: center;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid #e5e7eb;
-}
-.endothelial-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: #1e40af;
-  white-space: nowrap;
-}
-.endothelial-count,
-.endothelial-note {
-  padding: 3px 6px;
-  border: 1px solid #1f2937;
-  font-size: 12px;
-  min-width: 0;
-}
-.endothelial-count {
-  text-align: center;
 }
 </style>

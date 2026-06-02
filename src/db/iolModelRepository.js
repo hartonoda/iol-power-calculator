@@ -60,13 +60,7 @@ class IolModelRepository {
   duplicate(id) {
     const source = this.getById(id);
     if (!source) throw new Error('IOL model not found');
-
-    const name = this.uniqueCopyName(source.name);
-    const payload = { name };
-    for (const key of IOL_CONSTANT_FIELDS) {
-      payload[key] = source[key];
-    }
-    return this.add(payload);
+    return this.add({ name: this.uniqueCopyName(source.name) });
   }
 
   getById(id) {
