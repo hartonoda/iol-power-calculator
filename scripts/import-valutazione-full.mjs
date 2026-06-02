@@ -437,6 +437,120 @@ function scaledDecimal(v, threshold, divisor = 100) {
   return formatNumberForDb(scaled, 2);
 }
 
+/** FileMaker often stores diopters ×100 (e.g. -209 → -2.09). */
+function scaleIolResidual(v) {
+  return scaledDecimal(v, 10);
+}
+
+function firstCsvValue(read, ...keys) {
+  for (const key of keys) {
+    const t = trimValue(read(key));
+    if (t !== '') return t;
+  }
+  return '';
+}
+
+function mapCostoFromCsv(read) {
+  const raw = trimValue(read('Costo int'));
+  if (raw === '' || raw === '0') return 'Assic';
+  return formatCostoImport(raw) || null;
+}
+
+/**
+ * IOL calculation columns from valutazione.csv (FileMaker export).
+ * Toric layout verified against genovesi maurizio OD sample.
+ */
+function csvFieldPresent(read, key) {
+  return trimValue(read(key)) !== '';
+}
+
+/** FileMaker `residuo` as compact toric residual (e.g. 2 → +0.02), not large sferica-scale values. */
+function isCompactToricResidual(read, key = 'residuo') {
+  const n = parseNumberLoose(read(key));
+  if (n === null) return false;
+  const abs = Math.abs(n);
+  return abs > 0 && abs < 10;
+}
+
+/** `residuo` toric column stores hundredths when value is a small integer (2 → 0.02). */
+function scaleEvoToricResiduo(v) {
+  const n = parseNumberLoose(v);
+  if (n === null) return null;
+  const abs = Math.abs(n);
+  if (abs >= 1 && Number.isInteger(n)) {
+    return formatNumberForDb(n / 100, 2);
+  }
+  return formatNumberForDb(n, 2);
+}
+
+function mapIolFromCsv(read) {
+  const res = (...keys) => {
+    const v = firstCsvValue(read, ...keys);
+    return v ? scaleIolResidual(v) : null;
+  };
+  const raw = (...keys) => toNullIfEmpty(firstCsvValue(read, ...keys));
+  const resWhen = (trigger, ...keys) => (csvFieldPresent(read, trigger) ? res(...keys) : null);
+  const rawWhen = (trigger, ...keys) => (csvFieldPresent(read, trigger) ? raw(...keys) : null);
+
+  const evoToricFromResRef2 = csvFieldPresent(read, 'res ref2');
+  const evoToricFromResiduo = !evoToricFromResRef2 && isCompactToricResidual(read);
+  const evoToricActive = evoToricFromResRef2 || evoToricFromResiduo;
+
+  return {
+    // IOL sferica (e.g. 8 favali cristina OS): res r Copia → Argos, res r Copia2 → Tomey,
+    // res ref Copia2 → Evo, res ref Copia4 → Hoffer, res ref Copia5 → Kane, res r → Pearl
+    iol_argos_barrett_res: res('res r Copia'),
+    iol_tomey_barrett_res: res('res r Copia2'),
+    iol_evo2_res: res('res ref Copia2', 'Evo 2.0 cso'),
+    iol_hoffer_qst_res: res('res ref Copia4'),
+    iol_kane_res: res('res ref Copia5'),
+    iol_pearl_dgs_res: res('res r', 'pearl cso'),
+
+    // Toric rows only when FileMaker toric residual columns exist (avoid biometry axes like Asse 2)
+    iol_argos_barrett_toric_res: resWhen('residuo tomey toric', 'residuo tomey toric'),
+    iol_argos_barrett_toric_t: rawWhen('residuo tomey toric', 'T Copia', 'T4'),
+    iol_argos_barrett_toric_axis: rawWhen('residuo tomey toric', 'asee t2', 'asse7'),
+
+    iol_tomey_barrett_toric_res: resWhen('residuo1', 'residuo1'),
+    iol_tomey_barrett_toric_t: rawWhen('residuo1', 'T4', 'T Copia'),
+    iol_tomey_barrett_toric_axis: rawWhen('residuo1', 'Asse 5 Copia', 'asse t3'),
+
+    iol_evo_toric_res: evoToricActive
+      ? (evoToricFromResRef2
+        ? res('res ref2')
+        : toNullIfEmpty(scaleEvoToricResiduo(firstCsvValue(read, 'residuo'))))
+      : null,
+    iol_evo_toric: evoToricActive ? raw('T') : null,
+    iol_evo_toric_rescyl: evoToricActive
+      ? (evoToricFromResRef2 ? raw('Asse 2', 'Asse 5') : raw('Asse 5', 'Asse 2'))
+      : null,
+
+    iol_hoffer_qst_toric_res: resWhen('res ref2', 'res ref2'),
+    iol_hoffer_qst_toric: rawWhen('res ref2', 't2'),
+    iol_hoffer_qst_toric_rescyl: rawWhen('res ref2', 'asee t2', 'asse7'),
+
+    iol_kane_toric_res: resWhen('res ref3', 'res ref3'),
+    iol_kane_toric: rawWhen('res ref3', 't3'),
+    iol_kane_toric_rescyl: rawWhen('res ref3', 'asse t3'),
+
+    // IOL post LVC (e.g. bondani giorgio OS): RR Copia3 → Argos TK, res r Copia → Tomey TK,
+    // RR Copia → Oculix, RR Copia4 → Ray tracing
+    iol_argos_barrett_tk_res: resWhen('RR Copia3', 'RR Copia3'),
+    iol_tomey_barrett_tk_res: resWhen('RR Copia3', 'res r Copia'),
+    iol_tomey_oculix_res: resWhen('RR Copia', 'RR Copia'),
+    iol_ray_tracing_res: resWhen('RR Copia4', 'RR Copia4'),
+    iol_evo2_post_res: null,
+    iol_pearl_dgs_post_res: null,
+
+    tunnel: raw('Asse tunnel'),
+    iolModelSelected: raw('modello iol', 'iol'),
+    // Footer T/ast and AX IOL (model section) — not per-formula toric T/axis columns
+    iolT: raw('T fin'),
+    iolAx: raw('ax iol'),
+    iolPower: raw('p1'),
+  };
+}
+
 /**
  * FileMaker valutazione.csv biometry layout (per device):
  * - CSO: Km ms39, Astig (cil. tot.), Ast 2 (cil.), asse 3 (Ax), AXL ms39, ACD MS, LT CSO
@@ -622,10 +736,12 @@ function importIntoDatabase(dbPath, rows, profiles) {
       for (const eye of eyes) {
         const bio = mapBiometryFromCsv(read);
 
+        const iol = mapIolFromCsv(read);
+
         insertOperationStmt.run(
           opDate, patientId, toNullIfEmpty(read('Eta')), eye,
           toNullIfEmpty(read('tipo di intervento')) || 'Faco + IOL',
-          formatCostoImport(read('Costo int')) || null,
+          mapCostoFromCsv(read),
           toNullIfEmpty(noteIntervento),
           toNullIfEmpty(noteSistemic),
           toNullIfEmpty(noteEye),
@@ -659,38 +775,38 @@ function importIntoDatabase(dbPath, rows, profiles) {
           bio.argos_AXL,
           bio.argos_ACD,
           bio.argos_LT,
-          toNullIfEmpty(read('residuo1')) || toNullIfEmpty(read('res ref2')),
-          toNullIfEmpty(read('residuo')) || toNullIfEmpty(read('res ref3')),
-          toNullIfEmpty(read('Evo 2.0 cso')),
-          toNullIfEmpty(read('res r')),
-          toNullIfEmpty(read('res r Copia')),
-          toNullIfEmpty(read('pearl cso')),
-          toNullIfEmpty(read('residuo tomey toric')),
-          toNullIfEmpty(read('t2')),
-          toNullIfEmpty(read('asee t2')),
-          toNullIfEmpty(read('res ref Copia2')),
-          toNullIfEmpty(read('t3')),
-          toNullIfEmpty(read('asse t3')),
-          toNullIfEmpty(read('res ref Copia4')),
-          toNullIfEmpty(read('T')),
-          toNullIfEmpty(read('ax iol')),
-          toNullIfEmpty(read('res ref Copia5')),
-          toNullIfEmpty(read('T Copia')),
-          toNullIfEmpty(read('Asse 5')),
-          toNullIfEmpty(read('res ref2')),
-          toNullIfEmpty(read('T fin')),
-          toNullIfEmpty(read('Asse 5 Copia')),
-          toNullIfEmpty(read('res ref3')),
-          toNullIfEmpty(read('res r Copia2')),
-          toNullIfEmpty(read('residuo')),
-          toNullIfEmpty(read('res r')),
-          toNullIfEmpty(read('RR Copia3')),
-          toNullIfEmpty(read('RR Copia4')),
-          toNullIfEmpty(read('Asse tunnel')),
-          toNullIfEmpty(read('modello iol')) || toNullIfEmpty(read('iol')),
-          toNullIfEmpty(read('T')) || toNullIfEmpty(read('T fin')),
-          toNullIfEmpty(read('ax iol')) || toNullIfEmpty(read('asse t3')),
-          toNullIfEmpty(read('p1')),
+          iol.iol_argos_barrett_res,
+          iol.iol_tomey_barrett_res,
+          iol.iol_evo2_res,
+          iol.iol_hoffer_qst_res,
+          iol.iol_kane_res,
+          iol.iol_pearl_dgs_res,
+          iol.iol_argos_barrett_toric_res,
+          iol.iol_argos_barrett_toric_t,
+          iol.iol_argos_barrett_toric_axis,
+          iol.iol_tomey_barrett_toric_res,
+          iol.iol_tomey_barrett_toric_t,
+          iol.iol_tomey_barrett_toric_axis,
+          iol.iol_evo_toric_res,
+          iol.iol_evo_toric,
+          iol.iol_evo_toric_rescyl,
+          iol.iol_hoffer_qst_toric_res,
+          iol.iol_hoffer_qst_toric,
+          iol.iol_hoffer_qst_toric_rescyl,
+          iol.iol_kane_toric_res,
+          iol.iol_kane_toric,
+          iol.iol_kane_toric_rescyl,
+          iol.iol_argos_barrett_tk_res,
+          iol.iol_tomey_barrett_tk_res,
+          iol.iol_tomey_oculix_res,
+          iol.iol_ray_tracing_res,
+          iol.iol_evo2_post_res,
+          iol.iol_pearl_dgs_post_res,
+          iol.tunnel,
+          iol.iolModelSelected,
+          iol.iolT,
+          iol.iolAx,
+          iol.iolPower,
           now, now,
         );
 

@@ -5,6 +5,7 @@
     class="bio-cell"
     :disabled="disabled"
     @input="$emit('update:modelValue', normalizeDecimal($event.target.value))"
+    @focus="$emit('focus')"
   />
 </template>
 
@@ -15,7 +16,7 @@ defineProps({
   modelValue: { type: [String, Number], default: '' },
   disabled: { type: Boolean, default: false },
 });
-defineEmits(['update:modelValue']);
+defineEmits(['update:modelValue', 'focus']);
 </script>
 
 <style scoped>

@@ -45,7 +45,13 @@
         <div class="checkbox-grid">
           <template v-for="opt in previousEyeOperations" :key="'p-' + opt.value">
             <label class="checkbox-item">
-              <input type="checkbox" :value="opt.value" v-model="selectedPrev" :disabled="disabled" />
+              <input
+                type="checkbox"
+                :value="opt.value"
+                v-model="selectedPrev"
+                :disabled="disabled"
+                @change="onPrevEyeChange(opt.value)"
+              />
               <span class="cb-box" :class="{ checked: selectedPrev.includes(opt.value) }"></span>
               <span>{{ opt.label }}</span>
             </label>
@@ -54,7 +60,13 @@
           <template v-for="opt in eyeConditions" :key="opt.value">
             <div v-if="opt.optionsKey" class="problem-row">
               <label class="checkbox-item">
-                <input type="checkbox" :value="opt.value" v-model="selectedEye" :disabled="disabled" />
+                <input
+                  type="checkbox"
+                  :value="opt.value"
+                  v-model="selectedEye"
+                  :disabled="disabled"
+                  @change="onEyeConditionChange"
+                />
                 <span class="cb-box" :class="{ checked: selectedEye.includes(opt.value) }"></span>
                 <span class="problem-label">{{ opt.label }}</span>
               </label>
@@ -68,7 +80,13 @@
             </div>
             <div v-else-if="opt.hasInput" class="problem-row">
               <label class="checkbox-item">
-                <input type="checkbox" :value="opt.value" v-model="selectedEye" :disabled="disabled" />
+                <input
+                  type="checkbox"
+                  :value="opt.value"
+                  v-model="selectedEye"
+                  :disabled="disabled"
+                  @change="onEyeConditionChange"
+                />
                 <span class="cb-box" :class="{ checked: selectedEye.includes(opt.value) }"></span>
                 <span>{{ opt.label }}</span>
               </label>
@@ -81,7 +99,13 @@
               />
             </div>
             <label v-else class="checkbox-item">
-              <input type="checkbox" :value="opt.value" v-model="selectedEye" :disabled="disabled" />
+              <input
+                type="checkbox"
+                :value="opt.value"
+                v-model="selectedEye"
+                :disabled="disabled"
+                @change="onEyeConditionChange"
+              />
               <span class="cb-box" :class="{ checked: selectedEye.includes(opt.value) }"></span>
               <span>{{ opt.label }}</span>
             </label>
@@ -257,6 +281,19 @@ watch([selectedSystemic, selectedPrev, selectedEye, systemicInputs, eyeInputs, e
   props.form.noteEye = buildEye();
 }, { deep: true });
 
+function clearNessunaFromPrev() {
+  const i = selectedPrev.value.indexOf('nessuna');
+  if (i > -1) selectedPrev.value.splice(i, 1);
+}
+
+function hasParsedEyeConditions() {
+  return selectedEye.value.length > 0;
+}
+
+function hasParsedPreviousOperations() {
+  return selectedPrev.value.some((v) => v !== 'nessuna');
+}
+
 function hydrateFromForm() {
   parsing = true;
   resetParsedState();
@@ -265,7 +302,9 @@ function hydrateFromForm() {
     selectedSystemic.value = ['nessuna'];
   }
   parseEyeNote(props.form.noteEye || '');
-  if (!selectedPrev.value.length && !(props.form.noteEye || '').includes('Pregresso')) {
+  if (hasParsedEyeConditions() || hasParsedPreviousOperations()) {
+    clearNessunaFromPrev();
+  } else if (!selectedPrev.value.length) {
     selectedPrev.value = ['nessuna'];
   }
   parsing = false;
@@ -289,6 +328,18 @@ function onSystemicChange(value) {
     const i = selectedSystemic.value.indexOf('nessuna');
     if (i > -1) selectedSystemic.value.splice(i, 1);
   }
+}
+
+function onPrevEyeChange(value) {
+  if (value === 'nessuna' && selectedPrev.value.includes('nessuna')) {
+    selectedPrev.value = ['nessuna'];
+    return;
+  }
+  clearNessunaFromPrev();
+}
+
+function onEyeConditionChange() {
+  if (selectedEye.value.length) clearNessunaFromPrev();
 }
 </script>
 

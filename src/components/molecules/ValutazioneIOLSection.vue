@@ -1,7 +1,19 @@
 <template>
   <div class="iol-block">
+    <div class="iol-header">
+      <button
+        v-if="showReset"
+        type="button"
+        class="reset-btn"
+        :disabled="disabled"
+        @click="resetAll"
+      >
+        Reimposta IOL
+      </button>
+    </div>
+
     <div class="iol-panels">
-      <div class="iol-panel">
+      <div class="iol-panel" :class="{ 'panel-inactive': isPanelInactive('sferica') }">
         <div class="panel-title">IOL sferica</div>
         <table class="iol-table">
           <thead>
@@ -13,13 +25,20 @@
           <tbody>
             <tr v-for="row in sferica" :key="row.resKey">
               <td class="formula-name">{{ row.label }}</td>
-              <td><BioCell v-model="form[row.resKey]" :disabled="disabled" /></td>
+              <td>
+                <BioCell
+                  v-model="form[row.resKey]"
+                  :disabled="isCellDisabled('sferica')"
+                  @focus="activatePanel('sferica')"
+                  @update:modelValue="activatePanel('sferica')"
+                />
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="iol-panel">
+      <div class="iol-panel" :class="{ 'panel-inactive': isPanelInactive('torica') }">
         <div class="panel-title">IOL torica</div>
         <table class="iol-table">
           <thead>
@@ -33,15 +52,36 @@
           <tbody>
             <tr v-for="row in torica" :key="row.resKey">
               <td class="formula-name">{{ row.label }}</td>
-              <td><BioCell v-model="form[row.resKey]" :disabled="disabled" /></td>
-              <td><BioCell v-model="form[row.tKey]" :disabled="disabled" /></td>
-              <td><BioCell v-model="form[row.axisKey]" :disabled="disabled" /></td>
+              <td>
+                <BioCell
+                  v-model="form[row.resKey]"
+                  :disabled="isCellDisabled('torica')"
+                  @focus="activatePanel('torica')"
+                  @update:modelValue="activatePanel('torica')"
+                />
+              </td>
+              <td>
+                <BioCell
+                  v-model="form[row.tKey]"
+                  :disabled="isCellDisabled('torica')"
+                  @focus="activatePanel('torica')"
+                  @update:modelValue="activatePanel('torica')"
+                />
+              </td>
+              <td>
+                <BioCell
+                  v-model="form[row.axisKey]"
+                  :disabled="isCellDisabled('torica')"
+                  @focus="activatePanel('torica')"
+                  @update:modelValue="activatePanel('torica')"
+                />
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="iol-panel">
+      <div class="iol-panel" :class="{ 'panel-inactive': isPanelInactive('postLvc') }">
         <div class="panel-title">IOL post LVC</div>
         <table class="iol-table">
           <thead>
@@ -53,7 +93,14 @@
           <tbody>
             <tr v-for="row in postLvc" :key="row.resKey">
               <td class="formula-name">{{ row.label }}</td>
-              <td><BioCell v-model="form[row.resKey]" :disabled="disabled" /></td>
+              <td>
+                <BioCell
+                  v-model="form[row.resKey]"
+                  :disabled="isCellDisabled('postLvc')"
+                  @focus="activatePanel('postLvc')"
+                  @update:modelValue="activatePanel('postLvc')"
+                />
+              </td>
             </tr>
           </tbody>
         </table>
@@ -63,9 +110,15 @@
 </template>
 
 <script setup>
+import { ref, computed, watch } from 'vue';
 import BioCell from '@/components/atoms/BioCell.vue';
+import {
+  IOL_CALCULATION_FIELD_KEYS,
+  inferActiveIolPanel,
+  iolPanelHasData,
+} from '@/utils/iolCalculationPanels.js';
 
-defineProps({
+const props = defineProps({
   form: { type: Object, required: true },
   disabled: { type: Boolean, default: false },
 });
@@ -95,6 +148,56 @@ const postLvc = [
   { label: 'CSO — Evo 2.0', resKey: 'iol_evo2_post_res' },
   { label: 'CSO — Pearl DGS', resKey: 'iol_pearl_dgs_post_res' },
 ];
+
+const allFieldKeys = IOL_CALCULATION_FIELD_KEYS;
+
+/** @type {import('vue').Ref<'sferica' | 'torica' | 'postLvc' | null>} */
+const activePanel = ref(null);
+
+function panelHasData(panel) {
+  return iolPanelHasData(props.form, panel);
+}
+
+function syncActivePanelFromForm() {
+  activePanel.value = inferActiveIolPanel(props.form);
+  props.form.iolActivePanel = activePanel.value;
+}
+
+watch(
+  () => props.form.id,
+  () => syncActivePanelFromForm(),
+  { immediate: true },
+);
+
+const showReset = computed(
+  () => activePanel.value !== null || allFieldKeys.some((key) => {
+    const v = props.form[key];
+    return v != null && String(v).trim() !== '';
+  }),
+);
+
+function activatePanel(panel) {
+  if (props.disabled) return;
+  activePanel.value = panel;
+  props.form.iolActivePanel = panel;
+}
+
+function isCellDisabled(panel) {
+  return props.disabled || (activePanel.value !== null && activePanel.value !== panel);
+}
+
+function isPanelInactive(panel) {
+  return activePanel.value !== null && activePanel.value !== panel;
+}
+
+function resetAll() {
+  if (props.disabled) return;
+  for (const key of allFieldKeys) {
+    props.form[key] = '';
+  }
+  activePanel.value = null;
+  props.form.iolActivePanel = null;
+}
 </script>
 
 <style scoped>
@@ -103,10 +206,37 @@ const postLvc = [
   padding-top: 10px;
   margin-top: 10px;
 }
+.iol-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+.reset-btn {
+  padding: 4px 12px;
+  font-size: 12px;
+  border: 1px solid #2563eb;
+  background: #fff;
+  color: #1e40af;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.reset-btn:hover:not(:disabled) {
+  background: #eff6ff;
+}
+.reset-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .iol-panels {
   display: grid;
   grid-template-columns: 1fr 1.2fr 1fr;
   gap: 18px;
+}
+.iol-panel {
+  transition: opacity 0.15s ease;
+}
+.panel-inactive {
+  opacity: 0.45;
 }
 .panel-title {
   font-weight: 600;
