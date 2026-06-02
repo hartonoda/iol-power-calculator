@@ -38,6 +38,7 @@ contextBridge.exposeInMainWorld('api', {
     getByName: (name) => ipcRenderer.invoke('iolModel:getByName', name),
     add: (payload) => ipcRenderer.invoke('iolModel:add', payload),
     update: (id, payload) => ipcRenderer.invoke('iolModel:update', id, payload),
+    duplicate: (id) => ipcRenderer.invoke('iolModel:duplicate', id),
     delete: (id) => ipcRenderer.invoke('iolModel:delete', id),
   },
   config: {

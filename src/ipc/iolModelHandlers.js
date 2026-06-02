@@ -26,6 +26,10 @@ export function registerIolModelHandlers(iolModelRepo) {
         return iolModelRepo.update(id, payload);
     });
 
+    ipcMain.handle('iolModel:duplicate', async (event, id) => {
+        return iolModelRepo.duplicate(id);
+    });
+
     // Delete IOL model
     ipcMain.handle('iolModel:delete', async (event, id) => {
         try {

@@ -18,17 +18,22 @@
         </p>
 
         <div class="dialog-body">
-          <div class="add-row">
-            <input
-              v-model="newModelName"
-              type="text"
-              class="text-input"
-              placeholder="Nuovo modello IOL…"
-              @keyup.enter="addModel"
-            />
-            <button type="button" class="btn-add" :disabled="!newModelName.trim()" @click="addModel">
-              <SvgIcon name="plus" :size="16" />
-              Aggiungi
+          <div class="toolbar-row">
+            <div class="add-row">
+              <input
+                v-model="newModelName"
+                type="text"
+                class="text-input"
+                placeholder="Nuovo modello IOL…"
+                @keyup.enter="addModel"
+              />
+              <button type="button" class="btn-add" :disabled="!newModelName.trim()" @click="addModel">
+                <SvgIcon name="plus" :size="16" />
+                Aggiungi
+              </button>
+            </div>
+            <button type="button" class="btn-sort" title="Ordina per nome (A–Z)" @click="sortAlphabetically">
+              Ordina A–Z
             </button>
           </div>
 
@@ -86,14 +91,25 @@
                     </div>
                   </td>
                   <td class="col-actions">
-                    <button
-                      type="button"
-                      class="icon-btn danger"
-                      title="Elimina modello"
-                      @click="confirmDelete(row)"
-                    >
-                      <SvgIcon name="trash" :size="14" />
-                    </button>
+                    <div class="action-btns">
+                      <button
+                        type="button"
+                        class="icon-btn"
+                        title="Duplica modello"
+                        :disabled="duplicatingId === row.id"
+                        @click="duplicateModel(row)"
+                      >
+                        <SvgIcon name="plus" :size="14" />
+                      </button>
+                      <button
+                        type="button"
+                        class="icon-btn danger"
+                        title="Elimina modello"
+                        @click="confirmDelete(row)"
+                      >
+                        <SvgIcon name="trash" :size="14" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -138,7 +154,11 @@ const emit = defineEmits(['close', 'saved']);
 const editableRows = ref([]);
 const newModelName = ref('');
 const saving = ref(false);
+const duplicatingId = ref(null);
 const modelToDelete = ref(null);
+
+const localeSort = (a, b) =>
+  (a.name || '').localeCompare(b.name || '', 'it', { sensitivity: 'base' });
 
 function toEditable(model) {
   const row = { id: model.id, name: model.name };
@@ -159,7 +179,11 @@ function rowToPayload(row) {
 }
 
 function syncRows() {
-  editableRows.value = props.models.map(toEditable);
+  editableRows.value = props.models.map(toEditable).sort(localeSort);
+}
+
+function sortAlphabetically() {
+  editableRows.value = [...editableRows.value].sort(localeSort);
 }
 
 watch(
@@ -186,6 +210,18 @@ const addModel = async () => {
     emit('saved');
   } catch (err) {
     console.error('Failed to add IOL model:', err);
+  }
+};
+
+const duplicateModel = async (row) => {
+  duplicatingId.value = row.id;
+  try {
+    await window.api.iolModel.duplicate(row.id);
+    emit('saved');
+  } catch (err) {
+    console.error('Failed to duplicate IOL model:', err);
+  } finally {
+    duplicatingId.value = null;
   }
 };
 
@@ -278,9 +314,35 @@ const saveAll = async () => {
   min-height: 0;
 }
 
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .add-row {
   display: flex;
   gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.btn-sort {
+  padding: 8px 14px;
+  border: 1px solid #cbd5e1;
+  background: white;
+  color: #374151;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-sort:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
 }
 
 .table-wrap {
@@ -317,8 +379,15 @@ const saveAll = async () => {
 }
 
 .col-actions {
-  width: 40px;
+  width: 72px;
   text-align: center;
+}
+
+.action-btns {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
 .text-input,

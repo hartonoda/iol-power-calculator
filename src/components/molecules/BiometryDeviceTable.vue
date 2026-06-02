@@ -57,15 +57,40 @@
           <td><BioCell v-model="form[device.acd]" :disabled="disabled" /></td>
           <td><BioCell v-model="form[device.lt]" :disabled="disabled" /></td>
         </tr>
+        <tr class="mean-row">
+          <td class="row-label">Media</td>
+          <td>
+            <BioCell v-model="form.mean_avgKm" :disabled="disabled" />
+          </td>
+          <td>
+            <BioCell v-model="form.mean_cil" :disabled="disabled" />
+          </td>
+          <td>
+            <BioCell v-model="form.mean_ax" :disabled="disabled" />
+          </td>
+          <td>
+            <BioCell v-model="form.mean_CCT" :disabled="disabled" />
+          </td>
+          <td>
+            <BioCell v-model="form.mean_AXL" :disabled="disabled" />
+          </td>
+          <td>
+            <BioCell v-model="form.mean_ACD" :disabled="disabled" />
+          </td>
+          <td>
+            <BioCell v-model="form.mean_LT" :disabled="disabled" />
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, watch, onMounted } from 'vue';
 import BioCell from '@/components/atoms/BioCell.vue';
 import { deviceDiff, axisDiff, toleranceLabel, AX_TOLERANCE_DEG } from '@/utils/biometryTolerance';
+import { meanNumeric, meanAxisDeg, formatBiometryMean } from '@/utils/biometryMeanUtils';
 
 const props = defineProps({
   form: { type: Object, required: true },
@@ -107,6 +132,55 @@ const deviceRows = [
     lt: 'argos_LT',
   },
 ];
+
+const meanMetrics = [
+  { deviceKey: 'avgKm', meanKey: 'mean_avgKm', kind: 'decimal', digits: 2 },
+  { deviceKey: 'cil', meanKey: 'mean_cil', kind: 'decimal', digits: 2 },
+  { deviceKey: 'ax', meanKey: 'mean_ax', kind: 'axis' },
+  { deviceKey: 'cct', meanKey: 'mean_CCT', kind: 'integer' },
+  { deviceKey: 'axl', meanKey: 'mean_AXL', kind: 'decimal', digits: 2 },
+  { deviceKey: 'acd', meanKey: 'mean_ACD', kind: 'decimal', digits: 2 },
+  { deviceKey: 'lt', meanKey: 'mean_LT', kind: 'decimal', digits: 2 },
+];
+
+const deviceSourceSnapshot = computed(() =>
+  deviceRows.flatMap((device) =>
+    meanMetrics.map((m) => props.form[device[m.deviceKey]]),
+  ),
+);
+
+function recalcMeans() {
+  for (const metric of meanMetrics) {
+    const values = deviceRows.map((device) => props.form[device[metric.deviceKey]]);
+    const hasAny = values.some((v) => v !== '' && v != null);
+    if (!hasAny) {
+      props.form[metric.meanKey] = '';
+      continue;
+    }
+
+    let raw;
+    if (metric.deviceKey === 'ax') {
+      raw = meanAxisDeg(values);
+    } else {
+      raw = meanNumeric(values);
+    }
+
+    props.form[metric.meanKey] = formatBiometryMean(raw, {
+      kind: metric.kind,
+      digits: metric.digits,
+    });
+  }
+}
+
+onMounted(() => {
+  const hasSavedMeans = meanMetrics.some((m) => {
+    const v = props.form[m.meanKey];
+    return v !== '' && v != null;
+  });
+  if (!hasSavedMeans) recalcMeans();
+});
+
+watch(deviceSourceSnapshot, recalcMeans);
 
 function maxDeviceDiff(a, b, c) {
   return Math.max(
@@ -174,7 +248,8 @@ const metricWarnings = computed(() => {
   padding: 6px 10px 6px 0;
   white-space: nowrap;
 }
-.ciltot-row .row-label {
+.ciltot-row .row-label,
+.mean-row .row-label {
   font-size: 12px;
   font-style: italic;
 }
@@ -182,6 +257,15 @@ const metricWarnings = computed(() => {
   vertical-align: bottom;
   padding-bottom: 2px;
   border-bottom: 1px dashed #bfdbfe;
+}
+.mean-row td {
+  vertical-align: top;
+  padding-top: 4px;
+  border-top: 2px solid #93c5fd;
+  background: #f8fafc;
+}
+.mean-row :deep(.bio-cell) {
+  background: #fffbeb;
 }
 .ciltot-spacer {
   border-bottom: 1px dashed #bfdbfe;

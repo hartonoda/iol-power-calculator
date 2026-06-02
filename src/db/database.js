@@ -7,7 +7,7 @@ import IolModelRepository from './iolModelRepository.js';
 
 const DB_NAME = 'iol-calculator-patient-data.sqlite';
 const LEGACY_DB_NAMES = ['patient_data.sqlite', 'operation-eye.sqlite'];
-const DB_VERSION = 12; // Increment this when adding new migrations
+const DB_VERSION = 13; // Increment this when adding new migrations
 
 // Legacy folder for backward compatibility (old app used operation-eye)
 const LEGACY_APP_DATA = 'operation-eye';
@@ -632,6 +632,12 @@ class AppDatabase {
                 this.addCctColumns();
                 this.setVersion(12);
             }
+
+            if (currentVersion < 13) {
+                console.log('Running migration 13: Biometry mean row columns');
+                this.addBiometryMeanColumns();
+                this.setVersion(13);
+            }
         });
 
         try {
@@ -750,6 +756,18 @@ class AppDatabase {
 
     addCctColumns() {
         const newCols = ['cso_CCT', 'tomey_CCT', 'argos_CCT'];
+        const existing = new Set(this.db.pragma('table_info(operations)').map((c) => c.name));
+        for (const col of newCols) {
+            if (!existing.has(col)) {
+                this.db.exec(`ALTER TABLE operations ADD COLUMN ${col} TEXT`);
+            }
+        }
+    }
+
+    addBiometryMeanColumns() {
+        const newCols = [
+            'mean_avgKm', 'mean_cil', 'mean_ax', 'mean_CCT', 'mean_AXL', 'mean_ACD', 'mean_LT',
+        ];
         const existing = new Set(this.db.pragma('table_info(operations)').map((c) => c.name));
         for (const col of newCols) {
             if (!existing.has(col)) {

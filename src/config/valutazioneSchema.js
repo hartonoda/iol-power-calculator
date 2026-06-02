@@ -14,6 +14,7 @@ export const VALUTAZIONE_DB_FIELDS = [
   'cso_avgKm', 'cilTotal', 'axConclusion', 'cso_cil', 'cso_ax', 'cso_CCT', 'cso_AXL', 'cso_ACD', 'cso_LT',
   'tomey_avgKm', 'tomey_cilTotal', 'tomey_cil', 'tomey_ax', 'tomey_CCT', 'tomey_AXL', 'tomey_ACD', 'tomey_LT',
   'argos_avgKm', 'argos_cilTotal', 'argos_cil', 'argos_ax', 'argos_CCT', 'argos_AXL', 'argos_ACD', 'argos_LT',
+  'mean_avgKm', 'mean_cil', 'mean_ax', 'mean_CCT', 'mean_AXL', 'mean_ACD', 'mean_LT',
   'iol_argos_barrett_res', 'iol_tomey_barrett_res',
   'iol_evo2_res', 'iol_hoffer_qst_res', 'iol_kane_res', 'iol_pearl_dgs_res',
   'iol_argos_barrett_toric_res', 'iol_argos_barrett_toric_t', 'iol_argos_barrett_toric_axis',

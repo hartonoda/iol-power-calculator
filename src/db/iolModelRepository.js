@@ -41,9 +41,32 @@ class IolModelRepository {
             SELECT ${SELECT_COLUMNS}
             FROM iol_models 
             WHERE deletedAt IS NULL
-            ORDER BY isDefault DESC, name ASC
+            ORDER BY name COLLATE NOCASE ASC
         `);
     return stmt.all();
+  }
+
+  uniqueCopyName(baseName) {
+    const base = String(baseName || '').trim() || 'Modello';
+    let candidate = `${base} (copia)`;
+    let n = 2;
+    while (this.getByName(candidate)) {
+      candidate = `${base} (copia ${n})`;
+      n += 1;
+    }
+    return candidate;
+  }
+
+  duplicate(id) {
+    const source = this.getById(id);
+    if (!source) throw new Error('IOL model not found');
+
+    const name = this.uniqueCopyName(source.name);
+    const payload = { name };
+    for (const key of IOL_CONSTANT_FIELDS) {
+      payload[key] = source[key];
+    }
+    return this.add(payload);
   }
 
   getById(id) {
