@@ -34,29 +34,27 @@
       </div>
     </div>
 
+    <div class="list-meta no-print">
+      <span v-if="operationDate"><strong>Data intervento:</strong> {{ formatFilterDate(operationDate) }}</span>
+      <span v-if="search.trim()"><strong>Paziente:</strong> {{ search.trim() }}</span>
+      <span><strong>Interventi:</strong> {{ filteredOperations.length }}</span>
+      <button type="button" class="sort-btn" @click="toggleSort">
+        {{ sortBy === 'name' ? 'Ordina per data' : 'Ordina per paziente' }}
+      </button>
+    </div>
+
     <div class="list-container no-print">
       <div v-if="filteredOperations.length === 0" class="empty-list">
         <SvgIcon name="calendar" :size="40" :stroke-width="1.5" />
         <p>Nessun intervento trovato</p>
       </div>
 
-      <div v-for="op in filteredOperations" :key="op.id" class="admin-row">
-        <div class="admin-row-line admin-row-line-1">
-          <span class="field"><strong>Data intervento:</strong> {{ formatDate(op.operationDate) }}</span>
-          <span class="field eye-field">
-            <strong>Occhio:</strong>
-            <span class="eye-badge" :class="op.eye?.toLowerCase()">{{ op.eye || '—' }}</span>
-          </span>
-          <span class="field"><strong>Intervento di:</strong> {{ op.interventoDi || '—' }}</span>
-          <span class="field"><strong>Costo:</strong> {{ op.costo || '—' }}</span>
-        </div>
-        <div class="admin-row-line admin-row-line-2">
-          <span class="field"><strong>Paziente:</strong> {{ getPatientName(op.patientId) }}</span>
-          <span class="field"><strong>Modello IOL:</strong> {{ op.iolModelSelected || '—' }}</span>
-          <span class="field"><strong>T/ast:</strong> {{ op.iolT || '—' }}</span>
-          <span class="field"><strong>Potere IOL:</strong> {{ op.iolPower || '—' }}</span>
-        </div>
-      </div>
+      <AdministrationListTable
+        v-else
+        :operations="filteredOperations"
+        :patients="patients"
+        unknown-patient-label="Paziente sconosciuto"
+      />
     </div>
 
     <Teleport to="body">
@@ -73,6 +71,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import SvgIcon from '@/components/atoms/SvgIcon.vue';
+import AdministrationListTable from '@/components/molecules/AdministrationListTable.vue';
 import AdministrationListPrintView from '@/components/organisms/AdministrationListPrintView.vue';
 import { printAsPdf } from '@/utils/exportUtils';
 
@@ -83,6 +82,8 @@ const props = defineProps({
 
 const operationDate = ref('');
 const search = ref('');
+/** @type {import('vue').Ref<'name' | 'date'>} */
+const sortBy = ref('name');
 
 const filteredOperations = computed(() => {
   let ops = [...props.operations];
@@ -96,6 +97,20 @@ const filteredOperations = computed(() => {
     ops = ops.filter((op) => getPatientName(op.patientId).toLowerCase().includes(query));
   }
 
+  if (sortBy.value === 'date') {
+    return ops.sort((a, b) => {
+      const byDate = (b.operationDate || '').localeCompare(a.operationDate || '');
+      if (byDate !== 0) return byDate;
+      const byName = getPatientName(a.patientId).localeCompare(
+        getPatientName(b.patientId),
+        'it',
+        { sensitivity: 'base' },
+      );
+      if (byName !== 0) return byName;
+      return (a.eye || '').localeCompare(b.eye || '', 'it', { sensitivity: 'base' });
+    });
+  }
+
   return ops.sort((a, b) => {
     const byName = getPatientName(a.patientId).localeCompare(
       getPatientName(b.patientId),
@@ -107,14 +122,18 @@ const filteredOperations = computed(() => {
   });
 });
 
+function toggleSort() {
+  sortBy.value = sortBy.value === 'name' ? 'date' : 'name';
+}
+
 function getPatientName(patientId) {
   const patient = props.patients.find((p) => p.id === patientId);
   return patient?.name || 'Paziente sconosciuto';
 }
 
-function formatDate(dateString) {
-  if (!dateString) return '—';
-  const [year, month, day] = dateString.split('-').map(Number);
+function formatFilterDate(value) {
+  if (!value) return '';
+  const [year, month, day] = value.split('-').map(Number);
   const date = new Date(year, month - 1, day);
   return date.toLocaleDateString('it-IT', {
     day: '2-digit',
@@ -259,11 +278,45 @@ async function handlePrint() {
   font-size: 13px;
 }
 
+.list-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 20px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+  font-size: 13px;
+  color: #374151;
+  flex-shrink: 0;
+}
+
+.list-meta strong {
+  color: #1e40af;
+}
+
+.sort-btn {
+  margin-left: auto;
+  padding: 4px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #fff;
+  color: #1e40af;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sort-btn:hover {
+  background: #eff6ff;
+  border-color: #2563eb;
+}
+
 .list-container {
   flex: 1;
-  overflow-y: auto;
+  overflow: auto;
   min-height: 0;
-  padding: 8px 0 16px;
+  padding: 0 20px 16px;
 }
 
 .empty-list {
@@ -282,66 +335,9 @@ async function handlePrint() {
   color: #6b7280;
 }
 
-.admin-row {
-  padding: 12px 20px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.admin-row-line {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px 16px;
-  font-size: 13px;
-  color: #374151;
-}
-
-.admin-row-line-2 {
-  margin-top: 6px;
-  color: #1f2937;
-}
-
-.field {
-  min-width: 0;
-  word-break: break-word;
-}
-
-.field strong {
-  color: #1e40af;
-  font-weight: 600;
-  margin-right: 4px;
-}
-
-.eye-field {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.eye-badge {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
-}
-
-.eye-badge.od {
-  background: #dbeafe;
-  color: #1e40af;
-}
-
-.eye-badge.os {
-  background: #dcfce7;
-  color: #166534;
-}
-
 @media (max-width: 1100px) {
   .filters {
     grid-template-columns: 1fr;
-  }
-
-  .admin-row-line {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 </style>

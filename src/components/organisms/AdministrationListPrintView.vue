@@ -11,49 +11,21 @@
       <span><strong>Stampa:</strong> {{ printedAt }}</span>
     </div>
 
-    <table class="print-table">
-      <colgroup>
-        <col class="col-date" />
-        <col class="col-patient" />
-        <col class="col-eye" />
-        <col class="col-type" />
-        <col class="col-model" />
-        <col class="col-power" />
-        <col class="col-tast" />
-        <col class="col-cost" />
-      </colgroup>
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Paziente</th>
-          <th>Occhio</th>
-          <th>Tipo di intervento</th>
-          <th>Modello IOL</th>
-          <th>Potere IOL</th>
-          <th>T/ast</th>
-          <th>Costo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="op in operations" :key="op.id">
-          <td>{{ formatDate(op.operationDate) }}</td>
-          <td class="col-patient">{{ getPatientName(op.patientId) }}</td>
-          <td class="col-eye">{{ op.eye || '—' }}</td>
-          <td>{{ op.interventoDi || '—' }}</td>
-          <td class="col-model">{{ op.iolModelSelected || '—' }}</td>
-          <td class="col-power">{{ op.iolPower || '—' }}</td>
-          <td class="col-tast">{{ op.iolT || '—' }}</td>
-          <td>{{ op.costo || '—' }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <AdministrationListTable
+      v-if="operations.length"
+      class="print-table-wrap"
+      :operations="operations"
+      :patients="patients"
+    />
 
-    <p v-if="!operations.length" class="print-empty">Nessun intervento da stampare.</p>
+    <p v-else class="print-empty">Nessun intervento da stampare.</p>
   </div>
 </template>
 
 <script setup>
-const props = defineProps({
+import AdministrationListTable from '@/components/molecules/AdministrationListTable.vue';
+
+defineProps({
   operations: { type: Array, default: () => [] },
   patients: { type: Array, default: () => [] },
   operationDate: { type: String, default: '' },
@@ -67,11 +39,6 @@ const printedAt = new Date().toLocaleString('it-IT', {
   hour: '2-digit',
   minute: '2-digit',
 });
-
-function getPatientName(patientId) {
-  const patient = props.patients.find((p) => p.id === patientId);
-  return patient?.name || '—';
-}
 
 function formatDate(dateString) {
   if (!dateString) return '—';
@@ -117,51 +84,28 @@ function formatDate(dateString) {
   color: #374151;
 }
 
-.print-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-  font-size: 12.5pt;
-}
-
-.col-date { width: 10%; }
-.col-patient { width: 20%; }
-.col-eye { width: 5%; }
-.col-type { width: 14%; }
-.col-model { width: 22%; }
-.col-power { width: 7%; }
-.col-tast { width: 6%; }
-.col-cost { width: 16%; }
-
-.print-table th,
-.print-table td {
-  border: 1px solid #cbd5e1;
-  padding: 5px 6px;
-  text-align: left;
-  vertical-align: top;
-  word-break: break-word;
-}
-
-.print-table .col-eye,
-.print-table .col-power,
-.print-table .col-tast {
-  text-align: center;
-}
-
-.print-table th {
-  background: #f1f5f9;
-  color: #1e40af;
-  font-weight: 600;
-}
-
-.print-table td.col-patient,
-.print-table td.col-model {
-  font-weight: 600;
-}
-
 .print-empty {
   margin-top: 12px;
   color: #6b7280;
   font-size: 13pt;
+}
+
+.print-table-wrap :deep(.admin-list-table) {
+  font-size: 12.5pt;
+}
+
+.print-table-wrap :deep(.admin-list-table thead th) {
+  font-size: 12.5pt;
+  position: static;
+}
+
+.print-table-wrap :deep(.admin-list-table th),
+.print-table-wrap :deep(.admin-list-table td) {
+  padding: 5px 6px;
+}
+
+.print-table-wrap :deep(.eye-badge) {
+  font-size: 10pt;
+  padding: 1px 6px;
 }
 </style>
