@@ -6,18 +6,26 @@
             :patients="patients"
             :selected-id="selectedId"
             :smartiol-available="smartiolAvailable"
+            :admin-list-active="rightView === 'admin-list'"
             @select="handleSelectOperation"
-            @add="formActions.resetForm()"
-            @add-operation-for-patient="patient => formActions.resetForm(patient.id)"
+            @add="handleAddOperation"
+            @add-operation-for-patient="handleAddOperationForPatient"
             @edit-patient="openEditPatientModal"
             @delete-patient="deleteActions.confirmDeletePatient"
             @delete-operation="deleteActions.confirmDeleteOperation"
             @refresh="handleRefreshFromDatabase"
             @open-smartiol-import="openSmartIolImportModal"
+            @open-admin-list="rightView = 'admin-list'"
         />
 
-        <!-- Right Panel: Form / Details -->
+        <!-- Right Panel: Form / Details / Admin list -->
+        <AdministrationListPanel
+            v-if="rightView === 'admin-list'"
+            :operations="operations"
+            :patients="patients"
+        />
         <OperationDetail
+            v-else
             :form="form"
             :patients="patients"
             :iol-models="iolModels"
@@ -77,6 +85,7 @@
 import { reactive, ref, watch, onMounted } from 'vue';
 import OperationsList from '@/components/organisms/OperationsList.vue';
 import OperationDetail from '@/components/organisms/OperationDetail.vue';
+import AdministrationListPanel from '@/components/organisms/AdministrationListPanel.vue';
 import AddPatientModal from '@/components/molecules/AddPatientModal.vue';
 import SmartIolImportModal from '@/components/molecules/SmartIolImportModal.vue';
 import ConfirmModal from '@/components/atoms/ConfirmModal.vue';
@@ -107,6 +116,7 @@ const modals = reactive({
     smartIolImport: false,
 });
 const smartiolAvailable = ref(false);
+const rightView = ref('valutazione');
 
 // Clear form errors on field changes
 watch(() => form.value.patientId, (val) => {
@@ -118,7 +128,18 @@ watch(() => form.value.eye, (val) => {
 
 // Event handlers
 const handleSelectOperation = async (op) => {
+    rightView.value = 'valutazione';
     await formActions.selectOperation(op);
+};
+
+const handleAddOperation = () => {
+    rightView.value = 'valutazione';
+    formActions.resetForm();
+};
+
+const handleAddOperationForPatient = (patient) => {
+    rightView.value = 'valutazione';
+    formActions.resetForm(patient.id);
 };
 
 const handleRefreshFromDatabase = async () => {
@@ -182,6 +203,7 @@ const handlePatientUpdated = async () => {
 };
 
 const handleSmartIolPatientImported = async (result) => {
+    rightView.value = 'valutazione';
     await loadPatients();
     await loadOperations();
     const importedOpId = Number(
@@ -266,7 +288,9 @@ onMounted(async () => {
         display: block !important;
         height: auto !important;
     }
-    .operations-list-panel {
+    .operations-list-panel,
+    .admin-list-panel .no-print,
+    .operation-detail-panel .no-print {
         display: none !important;
     }
 }

@@ -49,6 +49,15 @@
             v-model:active-tab="activeTab"
         />
 
+        <button
+            type="button"
+            class="admin-list-btn"
+            :class="{ active: adminListActive }"
+            @click="$emit('open-admin-list')"
+        >
+            {{ t('sidebar.adminList') }}
+        </button>
+
         <!-- Tab Content -->
         <PatientsTab
             v-if="activeTab === 'pazienti'"
@@ -95,6 +104,7 @@ const props = defineProps({
     patients: { type: Array, default: () => [] },
     selectedId: { type: [Number, null], default: null },
     smartiolAvailable: { type: Boolean, default: false },
+    adminListActive: { type: Boolean, default: false },
 });
 
 defineEmits([
@@ -106,6 +116,7 @@ defineEmits([
     'delete-operation',
     'refresh',
     'open-smartiol-import',
+    'open-admin-list',
 ]);
 
 // Tab state
@@ -261,5 +272,31 @@ const handleLocaleChange = (event) => {
 
 .btn-add-operation svg {
     flex-shrink: 0;
+}
+
+.admin-list-btn {
+    width: 100%;
+    padding: 10px 16px;
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+    background: #fff;
+    color: #374151;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+}
+
+.admin-list-btn:hover {
+    background: #f3f4f6;
+    color: #1e40af;
+}
+
+.admin-list-btn.active {
+    background: #eef2ff;
+    color: #1e40af;
+    box-shadow: inset 3px 0 0 #4361ee;
 }
 </style>
