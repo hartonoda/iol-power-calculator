@@ -26,9 +26,9 @@ const compatibilityScores = [
 
 <style scoped>
 .compat-block {
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #2563eb;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 2px solid #2563eb;
 }
 .panel-title {
   font-weight: 600;

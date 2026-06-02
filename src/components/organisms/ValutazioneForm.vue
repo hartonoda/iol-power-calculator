@@ -111,36 +111,10 @@
 
     <ValutazioneNotesSection :form="form" :disabled="disabled" />
     <BiometryDeviceTable :form="form" :disabled="disabled" />
-    <ValutazioneIOLSection :form="form" :disabled="disabled" />
+    <SmartIolCompatibilitySection :form="form" :disabled="disabled" />
+    <IolModelSection :form="form" :iol-models="iolModels" :disabled="disabled" />
 
-    <!-- Footer -->
-    <div class="footer-row">
-      <label class="footer-field tunnel-field">
-        <span class="lbl">Tunnel:</span>
-        <input v-model="form.tunnel" type="text" :disabled="disabled" />
-      </label>
-      <label class="footer-field model-field">
-        <span class="lbl">Modello IOL:</span>
-        <FmSelect
-          v-model="form.iolModelSelected"
-          :options="iolModelOptions"
-          :disabled="disabled"
-          placeholder="—"
-        />
-      </label>
-      <label class="footer-field narrow">
-        <span class="lbl">T:</span>
-        <input v-model="form.iolT" type="text" :disabled="disabled" />
-      </label>
-      <label class="footer-field narrow">
-        <span class="lbl">AX IOL:</span>
-        <input v-model="form.iolAx" type="text" :disabled="disabled" />
-      </label>
-      <label class="footer-field power-field">
-        <span class="lbl">Potere IOL:</span>
-        <input v-model="form.iolPower" type="text" class="power-input" :disabled="disabled" />
-      </label>
-    </div>
+    <ValutazioneIOLSection :form="form" :disabled="disabled" />
   </div>
 </template>
 
@@ -157,7 +131,9 @@ import {
 import FmSelect from '@/components/atoms/FmSelect.vue';
 import ValutazioneNotesSection from '@/components/molecules/ValutazioneNotesSection.vue';
 import BiometryDeviceTable from '@/components/molecules/BiometryDeviceTable.vue';
+import SmartIolCompatibilitySection from '@/components/molecules/SmartIolCompatibilitySection.vue';
 import ValutazioneIOLSection from '@/components/molecules/ValutazioneIOLSection.vue';
+import IolModelSection from '@/components/molecules/IolModelSection.vue';
 import dropdownOptions from '@/config/dropdownOptions.json';
 
 const props = defineProps({
@@ -166,15 +142,6 @@ const props = defineProps({
   iolModels: { type: Array, default: () => [] },
   disabled: { type: Boolean, default: false },
   isExisting: { type: Boolean, default: false },
-});
-
-const iolModelOptions = computed(() => {
-  const fromDb = props.iolModels.map((m) => m.name);
-  const merged = [...dropdownOptions.iolModels];
-  fromDb.forEach((name) => {
-    if (name && !merged.includes(name)) merged.push(name);
-  });
-  return merged;
 });
 
 defineEmits(['add-new-patient']);
@@ -321,40 +288,6 @@ const displayAge = computed(() => {
 }
 .contralateral-field .fm-select {
   min-width: 140px;
-}
-.footer-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: end;
-  border-top: 2px solid #2563eb;
-  padding-top: 12px;
-  margin-top: 4px;
-}
-.footer-field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.footer-field input,
-.footer-field select {
-  padding: 6px 8px;
-  border: 1px solid #cbd5e1;
-}
-.tunnel-field input {
-  background: #fce7f3;
-  max-width: 80px;
-}
-.model-field select {
-  min-width: 180px;
-  font-weight: 700;
-  color: #b91c1c;
-}
-.power-field .power-input {
-  font-weight: 700;
-  color: #b91c1c;
-  font-size: 15px;
-  width: 72px;
 }
 .narrow {
   max-width: 90px;
