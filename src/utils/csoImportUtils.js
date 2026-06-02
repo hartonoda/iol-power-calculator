@@ -62,7 +62,7 @@ function mapToOperationFields(op) {
         'offsetLimbus', 'offsetPupilla', 'AbS', 'Coma', 'HOA', 'SDP', 'SRI', 'SAI',
         'pupillaPhotopic', 'pupillaMesopica', 'pupillaScotopic', 'cellEndotelio',
         'cso_K1', 'cso_axK1', 'cso_K2', 'cso_axK2', 'cso_avgKm', 'cso_cil', 'cso_ax',
-        'cilTotal', 'axConclusion', 'cso_AXL', 'cso_ACD', 'cso_LT',
+        'cilTotal', 'axConclusion', 'cso_CCT', 'cso_AXL', 'cso_ACD', 'cso_LT',
         'iolModelSelected'
     ];
     const result = {};

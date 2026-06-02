@@ -7,7 +7,7 @@ import IolModelRepository from './iolModelRepository.js';
 
 const DB_NAME = 'iol-calculator-patient-data.sqlite';
 const LEGACY_DB_NAMES = ['patient_data.sqlite', 'operation-eye.sqlite'];
-const DB_VERSION = 11; // Increment this when adding new migrations
+const DB_VERSION = 12; // Increment this when adding new migrations
 
 // Legacy folder for backward compatibility (old app used operation-eye)
 const LEGACY_APP_DATA = 'operation-eye';
@@ -445,6 +445,7 @@ class AppDatabase {
                 axConclusion TEXT,
                 
                 -- CSO Biometry
+                cso_CCT TEXT,
                 cso_AXL TEXT,
                 cso_ACD TEXT,
                 cso_LT TEXT,
@@ -625,6 +626,12 @@ class AppDatabase {
                 this.seedIolModelConstants(true);
                 this.setVersion(11);
             }
+
+            if (currentVersion < 12) {
+                console.log('Running migration 12: CCT biometry columns');
+                this.addCctColumns();
+                this.setVersion(12);
+            }
         });
 
         try {
@@ -737,6 +744,16 @@ class AppDatabase {
         for (const col of ['barrett', 'barrettDf']) {
             if (!existing.has(col)) {
                 this.db.exec(`ALTER TABLE iol_models ADD COLUMN ${col} REAL NULL`);
+            }
+        }
+    }
+
+    addCctColumns() {
+        const newCols = ['cso_CCT', 'tomey_CCT', 'argos_CCT'];
+        const existing = new Set(this.db.pragma('table_info(operations)').map((c) => c.name));
+        for (const col of newCols) {
+            if (!existing.has(col)) {
+                this.db.exec(`ALTER TABLE operations ADD COLUMN ${col} TEXT`);
             }
         }
     }

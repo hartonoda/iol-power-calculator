@@ -22,6 +22,7 @@
               {{ metricWarnings.ax.label }}
             </div>
           </th>
+          <th title="Central corneal thickness">CCT</th>
           <th>AXL</th>
           <th>ACD</th>
           <th>LT</th>
@@ -37,6 +38,7 @@
           <td>
             <BioCell v-model="form.axConclusion" :disabled="disabled" />
           </td>
+          <td class="ciltot-spacer"></td>
           <td class="ciltot-spacer" colspan="3"></td>
         </tr>
         <tr v-for="device in deviceRows" :key="device.key">
@@ -50,6 +52,7 @@
           <td :class="{ 'alert-cell': metricWarnings.ax.alert }">
             <BioCell v-model="form[device.ax]" :disabled="disabled" />
           </td>
+          <td><BioCell v-model="form[device.cct]" :disabled="disabled" /></td>
           <td><BioCell v-model="form[device.axl]" :disabled="disabled" /></td>
           <td><BioCell v-model="form[device.acd]" :disabled="disabled" /></td>
           <td><BioCell v-model="form[device.lt]" :disabled="disabled" /></td>
@@ -62,7 +65,7 @@
 <script setup>
 import { computed } from 'vue';
 import BioCell from '@/components/atoms/BioCell.vue';
-import { deviceDiff, toleranceLabel } from '@/utils/biometryTolerance';
+import { deviceDiff, axisDiff, toleranceLabel, AX_TOLERANCE_DEG } from '@/utils/biometryTolerance';
 
 const props = defineProps({
   form: { type: Object, required: true },
@@ -76,6 +79,7 @@ const deviceRows = [
     avgKm: 'cso_avgKm',
     cil: 'cso_cil',
     ax: 'cso_ax',
+    cct: 'cso_CCT',
     axl: 'cso_AXL',
     acd: 'cso_ACD',
     lt: 'cso_LT',
@@ -86,6 +90,7 @@ const deviceRows = [
     avgKm: 'tomey_avgKm',
     cil: 'tomey_cil',
     ax: 'tomey_ax',
+    cct: 'tomey_CCT',
     axl: 'tomey_AXL',
     acd: 'tomey_ACD',
     lt: 'tomey_LT',
@@ -96,6 +101,7 @@ const deviceRows = [
     avgKm: 'argos_avgKm',
     cil: 'argos_cil',
     ax: 'argos_ax',
+    cct: 'argos_CCT',
     axl: 'argos_AXL',
     acd: 'argos_ACD',
     lt: 'argos_LT',
@@ -110,10 +116,19 @@ function maxDeviceDiff(a, b, c) {
   ) || null;
 }
 
+function maxAxisDiff(a, b, c) {
+  const diffs = [
+    axisDiff(props.form[a], props.form[b]),
+    axisDiff(props.form[b], props.form[c]),
+    axisDiff(props.form[a], props.form[c]),
+  ].filter((d) => d !== null);
+  return diffs.length ? Math.max(...diffs) : null;
+}
+
 const metricWarnings = computed(() => {
   const avgKmDiff = maxDeviceDiff('cso_avgKm', 'tomey_avgKm', 'argos_avgKm');
   const cilDiff = maxDeviceDiff('cso_cil', 'tomey_cil', 'argos_cil');
-  const axDiff = maxDeviceDiff('cso_ax', 'tomey_ax', 'argos_ax');
+  const axDiff = maxAxisDiff('cso_ax', 'tomey_ax', 'argos_ax');
 
   return {
     avgKm: {
@@ -125,8 +140,8 @@ const metricWarnings = computed(() => {
       alert: cilDiff !== null && cilDiff > 0.3,
     },
     ax: {
-      label: toleranceLabel(axDiff, 0.1, '°'),
-      alert: axDiff !== null && axDiff > 0.1,
+      label: toleranceLabel(axDiff, AX_TOLERANCE_DEG, '°'),
+      alert: axDiff !== null && axDiff > AX_TOLERANCE_DEG,
     },
   };
 });
