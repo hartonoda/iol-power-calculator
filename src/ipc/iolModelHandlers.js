@@ -16,14 +16,14 @@ export function registerIolModelHandlers(iolModelRepo) {
         return iolModelRepo.getByName(name);
     });
 
-    // Add new IOL model
-    ipcMain.handle('iolModel:add', async (event, name) => {
-        return iolModelRepo.add(name);
+    // Add new IOL model (name string or { name, ...constants })
+    ipcMain.handle('iolModel:add', async (event, payload) => {
+        return iolModelRepo.add(payload);
     });
 
-    // Update IOL model
-    ipcMain.handle('iolModel:update', async (event, id, name) => {
-        return iolModelRepo.update(id, name);
+    // Update IOL model (name and/or constants)
+    ipcMain.handle('iolModel:update', async (event, id, payload) => {
+        return iolModelRepo.update(id, payload);
     });
 
     // Delete IOL model

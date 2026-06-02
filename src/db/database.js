@@ -2,10 +2,12 @@ import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import Database from 'better-sqlite3';
+import { IOL_MODEL_CONSTANTS_DEFAULTS } from '../config/iolModelConstantsDefaults.js';
+import IolModelRepository from './iolModelRepository.js';
 
 const DB_NAME = 'iol-calculator-patient-data.sqlite';
 const LEGACY_DB_NAMES = ['patient_data.sqlite', 'operation-eye.sqlite'];
-const DB_VERSION = 8; // Increment this when adding new migrations
+const DB_VERSION = 11; // Increment this when adding new migrations
 
 // Legacy folder for backward compatibility (old app used operation-eye)
 const LEGACY_APP_DATA = 'operation-eye';
@@ -609,6 +611,20 @@ class AppDatabase {
                 this.addCellEndotelioNoteColumn();
                 this.setVersion(9);
             }
+
+            if (currentVersion < 10) {
+                console.log('Running migration 10: IOL model calculation constants');
+                this.addIolModelConstantColumns();
+                this.seedIolModelConstants();
+                this.setVersion(10);
+            }
+
+            if (currentVersion < 11) {
+                console.log('Running migration 11: IOL model Barrett constants');
+                this.addIolModelBarrettColumns();
+                this.seedIolModelConstants(true);
+                this.setVersion(11);
+            }
         });
 
         try {
@@ -696,6 +712,41 @@ class AppDatabase {
         if (!existing.has('cellEndotelioNote')) {
             this.db.exec('ALTER TABLE operations ADD COLUMN cellEndotelioNote TEXT');
         }
+    }
+
+    addIolModelConstantColumns() {
+        const newCols = [
+            'nominalA',
+            'srktA',
+            'haigisA0',
+            'haigisA1',
+            'haigisA2',
+            'hofferPacd',
+            'holladaySf',
+        ];
+        const existing = new Set(this.db.pragma('table_info(iol_models)').map((c) => c.name));
+        for (const col of newCols) {
+            if (!existing.has(col)) {
+                this.db.exec(`ALTER TABLE iol_models ADD COLUMN ${col} REAL NULL`);
+            }
+        }
+    }
+
+    addIolModelBarrettColumns() {
+        const existing = new Set(this.db.pragma('table_info(iol_models)').map((c) => c.name));
+        for (const col of ['barrett', 'barrettDf']) {
+            if (!existing.has(col)) {
+                this.db.exec(`ALTER TABLE iol_models ADD COLUMN ${col} REAL NULL`);
+            }
+        }
+    }
+
+    seedIolModelConstants(refreshKnownDefaults = false) {
+        const repo = new IolModelRepository(this.db);
+        const count = repo.applyDefaultConstants(IOL_MODEL_CONSTANTS_DEFAULTS, {
+            refreshKnownDefaults,
+        });
+        console.log(`Seeded IOL constants for ${count} model(s)`);
     }
 
     migrateLegacyIolResiduals() {

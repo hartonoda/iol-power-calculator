@@ -112,7 +112,12 @@
     <ValutazioneNotesSection :form="form" :disabled="disabled" />
     <BiometryDeviceTable :form="form" :disabled="disabled" />
     <SmartIolCompatibilitySection :form="form" :disabled="disabled" />
-    <IolModelSection :form="form" :iol-models="iolModels" :disabled="disabled" />
+    <IolModelSection
+      :form="form"
+      :iol-models="iolModels"
+      :disabled="disabled"
+      @iol-models-changed="$emit('iol-models-changed')"
+    />
 
     <ValutazioneIOLSection :form="form" :disabled="disabled" />
   </div>
@@ -144,7 +149,7 @@ const props = defineProps({
   isExisting: { type: Boolean, default: false },
 });
 
-defineEmits(['add-new-patient']);
+defineEmits(['add-new-patient', 'iol-models-changed']);
 
 watch(
   () => props.form.id,

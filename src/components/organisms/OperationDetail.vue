@@ -48,6 +48,7 @@
                 :iol-models="iolModels"
                 :is-existing="!!selectedId"
                 @add-new-patient="$emit('add-new-patient')"
+                @iol-models-changed="$emit('iol-models-changed')"
             />
         </form>
 
@@ -74,7 +75,7 @@ const props = defineProps({
     hasChanges: { type: Boolean, default: false },
 });
 
-const emit = defineEmits(['submit', 'delete', 'add-new-patient', 'switch-eye']);
+const emit = defineEmits(['submit', 'delete', 'add-new-patient', 'switch-eye', 'iol-models-changed']);
 
 const showEyeSwitcher = computed(() => props.isBothEyesMode && !props.selectedId);
 

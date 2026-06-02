@@ -31,6 +31,7 @@
             @delete="deleteActions.confirmDeleteOperation()"
             @add-new-patient="openAddPatientModal"
             @switch-eye="formActions.handleEyeSwitch"
+            @iol-models-changed="loadIolModels"
         />
 
         <!-- Delete Operation Confirmation -->

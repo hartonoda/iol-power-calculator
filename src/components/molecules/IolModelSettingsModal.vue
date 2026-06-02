@@ -1,0 +1,428 @@
+<template>
+  <Teleport to="body">
+    <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
+      <div class="settings-dialog">
+        <div class="dialog-header">
+          <h3>Modelli IOL e costanti</h3>
+          <button type="button" class="icon-btn" title="Chiudi" @click="$emit('close')">
+            <SvgIcon name="close" :size="20" />
+          </button>
+        </div>
+
+        <p class="source-note">
+          Costanti da
+          <a href="https://iolcon.org/lensesTable.php" target="_blank" rel="noopener noreferrer">
+            iolcon.org/lensesTable.php
+          </a>
+          — Nominal (A), Hoffer Q/QST (ottimizzata se disponibile), Barrett (LF / DF).
+        </p>
+
+        <div class="dialog-body">
+          <div class="add-row">
+            <input
+              v-model="newModelName"
+              type="text"
+              class="text-input"
+              placeholder="Nuovo modello IOL…"
+              @keyup.enter="addModel"
+            />
+            <button type="button" class="btn-add" :disabled="!newModelName.trim()" @click="addModel">
+              <SvgIcon name="plus" :size="16" />
+              Aggiungi
+            </button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="models-table">
+              <thead>
+                <tr>
+                  <th class="col-name">Modello</th>
+                  <th>Nominal (A)</th>
+                  <th>Hoffer Q / QST</th>
+                  <th>Barrett (LF / DF)</th>
+                  <th class="col-actions"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in editableRows" :key="row.id">
+                  <td class="col-name">
+                    <input v-model="row.name" type="text" class="text-input compact" />
+                  </td>
+                  <td>
+                    <input
+                      v-model="row.nominalA"
+                      type="text"
+                      class="num-input wide"
+                      inputmode="decimal"
+                      placeholder="—"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      v-model="row.hofferPacd"
+                      type="text"
+                      class="num-input wide"
+                      inputmode="decimal"
+                      placeholder="—"
+                    />
+                  </td>
+                  <td>
+                    <div class="barrett-pair">
+                      <input
+                        v-model="row.barrett"
+                        type="text"
+                        class="num-input"
+                        inputmode="decimal"
+                        placeholder="LF"
+                      />
+                      <span class="barrett-sep">/</span>
+                      <input
+                        v-model="row.barrettDf"
+                        type="text"
+                        class="num-input"
+                        inputmode="decimal"
+                        placeholder="DF"
+                      />
+                    </div>
+                  </td>
+                  <td class="col-actions">
+                    <button
+                      type="button"
+                      class="icon-btn danger"
+                      title="Elimina modello"
+                      @click="confirmDelete(row)"
+                    >
+                      <SvgIcon name="trash" :size="14" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="dialog-footer">
+          <button type="button" class="btn-secondary" @click="$emit('close')">Annulla</button>
+          <button type="button" class="btn-primary" :disabled="saving" @click="saveAll">
+            {{ saving ? 'Salvataggio…' : 'Salva' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ConfirmModal
+      :show="!!modelToDelete"
+      title="Elimina modello IOL"
+      :message="'Eliminare <strong>' + (modelToDelete?.name || '') + '</strong>?'"
+      warning="Le valutazioni esistenti che usano questo modello non vengono modificate."
+      confirm-text="Elimina"
+      @confirm="deleteModel"
+      @cancel="modelToDelete = null"
+    />
+  </Teleport>
+</template>
+
+<script setup>
+import { ref, watch } from 'vue';
+import ConfirmModal from '@/components/atoms/ConfirmModal.vue';
+import SvgIcon from '@/components/atoms/SvgIcon.vue';
+import { IOL_CONSTANT_FIELDS } from '@/config/iolModelConstantsDefaults.js';
+
+const props = defineProps({
+  show: { type: Boolean, default: false },
+  models: { type: Array, default: () => [] },
+});
+
+const emit = defineEmits(['close', 'saved']);
+
+const editableRows = ref([]);
+const newModelName = ref('');
+const saving = ref(false);
+const modelToDelete = ref(null);
+
+function toEditable(model) {
+  const row = { id: model.id, name: model.name };
+  for (const key of IOL_CONSTANT_FIELDS) {
+    const val = model[key];
+    row[key] = val == null ? '' : String(val);
+  }
+  return row;
+}
+
+function rowToPayload(row) {
+  const payload = { name: row.name.trim() };
+  for (const key of IOL_CONSTANT_FIELDS) {
+    const raw = String(row[key] ?? '').trim();
+    payload[key] = raw === '' ? null : Number(raw);
+  }
+  return payload;
+}
+
+function syncRows() {
+  editableRows.value = props.models.map(toEditable);
+}
+
+watch(
+  () => props.show,
+  (open) => {
+    if (open) syncRows();
+  },
+);
+
+watch(
+  () => props.models,
+  () => {
+    if (props.show) syncRows();
+  },
+  { deep: true },
+);
+
+const addModel = async () => {
+  const name = newModelName.value.trim();
+  if (!name) return;
+  try {
+    await window.api.iolModel.add({ name });
+    newModelName.value = '';
+    emit('saved');
+  } catch (err) {
+    console.error('Failed to add IOL model:', err);
+  }
+};
+
+const confirmDelete = (row) => {
+  modelToDelete.value = row;
+};
+
+const deleteModel = async () => {
+  if (!modelToDelete.value) return;
+  try {
+    await window.api.iolModel.delete(modelToDelete.value.id);
+    modelToDelete.value = null;
+    emit('saved');
+  } catch (err) {
+    console.error('Failed to delete IOL model:', err);
+  }
+};
+
+const saveAll = async () => {
+  saving.value = true;
+  try {
+    for (const row of editableRows.value) {
+      if (!row.name?.trim()) continue;
+      await window.api.iolModel.update(row.id, rowToPayload(row));
+    }
+    emit('saved');
+    emit('close');
+  } catch (err) {
+    console.error('Failed to save IOL models:', err);
+  } finally {
+    saving.value = false;
+  }
+};
+</script>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.settings-dialog {
+  background: white;
+  border-radius: 12px;
+  width: min(1100px, 96vw);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.dialog-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #1a1a2e;
+}
+
+.source-note {
+  margin: 0;
+  padding: 10px 20px 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.source-note a {
+  color: #2563eb;
+}
+
+.dialog-body {
+  padding: 16px 20px;
+  overflow: hidden;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+.add-row {
+  display: flex;
+  gap: 8px;
+}
+
+.table-wrap {
+  overflow: auto;
+  flex: 1;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.models-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.models-table th,
+.models-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  text-align: left;
+}
+
+.models-table th {
+  background: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.col-name {
+  min-width: 160px;
+}
+
+.col-actions {
+  width: 40px;
+  text-align: center;
+}
+
+.text-input,
+.num-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 6px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.num-input {
+  min-width: 52px;
+  max-width: 68px;
+}
+
+.num-input.wide {
+  min-width: 72px;
+  max-width: 88px;
+}
+
+.barrett-pair {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.barrett-sep {
+  color: #94a3b8;
+  font-size: 12px;
+}
+
+.text-input.compact {
+  min-width: 140px;
+}
+
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: none;
+  background: #22c55e;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.btn-add:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-primary,
+.btn-secondary {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-primary:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: white;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: 1px solid #e5e7eb;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #6b7280;
+}
+
+.icon-btn.danger:hover {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+</style>
