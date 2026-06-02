@@ -57,7 +57,12 @@ ipcMain.handle('print:preview', async () => {
   if (!mainWindow) return { success: false, error: 'Nessuna finestra disponibile' };
   return new Promise((resolve) => {
     mainWindow.webContents.print(
-      { silent: false, printBackground: true, margins: { marginType: 'default' } },
+      {
+        silent: false,
+        printBackground: true,
+        landscape: true,
+        margins: { marginType: 'default' },
+      },
       (success, failureReason) => {
         resolve(success ? { success: true } : { success: false, error: failureReason });
       },

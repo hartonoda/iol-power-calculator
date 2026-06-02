@@ -26,9 +26,9 @@
             </div>
         </div>
 
-        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <div v-if="errorMessage" class="error-message no-print">{{ errorMessage }}</div>
 
-        <form class="detail-form" @submit.prevent="$emit('submit')">
+        <form class="detail-form no-print" @submit.prevent="$emit('submit')">
             <div v-if="showEyeSwitcher" class="eye-switcher no-print">
                 <button
                     type="button"
@@ -52,7 +52,9 @@
             />
         </form>
 
-        <PrintView :form="form" :patients="patients" />
+        <Teleport to="body">
+            <PrintView :form="form" :patients="patients" />
+        </Teleport>
     </div>
 </template>
 

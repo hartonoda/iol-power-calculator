@@ -35,4 +35,26 @@ textarea {
   .no-print {
     display: none !important;
   }
+
+  /* Print only the Valutazione report — hide the rest of the app UI */
+  body * {
+    visibility: hidden;
+  }
+
+  .print-view,
+  .print-view * {
+    visibility: visible;
+  }
+
+  .print-view {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 281mm;
+    margin: 0 auto;
+    padding: 0;
+  }
 }

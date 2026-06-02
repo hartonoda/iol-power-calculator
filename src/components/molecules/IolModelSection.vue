@@ -46,7 +46,7 @@
 
       <label class="footer-field">
 
-        <span class="lbl">T:</span>
+        <span class="lbl">T/ast:</span>
 
         <input v-model="form.iolT" type="text" :disabled="disabled" />
 

@@ -45,8 +45,8 @@ body {
 
 @media print {
   @page {
-    size: A4 portrait;
-    margin: 10mm;
+    size: A4 landscape;
+    margin: 8mm;
   }
 
   * {
@@ -67,13 +67,30 @@ body {
     overflow: visible !important;
   }
 
-  .operations-list-panel {
+  .no-print {
     display: none !important;
   }
 
-  .operations-page {
+  /* Only the compact Valutazione report (see styles/main.css) */
+  body * {
+    visibility: hidden;
+  }
+
+  .print-view,
+  .print-view * {
+    visibility: visible;
+  }
+
+  .print-view {
     display: block !important;
-    height: auto !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    width: 100%;
+    max-width: 281mm;
+    margin: 0 auto;
+    padding: 0;
   }
 }
 </style>
