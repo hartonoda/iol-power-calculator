@@ -1,7 +1,7 @@
 {
   "name": "iol-power-calculator",
   "productName": "IOL Power Calculator",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Standalone IOL power evaluation for cataract surgery",
   "main": ".vite/build/main.js",
   "private": true,

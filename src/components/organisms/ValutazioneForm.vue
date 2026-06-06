@@ -29,40 +29,20 @@
       </label>
       <label class="field intervento-field">
         <span class="lbl">Intervento di:</span>
-        <input
-          v-if="interventoCustomMode"
+        <FmComboBox
           v-model="form.interventoDi"
-          type="text"
-          class="intervento-input"
-          :disabled="disabled"
-          placeholder="Specificare intervento…"
-        />
-        <FmSelect
-          v-else
-          v-model="form.interventoDi"
-          :options="interventoSelectOptions"
+          :options="interventoOptions"
           :disabled="disabled"
           placeholder="—"
-          @update:model-value="onInterventoSelect"
         />
       </label>
       <label class="field costo-field">
         <span class="lbl">Costo:</span>
-        <input
-          v-if="costoCustomMode"
+        <FmComboBox
           v-model="form.costo"
-          type="text"
-          class="costo-input"
-          :disabled="disabled"
-          placeholder="Valore personalizzato…"
-        />
-        <FmSelect
-          v-else
-          v-model="form.costo"
-          :options="costoSelectOptions"
+          :options="costoOptions"
           :disabled="disabled"
           placeholder="—"
-          @update:model-value="onCostoSelect"
         />
       </label>
     </div>
@@ -125,7 +105,7 @@
       </label>
       <label class="inline grow contralateral-field">
         <span class="lbl">Occhio controlaterale:</span>
-        <FmSelect
+        <FmComboBox
           v-model="form.contralateralEye"
           :options="dropdownOptions.contralateralEye"
           :disabled="disabled"
@@ -150,7 +130,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, watch } from 'vue';
 import PatientAutocomplete from '@/components/atoms/PatientAutocomplete.vue';
 import {
   normalizeDecimal,
@@ -159,7 +139,7 @@ import {
   formatVisusFields,
   VISUS_VA_OPTIONS,
 } from '@/utils/numberUtils';
-import FmSelect from '@/components/atoms/FmSelect.vue';
+import FmComboBox from '@/components/atoms/FmComboBox.vue';
 import ValutazioneNotesSection from '@/components/molecules/ValutazioneNotesSection.vue';
 import ValutazioneEndothelialSection from '@/components/molecules/ValutazioneEndothelialSection.vue';
 import BiometryDeviceTable from '@/components/molecules/BiometryDeviceTable.vue';
@@ -178,77 +158,16 @@ const props = defineProps({
 
 defineEmits(['add-new-patient', 'iol-models-changed']);
 
-const COSTO_EDIT_OPTION = 'Edit...';
-const costoPresetOptions = dropdownOptions.costo.filter((o) => o !== COSTO_EDIT_OPTION);
-const costoSelectOptions = [...costoPresetOptions, COSTO_EDIT_OPTION];
-const costoCustomMode = ref(false);
-
-const INTERVENTO_ALTRO_OPTION = 'Altro';
-const interventoPresetOptions = dropdownOptions.interventoDi.filter((o) => o !== INTERVENTO_ALTRO_OPTION);
-const interventoSelectOptions = [...interventoPresetOptions, INTERVENTO_ALTRO_OPTION];
-const interventoCustomMode = ref(false);
-
-function syncCostoInputMode() {
-  const value = String(props.form.costo || '').trim();
-  costoCustomMode.value = Boolean(value && !costoPresetOptions.includes(value));
-}
-
-function onCostoSelect(value) {
-  if (value === COSTO_EDIT_OPTION) {
-    costoCustomMode.value = true;
-    props.form.costo = '';
-    return;
-  }
-  costoCustomMode.value = false;
-  props.form.costo = value;
-}
-
-function syncInterventoInputMode() {
-  const value = String(props.form.interventoDi || '').trim();
-  interventoCustomMode.value = Boolean(value && !interventoPresetOptions.includes(value));
-}
-
-function onInterventoSelect(value) {
-  if (value === INTERVENTO_ALTRO_OPTION) {
-    interventoCustomMode.value = true;
-    props.form.interventoDi = '';
-    return;
-  }
-  interventoCustomMode.value = false;
-  props.form.interventoDi = value;
-}
+const interventoOptions = dropdownOptions.interventoDi.filter((o) => o !== 'Altro');
+const costoOptions = dropdownOptions.costo.filter((o) => o !== 'Edit...');
 
 watch(
   () => props.form.id,
   () => {
     formatDiopterFields(props.form);
     formatVisusFields(props.form);
-    syncCostoInputMode();
-    syncInterventoInputMode();
   },
   { immediate: true },
-);
-
-watch(
-  () => props.form.costo,
-  () => {
-    if (costoCustomMode.value && !String(props.form.costo || '').trim()) {
-      costoCustomMode.value = false;
-      return;
-    }
-    if (!costoCustomMode.value) syncCostoInputMode();
-  },
-);
-
-watch(
-  () => props.form.interventoDi,
-  () => {
-    if (interventoCustomMode.value && !String(props.form.interventoDi || '').trim()) {
-      interventoCustomMode.value = false;
-      return;
-    }
-    if (!interventoCustomMode.value) syncInterventoInputMode();
-  },
 );
 
 const visusOptions = VISUS_VA_OPTIONS;
@@ -303,19 +222,18 @@ const displayAge = computed(() => {
 .intervento-field {
   min-width: 0;
 }
-.intervento-field :deep(.fm-select),
-.intervento-field .intervento-input {
+.intervento-field :deep(.fm-combobox) {
   max-width: 11rem;
-}
-.intervento-field .intervento-input {
   padding: 4px 6px;
   border: 1px solid #cbd5e1;
   font-size: 13px;
 }
-.costo-field .costo-input,
-.costo-field :deep(.fm-select) {
+.costo-field :deep(.fm-combobox) {
   min-width: 6.5rem;
   max-width: 9rem;
+  padding: 4px 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
 }
 .field {
   display: flex;
@@ -390,8 +308,11 @@ const displayAge = computed(() => {
   align-items: center;
   gap: 8px;
 }
-.contralateral-field .fm-select {
+.contralateral-field :deep(.fm-combobox) {
   min-width: 140px;
+  padding: 4px 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
 }
 .narrow {
   max-width: 90px;

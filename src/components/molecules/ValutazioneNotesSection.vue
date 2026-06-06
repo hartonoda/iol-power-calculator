@@ -70,7 +70,7 @@
                 <span class="cb-box" :class="{ checked: selectedEye.includes(opt.value) }"></span>
                 <span class="problem-label">{{ opt.label }}</span>
               </label>
-              <FmSelect
+              <FmComboBox
                 v-if="selectedEye.includes(opt.value)"
                 v-model="eyeDropdowns[opt.value]"
                 :options="dropdownLists[opt.optionsKey]"
@@ -120,7 +120,7 @@
 import { ref, watch, onMounted, reactive } from 'vue';
 import noteOptions from '@/config/noteOptions.json';
 import dropdownOptions from '@/config/dropdownOptions.json';
-import FmSelect from '@/components/atoms/FmSelect.vue';
+import FmComboBox from '@/components/atoms/FmComboBox.vue';
 const props = defineProps({
   form: { type: Object, required: true },
   disabled: { type: Boolean, default: false },
