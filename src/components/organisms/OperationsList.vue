@@ -13,7 +13,7 @@
                     </div>
                 </div>
                 <div class="branding-right">
-                    <span class="version-badge">Valutazione</span>
+                    <span class="version-badge">v{{ APP_VERSION }}</span>
                     <div class="language-selector">
                     <label class="sr-only" for="language-select">{{ t('common.language') }}</label>
                     <select
@@ -97,6 +97,7 @@ import PatientsTab from '@/components/molecules/PatientsTab.vue';
 import InterventiTab from '@/components/molecules/InterventiTab.vue';
 import AppLogo from '@/components/atoms/AppLogo.vue';
 import SvgIcon from '@/components/atoms/SvgIcon.vue';
+import { APP_VERSION } from '@/config/appVersion.js';
 const { t, locale, setLocale, availableLocales } = useI18n();
 
 const props = defineProps({

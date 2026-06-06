@@ -36,7 +36,15 @@ npm start
 npm run make
 ```
 
-Output appears under `out/make/`.
+Output appears under `out/make/` (Squirrel installer) and `out/IOL Power Calculator-win32-x64v{version}.zip` (portable folder, same workflow as SmartIOL).
+
+For another computer, prefer the **portable zip**: unzip anywhere and run `IOL Power Calculator.exe`. The Squirrel `Setup.exe` also works, but some PCs block unsigned installers.
+
+If startup fails, check `%APPDATA%/IOL Power Calculator/startup-error.log`.
+
+## Versioning
+
+The app version (`vX.Y.Z` in the sidebar) comes from `package.json`. A pre-commit hook bumps the patch number on every commit. Hooks are installed automatically via `npm install` (`prepare` script). To skip a bump once, use `SKIP_VERSION_BUMP=1 git commit`.
 
 ## Database
 

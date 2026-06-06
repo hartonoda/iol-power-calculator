@@ -1,5 +1,6 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog } from 'electron';
 import path from 'node:path';
+import fs from 'node:fs';
 import started from 'electron-squirrel-startup';
 import AppDatabase from './db/database.js';
 import PatientRepository from './db/patientRepository.js';
@@ -32,12 +33,15 @@ if (!gotLock) {
 }
 
 const createWindow = () => {
+  const iconPath = path.join(app.getAppPath(), 'src', 'assets', 'img', 'logo.ico');
+
   mainWindow = new BrowserWindow({
     width: 1600,
     height: 1000,
     minWidth: 1200,
     minHeight: 700,
     title: 'eye - Valutazione IOL',
+    icon: iconPath,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -75,7 +79,22 @@ ipcMain.handle('database:getInfo', async () => {
   return appDatabase.getDatabaseInfo();
 });
 
-app.whenReady().then(() => {
+function logStartupError(error) {
+  const message = error?.stack || String(error);
+  console.error(message);
+  try {
+    const logDir = app.getPath('userData');
+    fs.mkdirSync(logDir, { recursive: true });
+    fs.appendFileSync(path.join(logDir, 'startup-error.log'), `${new Date().toISOString()}\n${message}\n\n`);
+  } catch (logError) {
+    console.error('Failed to write startup log:', logError);
+  }
+  if (app.isReady()) {
+    dialog.showErrorBox('IOL Power Calculator', `Avvio non riuscito:\n\n${message}`);
+  }
+}
+
+function bootstrap() {
   appDatabase = new AppDatabase();
   const db = appDatabase.getConnection();
 
@@ -93,6 +112,27 @@ app.whenReady().then(() => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
+}
+
+app.whenReady().then(() => {
+  try {
+    bootstrap();
+  } catch (error) {
+    logStartupError(error);
+    app.quit();
+  }
+}).catch((error) => {
+  logStartupError(error);
+  app.quit();
+});
+
+process.on('uncaughtException', (error) => {
+  logStartupError(error);
+  app.quit();
+});
+
+process.on('unhandledRejection', (reason) => {
+  logStartupError(reason);
 });
 
 app.on('window-all-closed', () => {

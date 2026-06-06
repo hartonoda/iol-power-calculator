@@ -20,11 +20,12 @@ class AppDatabase {
         this.appDataLegacyDbPaths = LEGACY_DB_NAMES.map((name) => path.join(this.appDataPath, name));
 
         // Exe folder path (Program Files is read-only - we must use AppData there)
-        this.exeDbPath = process.env.NODE_ENV === 'development'
+        const isDev = !app.isPackaged;
+        this.exeDbPath = isDev
             ? path.join(app.getAppPath(), DB_NAME)
             : path.join(path.dirname(process.execPath), DB_NAME);
         this.exeLegacyDbPaths = LEGACY_DB_NAMES.map((name) => (
-            process.env.NODE_ENV === 'development'
+            isDev
                 ? path.join(app.getAppPath(), name)
                 : path.join(path.dirname(process.execPath), name)
         ));
@@ -45,6 +46,7 @@ class AppDatabase {
         this.ensureAppDataDirectory();
         this.initializeDatabase();
         this.setupTables();
+        this.ensureSchemaColumns();
         this.runMigrations();
         this.mergeFromOperationEyeIfExists();
         this.backupToAppData();
@@ -508,6 +510,15 @@ class AppDatabase {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL UNIQUE,
                 isDefault INTEGER NOT NULL DEFAULT 0,
+                nominalA REAL NULL,
+                srktA REAL NULL,
+                haigisA0 REAL NULL,
+                haigisA1 REAL NULL,
+                haigisA2 REAL NULL,
+                hofferPacd REAL NULL,
+                holladaySf REAL NULL,
+                barrett REAL NULL,
+                barrettDf REAL NULL,
                 createdAt TEXT NOT NULL,
                 updatedAt TEXT NOT NULL,
                 deletedAt TEXT NULL
@@ -515,6 +526,21 @@ class AppDatabase {
         `);
 
         console.log('Database tables setup complete');
+    }
+
+    /**
+     * Idempotent column checks — runs on every startup, including fresh installs
+     * and databases that already report the latest schema_version.
+     */
+    ensureSchemaColumns() {
+        this.addCompatibilityScoreColumns();
+        this.addCellEndotelioNoteColumn();
+        this.addValutazioneColumns();
+        this.addIolModelConstantColumns();
+        this.addIolModelBarrettColumns();
+        this.addCctColumns();
+        this.addBiometryMeanColumns();
+        this.seedIolModelConstants(false);
     }
 
     getCurrentVersion() {
@@ -616,7 +642,6 @@ class AppDatabase {
             if (currentVersion < 10) {
                 console.log('Running migration 10: IOL model calculation constants');
                 this.addIolModelConstantColumns();
-                this.seedIolModelConstants();
                 this.setVersion(10);
             }
 

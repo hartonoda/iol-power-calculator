@@ -2,10 +2,13 @@ const path = require('path');
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
+const iconBase = path.join(__dirname, 'src', 'assets', 'img', 'logo');
+
 module.exports = {
   packagerConfig: {
     asar: true,
     prune: true,
+    icon: iconBase,
     extraResource: [
       path.join(__dirname, 'src', 'config', 'ocularParameterRules.json'),
       path.join(__dirname, 'src', 'config', 'iolSuitabilityRules.json'),
@@ -20,22 +23,23 @@ module.exports = {
       return !keep;
     },
   },
-  rebuildConfig: {},
+  rebuildConfig: {
+    onlyModules: ['better-sqlite3'],
+  },
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        iconUrl: `file://${path.join(__dirname, 'src', 'assets', 'img', 'logo.ico').replace(/\\/g, '/')}`,
+        setupIcon: path.join(__dirname, 'src', 'assets', 'img', 'logo.ico'),
+      },
     },
     {
       name: '@electron-forge/maker-zip',
-      platforms: ['darwin'],
+      platforms: ['darwin', 'win32'],
     },
   ],
   plugins: [
-    {
-      name: '@electron-forge/plugin-auto-unpack-natives',
-      config: {},
-    },
     {
       name: '@electron-forge/plugin-vite',
       config: {
