@@ -118,13 +118,14 @@ async function handlePrint() {
     align-items: center;
     justify-content: space-between;
     padding: 12px 20px;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--color-header-bg);
+    border-bottom: 1px solid var(--color-brand-darker);
     flex-shrink: 0;
 }
 .panel-header h2 {
     margin: 0;
     font-size: 17px;
-    color: #1f2937;
+    color: var(--color-on-brand);
 }
 .header-actions {
     display: flex;
@@ -134,7 +135,7 @@ async function handlePrint() {
 .header-divider {
     width: 1px;
     height: 24px;
-    background: #e5e7eb;
+    background: rgba(255, 255, 255, 0.35);
 }
 .detail-form {
     flex: 1;
@@ -154,16 +155,16 @@ async function handlePrint() {
     font-weight: 600;
 }
 .eye-switcher button.active {
-    background: #4f46e5;
-    color: white;
-    border-color: #4f46e5;
+    background: var(--color-accent);
+    color: var(--color-on-brand);
+    border-color: var(--color-accent);
 }
 .btn-header-save {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: #4f46e5;
-    color: white;
+    background: var(--color-on-brand);
+    color: var(--color-brand-dark);
     border: none;
     padding: 8px 16px;
     border-radius: 6px;

@@ -170,7 +170,7 @@ const onModelsSaved = () => {
 
 .lbl {
 
-  color: #1e40af;
+  color: var(--color-label);
 
   font-weight: 600;
 
@@ -216,7 +216,7 @@ const onModelsSaved = () => {
 
   background: #f1f5f9;
 
-  color: #1e40af;
+  color: var(--color-label);
 
 }
 
@@ -232,7 +232,7 @@ const onModelsSaved = () => {
 
   width: 100%;
 
-  border-top: 2px solid #2563eb;
+  border-top: 2px solid var(--color-section-divider);
 
   padding-top: 12px;
 

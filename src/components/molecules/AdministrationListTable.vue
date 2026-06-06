@@ -95,7 +95,7 @@ function formatDate(dateString) {
   top: 0;
   z-index: 1;
   background: #f1f5f9;
-  color: #1e40af;
+  color: var(--color-label);
   font-weight: 600;
   font-size: 12px;
 }
@@ -120,12 +120,12 @@ function formatDate(dateString) {
 }
 
 .eye-badge.od {
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--color-accent-muted-bg);
+  color: var(--color-label);
 }
 
 .eye-badge.os {
   background: #dcfce7;
-  color: #166534;
+  color: var(--color-brand-dark);
 }
 </style>

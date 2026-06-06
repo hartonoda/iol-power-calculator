@@ -191,14 +191,15 @@ async function handlePrint() {
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--color-header-bg);
+  border-bottom: 1px solid var(--color-brand-darker);
   flex-shrink: 0;
 }
 
 .panel-header h2 {
   margin: 0;
   font-size: 17px;
-  color: #1f2937;
+  color: var(--color-on-brand);
 }
 
 .btn-print {
@@ -206,16 +207,16 @@ async function handlePrint() {
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border: 1px solid #2563eb;
+  border: 1px solid var(--color-on-brand);
   border-radius: 6px;
-  background: #eff6ff;
-  color: #1e40af;
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-on-brand);
   font-size: 13px;
   font-weight: 600;
 }
 
 .btn-print:hover:not(:disabled) {
-  background: #dbeafe;
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .btn-print:disabled {
@@ -274,7 +275,7 @@ async function handlePrint() {
 
 .date-input-wrap input:focus {
   outline: none;
-  border-color: #4361ee;
+  border-color: var(--color-accent-light);
 }
 
 .calendar-btn {
@@ -288,14 +289,14 @@ async function handlePrint() {
   border: none;
   background: transparent;
   border-radius: 4px;
-  color: #1e40af;
+  color: var(--color-label);
   cursor: pointer;
   flex-shrink: 0;
 }
 
 .calendar-btn:hover {
-  background: #eff6ff;
-  color: #2563eb;
+  background: var(--color-accent-muted-bg);
+  color: var(--color-accent);
 }
 
 .clear-date-btn {
@@ -331,8 +332,8 @@ async function handlePrint() {
 }
 
 .search-box:focus-within {
-  border-color: #4361ee;
-  box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.12);
+  border-color: var(--color-accent-light);
+  box-shadow: 0 0 0 2px var(--color-accent-ring);
 }
 
 .search-box input {
@@ -357,7 +358,7 @@ async function handlePrint() {
 }
 
 .list-meta strong {
-  color: #1e40af;
+  color: var(--color-label);
 }
 
 .sort-btn {
@@ -366,15 +367,15 @@ async function handlePrint() {
   border: 1px solid #cbd5e1;
   border-radius: 6px;
   background: #fff;
-  color: #1e40af;
+  color: var(--color-label);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
 }
 
 .sort-btn:hover {
-  background: #eff6ff;
-  border-color: #2563eb;
+  background: var(--color-accent-subtle-bg);
+  border-color: var(--color-accent);
 }
 
 .list-container {

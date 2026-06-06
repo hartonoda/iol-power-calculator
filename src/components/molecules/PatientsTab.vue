@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="patients-tab">
         <!-- Search -->
         <div class="search-box">
@@ -267,8 +267,8 @@ const formatAge = (dateString) => {
 }
 
 .search-input-wrap:focus-within {
-    border-color: #4361ee;
-    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.12);
+    border-color: var(--color-accent-light);
+    box-shadow: 0 0 0 2px var(--color-accent-ring);
 }
 
 .search-actions {
@@ -293,11 +293,11 @@ const formatAge = (dateString) => {
     background: #f9fafb;
 }
 .search-action-btn.smartiol-btn {
-    border-color: #2563eb;
-    color: #1d4ed8;
+    border-color: var(--color-accent);
+    color: var(--color-brand-dark);
 }
 .search-action-btn.smartiol-btn:hover {
-    background: #eff6ff;
+    background: var(--color-accent-subtle-bg);
 }
 
 .search-box svg {
@@ -413,8 +413,8 @@ const formatAge = (dateString) => {
 }
 
 .operation-count.multiple {
-    background: #dbeafe;
-    color: #1e40af;
+    background: var(--color-accent-muted-bg);
+    color: var(--color-label);
 }
 
 .operations-sublist {
@@ -435,8 +435,8 @@ const formatAge = (dateString) => {
 .operation-item:hover { background: #f3f4f6; }
 
 .operation-item.selected {
-    background: #eef2ff;
-    border-left: 3px solid #4361ee;
+    background: var(--color-accent-hover-bg);
+    border-left: 3px solid var(--color-accent);
     padding-left: 35px;
 }
 
@@ -449,8 +449,8 @@ const formatAge = (dateString) => {
     flex-shrink: 0;
 }
 
-.op-eye.od { background: #dbeafe; color: #1e40af; }
-.op-eye.os { background: #dcfce7; color: #166534; }
+.op-eye.od { background: var(--color-accent-muted-bg); color: var(--color-label); }
+.op-eye.os { background: #dcfce7; color: var(--color-brand-dark); }
 .op-eye.ou { background: #fef3c7; color: #92400e; }
 
 .op-date {
@@ -523,10 +523,10 @@ const formatAge = (dateString) => {
     justify-content: center;
     gap: 6px;
     padding: 8px 12px;
-    border: 1px solid #bfdbfe;
+    border: 1px solid var(--color-accent-border);
     border-radius: 6px;
     background: white;
-    color: #2563eb;
+    color: var(--color-accent);
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
@@ -534,8 +534,8 @@ const formatAge = (dateString) => {
 }
 
 .edit-patient-btn:hover {
-    background: #eff6ff;
-    border-color: #3b82f6;
+    background: var(--color-accent-subtle-bg);
+    border-color: var(--color-accent-light);
 }
 
 .edit-patient-btn svg {

@@ -71,7 +71,7 @@ function formatDate(dateString) {
 
 .print-title {
   font-size: 18pt;
-  color: #1e40af;
+  color: var(--color-label);
   margin: 0 0 8px;
 }
 

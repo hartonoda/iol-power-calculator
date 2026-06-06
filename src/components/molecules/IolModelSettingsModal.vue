@@ -361,7 +361,7 @@ const saveAll = async () => {
 }
 
 .btn-primary {
-  background: #2563eb;
+  background: var(--color-accent);
   color: white;
 }
 

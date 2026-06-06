@@ -166,7 +166,7 @@ function isPanelInactive(panel) {
 
 <style scoped>
 .iol-block {
-  border-top: 2px solid #2563eb;
+  border-top: 2px solid var(--color-section-divider);
   padding-top: 10px;
   margin-top: 10px;
 }
@@ -184,7 +184,7 @@ function isPanelInactive(panel) {
 }
 .panel-title {
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-label);
   margin-bottom: 6px;
   font-size: 13px;
 }

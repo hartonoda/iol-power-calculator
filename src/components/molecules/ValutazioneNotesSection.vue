@@ -345,7 +345,7 @@ function onEyeConditionChange() {
 
 <style scoped>
 .notes-block {
-  border-top: 2px solid #2563eb;
+  border-top: 2px solid var(--color-section-divider);
   padding-top: 10px;
 }
 .notes-columns {
@@ -355,7 +355,7 @@ function onEyeConditionChange() {
 }
 .section-label {
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-label);
   margin-bottom: 8px;
   font-size: 13px;
 }
@@ -380,7 +380,7 @@ function onEyeConditionChange() {
 .cb-box {
   width: 14px;
   height: 14px;
-  border: 2px solid #2563eb;
+  border: 2px solid var(--color-accent);
   flex-shrink: 0;
   background: white;
 }

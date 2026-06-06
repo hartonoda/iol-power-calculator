@@ -188,7 +188,7 @@ const metricWarnings = computed(() => {
 
 <style scoped>
 .biometry-block {
-  border-top: 2px solid #2563eb;
+  border-top: 2px solid var(--color-section-divider);
   padding-top: 10px;
   margin-top: 10px;
 }
@@ -214,7 +214,7 @@ const metricWarnings = computed(() => {
   max-width: var(--bio-col-width);
 }
 .bio-table th {
-  color: #1e40af;
+  color: var(--color-label);
   font-weight: 600;
   padding: 4px 6px;
   text-align: center;
@@ -222,7 +222,7 @@ const metricWarnings = computed(() => {
   vertical-align: top;
 }
 .row-label {
-  color: #1e40af;
+  color: var(--color-label);
   font-weight: 600;
   text-align: left;
   padding: 6px 10px 6px 0;
@@ -235,10 +235,10 @@ const metricWarnings = computed(() => {
 .ciltot-row td {
   vertical-align: bottom;
   padding-bottom: 2px;
-  border-bottom: 1px dashed #bfdbfe;
+  border-bottom: 1px dashed var(--color-accent-border-soft);
 }
 .ciltot-spacer {
-  border-bottom: 1px dashed #bfdbfe;
+  border-bottom: 1px dashed var(--color-accent-border-soft);
 }
 .device-row td {
   padding-top: 6px;
@@ -258,7 +258,7 @@ const metricWarnings = computed(() => {
 .metric-prefix {
   font-size: 12px;
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-label);
   font-style: italic;
   white-space: nowrap;
 }

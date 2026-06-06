@@ -4,6 +4,31 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* Brand palette — change these to retheme the app */
+  --color-brand: #15803d;
+  --color-brand-dark: #166534;
+  --color-brand-darker: #14532d;
+  --color-brand-light: #22c55e;
+  --color-brand-muted: #dcfce7;
+  --color-brand-subtle: #f0fdf4;
+  --color-brand-border: #86efac;
+  --color-brand-border-soft: #bbf7d0;
+
+  --color-header-bg: linear-gradient(135deg, var(--color-brand-dark) 0%, var(--color-brand-darker) 100%);
+  --color-section-divider: var(--color-brand);
+  --color-label: var(--color-brand-dark);
+  --color-accent: var(--color-brand);
+  --color-accent-light: var(--color-brand-light);
+  --color-accent-subtle-bg: var(--color-brand-subtle);
+  --color-accent-muted-bg: var(--color-brand-muted);
+  --color-accent-border: var(--color-brand-border);
+  --color-accent-border-soft: var(--color-brand-border-soft);
+  --color-accent-hover-bg: #ecfdf5;
+  --color-accent-ring: rgba(21, 128, 61, 0.15);
+  --color-on-brand: #ffffff;
+}
+
 html,
 body {
   margin: 0;

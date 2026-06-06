@@ -283,13 +283,13 @@ const displayAge = computed(() => {
   font-size: 13px;
 }
 .lbl {
-  color: #1e40af;
+  color: var(--color-label);
   font-weight: 600;
   margin-right: 4px;
   white-space: nowrap;
 }
 .section-label {
-  color: #1e40af;
+  color: var(--color-label);
   font-weight: 600;
 }
 .header-grid {
@@ -297,7 +297,7 @@ const displayAge = computed(() => {
   grid-template-columns: 140px 1fr 60px 70px minmax(130px, 11rem) minmax(100px, 8.5rem);
   gap: 10px 12px;
   align-items: end;
-  border-bottom: 2px solid #2563eb;
+  border-bottom: 2px solid var(--color-section-divider);
   padding-bottom: 10px;
 }
 .intervento-field {

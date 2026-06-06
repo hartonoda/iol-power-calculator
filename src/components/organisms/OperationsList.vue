@@ -151,7 +151,7 @@ const handleLocaleChange = (event) => {
 /* App Branding */
 .app-branding {
     padding: 14px 20px 16px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background: var(--color-header-bg);
     flex-shrink: 0;
 }
 
@@ -260,9 +260,9 @@ const handleLocaleChange = (event) => {
     gap: 8px;
     padding: 12px 16px;
     border-radius: 8px;
-    border: 2px dashed #4361ee;
-    background: #f8faff;
-    color: #4361ee;
+    border: 2px dashed var(--color-accent-light);
+    background: var(--color-accent-subtle-bg);
+    color: var(--color-accent);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -270,7 +270,7 @@ const handleLocaleChange = (event) => {
 }
 
 .btn-add-operation:hover {
-    background: #eef2ff;
+    background: var(--color-accent-hover-bg);
     border-style: solid;
 }
 
@@ -292,9 +292,9 @@ const handleLocaleChange = (event) => {
     gap: 8px;
     padding: 10px 16px;
     border-radius: 8px;
-    border: 1px solid #4361ee;
-    background: #f8faff;
-    color: #4361ee;
+    border: 1px solid var(--color-accent-light);
+    background: var(--color-accent-subtle-bg);
+    color: var(--color-accent);
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -302,14 +302,14 @@ const handleLocaleChange = (event) => {
 }
 
 .admin-list-btn:hover {
-    background: #eef2ff;
-    border-color: #2563eb;
+    background: var(--color-accent-hover-bg);
+    border-color: var(--color-accent);
 }
 
 .admin-list-btn.active {
-    background: #4361ee;
-    color: #fff;
-    border-color: #4361ee;
+    background: var(--color-accent);
+    color: var(--color-on-brand);
+    border-color: var(--color-accent);
 }
 
 .admin-list-btn svg {

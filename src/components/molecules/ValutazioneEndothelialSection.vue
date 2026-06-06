@@ -51,12 +51,12 @@ const endothelialWarning = computed(() => {
 .endothelial-block {
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 2px solid #2563eb;
+  border-top: 2px solid var(--color-section-divider);
 }
 
 .section-label {
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-label);
   margin-bottom: 8px;
   font-size: 13px;
 }

@@ -359,7 +359,7 @@ function formatCompatPercent(value) {
 
 .print-row-notes .print-label {
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-label);
   flex: 0 0 auto;
 }
 
@@ -387,8 +387,8 @@ function formatCompatPercent(value) {
   width: 100%;
   padding: 8px 12px;
   background: #f8fafc;
-  border-top: 2px solid #2563eb;
-  border-bottom: 2px solid #2563eb;
+  border-top: 2px solid var(--color-section-divider);
+  border-bottom: 2px solid var(--color-section-divider);
 }
 
 .print-highlight-grid {
@@ -430,7 +430,7 @@ function formatCompatPercent(value) {
 .highlight-label {
   font-size: 9pt;
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-label);
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
@@ -519,14 +519,14 @@ function formatCompatPercent(value) {
 .print-table th {
   background: #f1f5f9;
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-label);
   font-size: 8.5pt;
 }
 
 .col-device {
   text-align: left !important;
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-label);
   width: 14%;
   white-space: nowrap;
 }
@@ -550,7 +550,7 @@ function formatCompatPercent(value) {
 
 .iol-res-title {
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-label);
   font-size: 9.5pt;
   margin-bottom: 4px;
 }
@@ -558,7 +558,7 @@ function formatCompatPercent(value) {
 .iol-res-table-columns .col-metric {
   text-align: left !important;
   font-weight: 600;
-  color: #1e40af;
+  color: var(--color-label);
   width: 8%;
   white-space: nowrap;
   font-size: 8.5pt;
