@@ -16,6 +16,7 @@
       class="print-table-wrap"
       :operations="operations"
       :patients="patients"
+      :order-numbers="orderNumbers"
     />
 
     <p v-else class="print-empty">Nessun intervento da stampare.</p>
@@ -30,6 +31,7 @@ defineProps({
   patients: { type: Array, default: () => [] },
   operationDate: { type: String, default: '' },
   search: { type: String, default: '' },
+  orderNumbers: { type: Object, default: () => ({}) },
 });
 
 const printedAt = new Date().toLocaleString('it-IT', {
@@ -104,8 +106,9 @@ function formatDate(dateString) {
   padding: 5px 6px;
 }
 
-.print-table-wrap :deep(.eye-badge) {
-  font-size: 10pt;
-  padding: 1px 6px;
+.print-table-wrap :deep(.admin-list-table .col-order) {
+  font-weight: 600;
+  text-align: center;
+  width: 5%;
 }
 </style>

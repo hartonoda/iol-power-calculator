@@ -64,8 +64,11 @@
         :operations="filteredOperations"
         :patients="patients"
         show-open-action
+        :show-reorder-controls="canReorder"
+        :order-numbers="orderNumbers"
         unknown-patient-label="Paziente sconosciuto"
         @open-operation="$emit('open-operation', $event)"
+        @reorder="setOperationOrder($event.operationId, $event.order)"
       />
     </div>
 
@@ -75,6 +78,7 @@
         :patients="patients"
         :operation-date="operationDate"
         :search="search"
+        :order-numbers="orderNumbers"
       />
     </Teleport>
   </div>
@@ -86,6 +90,15 @@ import SvgIcon from '@/components/atoms/SvgIcon.vue';
 import AdministrationListTable from '@/components/molecules/AdministrationListTable.vue';
 import AdministrationListPrintView from '@/components/organisms/AdministrationListPrintView.vue';
 import { printAsPdf } from '@/utils/exportUtils';
+import {
+  applyOrderToOperations,
+  mergeOrderWithOperations,
+  pruneOrderNumbers,
+  readStoredOrderIds,
+  readStoredOrderNumbers,
+  storeOrderIds,
+  storeOrderNumbers,
+} from '@/utils/adminListOrder';
 
 const ADMIN_LIST_DATE_KEY = 'adminListOperationDate';
 
@@ -121,25 +134,19 @@ const operationDateInput = ref(null);
 const search = ref('');
 /** @type {import('vue').Ref<'name' | 'date'>} */
 const sortBy = ref('name');
+const customOrderIds = ref(readStoredOrderIds(operationDate.value));
+const orderNumbers = ref(readStoredOrderNumbers(operationDate.value));
 
 watch(operationDate, (value) => {
   storeOperationDate(value);
+  customOrderIds.value = readStoredOrderIds(value);
+  orderNumbers.value = readStoredOrderNumbers(value);
 });
 
-const filteredOperations = computed(() => {
-  let ops = [...props.operations];
-
-  if (operationDate.value) {
-    ops = ops.filter((op) => op.operationDate === operationDate.value);
-  }
-
-  const query = search.value.trim().toLowerCase();
-  if (query) {
-    ops = ops.filter((op) => getPatientName(op.patientId).toLowerCase().includes(query));
-  }
-
+function sortOperations(ops) {
+  const sorted = [...ops];
   if (sortBy.value === 'date') {
-    return ops.sort((a, b) => {
+    return sorted.sort((a, b) => {
       const byDate = (b.operationDate || '').localeCompare(a.operationDate || '');
       if (byDate !== 0) return byDate;
       const byName = getPatientName(a.patientId).localeCompare(
@@ -152,7 +159,7 @@ const filteredOperations = computed(() => {
     });
   }
 
-  return ops.sort((a, b) => {
+  return sorted.sort((a, b) => {
     const byName = getPatientName(a.patientId).localeCompare(
       getPatientName(b.patientId),
       'it',
@@ -161,10 +168,77 @@ const filteredOperations = computed(() => {
     if (byName !== 0) return byName;
     return (a.eye || '').localeCompare(b.eye || '', 'it', { sensitivity: 'base' });
   });
+}
+
+const dateFilteredOperations = computed(() => {
+  let ops = [...props.operations];
+  if (operationDate.value) {
+    ops = ops.filter((op) => op.operationDate === operationDate.value);
+  }
+  return sortOperations(ops);
+});
+
+const orderedOperations = computed(() => {
+  const ops = dateFilteredOperations.value;
+  const mergedIds = mergeOrderWithOperations(ops, customOrderIds.value);
+  return applyOrderToOperations(ops, mergedIds);
+});
+
+const filteredOperations = computed(() => {
+  let ops = orderedOperations.value;
+  const query = search.value.trim().toLowerCase();
+  if (query) {
+    ops = ops.filter((op) => getPatientName(op.patientId).toLowerCase().includes(query));
+  }
+  return ops;
+});
+
+const canReorder = computed(() => !search.value.trim());
+
+function setOperationOrder(operationId, orderNumber) {
+  const id = String(operationId);
+  const count = dateFilteredOperations.value.length;
+  const target = Math.max(1, Math.min(count, Math.round(orderNumber)));
+
+  const ids = mergeOrderWithOperations(dateFilteredOperations.value, customOrderIds.value);
+  const idx = ids.indexOf(id);
+  if (idx < 0) return;
+
+  const newIdx = target - 1;
+  const nextIds = [...ids];
+  if (newIdx !== idx) {
+    const [removed] = nextIds.splice(idx, 1);
+    nextIds.splice(newIdx, 0, removed);
+    customOrderIds.value = nextIds;
+    storeOrderIds(operationDate.value, nextIds);
+  }
+
+  const nextNumbers = { ...orderNumbers.value, [id]: target };
+  orderNumbers.value = nextNumbers;
+  storeOrderNumbers(operationDate.value, nextNumbers);
+}
+
+watch(dateFilteredOperations, (ops) => {
+  const pruned = pruneOrderNumbers(ops, orderNumbers.value);
+  if (pruned !== orderNumbers.value) {
+    orderNumbers.value = pruned;
+    storeOrderNumbers(operationDate.value, pruned);
+  }
+
+  if (!customOrderIds.value.length) return;
+  const merged = mergeOrderWithOperations(ops, customOrderIds.value);
+  if (merged.join(',') !== customOrderIds.value.join(',')) {
+    customOrderIds.value = merged;
+    storeOrderIds(operationDate.value, merged);
+  }
 });
 
 function toggleSort() {
   sortBy.value = sortBy.value === 'name' ? 'date' : 'name';
+  customOrderIds.value = [];
+  orderNumbers.value = {};
+  storeOrderIds(operationDate.value, []);
+  storeOrderNumbers(operationDate.value, {});
 }
 
 function getPatientName(patientId) {

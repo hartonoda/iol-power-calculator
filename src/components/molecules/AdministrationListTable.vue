@@ -1,6 +1,7 @@
 ﻿<template>
   <table class="admin-list-table">
     <colgroup>
+      <col class="col-order" />
       <col class="col-date" />
       <col class="col-patient" />
       <col class="col-eye" />
@@ -13,6 +14,7 @@
     </colgroup>
     <thead>
       <tr>
+        <th class="col-order">N.</th>
         <th>Data</th>
         <th>Paziente</th>
         <th>Occhio</th>
@@ -25,7 +27,20 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="op in operations" :key="op.id">
+      <tr v-for="(op, index) in operations" :key="op.id">
+        <td class="col-order">
+          <input
+            v-if="showReorderControls"
+            type="number"
+            class="order-input"
+            :value="orderValue(op.id)"
+            min="1"
+            :max="operations.length"
+            placeholder=""
+            @change="onOrderChange(op, $event)"
+          />
+          <span v-else>{{ printOrderValue(op.id, index) }}</span>
+        </td>
         <td>{{ formatDate(op.operationDate) }}</td>
         <td class="col-patient">{{ getPatientName(op.patientId) }}</td>
         <td class="col-eye">
@@ -53,9 +68,40 @@ const props = defineProps({
   patients: { type: Array, default: () => [] },
   unknownPatientLabel: { type: String, default: '—' },
   showOpenAction: { type: Boolean, default: false },
+  showReorderControls: { type: Boolean, default: false },
+  orderNumbers: { type: Object, default: () => ({}) },
 });
 
-const emit = defineEmits(['open-operation']);
+const emit = defineEmits(['open-operation', 'reorder']);
+
+function orderValue(operationId) {
+  const num = props.orderNumbers[String(operationId)];
+  return num != null ? num : '';
+}
+
+function printOrderValue(operationId, index) {
+  const num = props.orderNumbers[String(operationId)];
+  return num != null ? num : index + 1;
+}
+
+function onOrderChange(op, event) {
+  const target = event.target;
+  const raw = String(target.value).trim();
+  const previous = orderValue(op.id);
+
+  if (!raw) {
+    target.value = previous === '' ? '' : String(previous);
+    return;
+  }
+
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed)) {
+    target.value = previous === '' ? '' : String(previous);
+    return;
+  }
+
+  emit('reorder', { operationId: op.id, order: parsed });
+}
 
 function getPatientName(patientId) {
   const patient = props.patients.find((p) => p.id === patientId);
@@ -82,15 +128,16 @@ function formatDate(dateString) {
   font-size: 13px;
 }
 
+.col-order { width: 5%; }
 .col-date { width: 9%; }
-.col-patient { width: 18%; }
+.col-patient { width: 17%; }
 .col-eye { width: 5%; }
-.col-type { width: 13%; }
-.col-model { width: 20%; }
+.col-type { width: 12%; }
+.col-model { width: 18%; }
 .col-power { width: 7%; }
 .col-tast { width: 5%; }
-.col-cost { width: 10%; }
-.col-action { width: 13%; }
+.col-cost { width: 9%; }
+.col-action { width: 12%; }
 
 .admin-list-table th,
 .admin-list-table td {
@@ -113,8 +160,36 @@ function formatDate(dateString) {
 
 .admin-list-table .col-eye,
 .admin-list-table .col-power,
-.admin-list-table .col-tast {
+.admin-list-table .col-tast,
+.admin-list-table .col-order {
   text-align: center;
+}
+
+.order-input {
+  width: 100%;
+  max-width: 42px;
+  padding: 4px 2px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--color-label);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.order-input::-webkit-outer-spin-button,
+.order-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.order-input:focus {
+  outline: none;
+  border-color: var(--color-accent-light);
+  box-shadow: 0 0 0 2px var(--color-accent-ring);
 }
 
 .admin-list-table td.col-patient,
