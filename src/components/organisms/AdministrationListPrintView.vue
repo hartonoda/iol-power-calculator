@@ -1,6 +1,6 @@
 <template>
   <div class="print-view admin-list-print">
-    <h1 class="print-title">Lista amministrazioni</h1>
+    <h1 class="print-title">Lista per amministrazione</h1>
 
     <div class="print-meta">
       <span v-if="operationDate">

@@ -18,7 +18,7 @@
         <th>Tipo di intervento</th>
         <th>Modello IOL</th>
         <th>Potere IOL</th>
-        <th>T/ast</th>
+        <th>T/Ast</th>
         <th>Costo</th>
       </tr>
     </thead>

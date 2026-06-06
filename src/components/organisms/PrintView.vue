@@ -134,7 +134,7 @@
           <span class="highlight-value-hero">{{ form.iolPower || '—' }}</span>
         </div>
         <div class="highlight-field">
-          <span class="highlight-label">T/ast</span>
+          <span class="highlight-label">T/Ast</span>
           <span class="highlight-value">{{ form.iolT || '—' }}</span>
         </div>
         <div class="highlight-field">
@@ -291,11 +291,23 @@ function formatDate(dateStr) {
   });
 }
 
+function formatNoteItemForPrint(item) {
+  const trimmed = String(item || '').trim();
+  const altroMatch = trimmed.match(/^Altro:\s*(.*)$/i);
+  if (altroMatch) {
+    return altroMatch[1].trim();
+  }
+  return trimmed;
+}
+
 function parseNoteItems(text) {
   const raw = String(text || '').trim();
   if (!raw) return [];
   if (raw === 'Nessuna') return ['Nessuna'];
-  return raw.split(';').map((s) => s.trim()).filter(Boolean);
+  return raw
+    .split(';')
+    .map((s) => formatNoteItemForPrint(s))
+    .filter(Boolean);
 }
 
 const systemicItems = computed(() => parseNoteItems(props.form.noteSistemic));

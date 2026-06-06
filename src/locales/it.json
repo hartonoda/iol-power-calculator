@@ -200,7 +200,7 @@
   "sidebar": {
     "patients": "Pazienti",
     "interventions": "Interventi",
-    "adminList": "Lista amministrazioni",
+    "adminList": "Lista per amministrazione",
     "filterByDate": "Filtra per data"
   },
   "settings": {

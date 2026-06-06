@@ -29,11 +29,21 @@
       </label>
       <label class="field intervento-field">
         <span class="lbl">Intervento di:</span>
-        <FmSelect
+        <input
+          v-if="interventoCustomMode"
           v-model="form.interventoDi"
-          :options="dropdownOptions.interventoDi"
+          type="text"
+          class="intervento-input"
+          :disabled="disabled"
+          placeholder="Specificare intervento…"
+        />
+        <FmSelect
+          v-else
+          v-model="form.interventoDi"
+          :options="interventoSelectOptions"
           :disabled="disabled"
           placeholder="—"
+          @update:model-value="onInterventoSelect"
         />
       </label>
       <label class="field costo-field">
@@ -173,6 +183,11 @@ const costoPresetOptions = dropdownOptions.costo.filter((o) => o !== COSTO_EDIT_
 const costoSelectOptions = [...costoPresetOptions, COSTO_EDIT_OPTION];
 const costoCustomMode = ref(false);
 
+const INTERVENTO_ALTRO_OPTION = 'Altro';
+const interventoPresetOptions = dropdownOptions.interventoDi.filter((o) => o !== INTERVENTO_ALTRO_OPTION);
+const interventoSelectOptions = [...interventoPresetOptions, INTERVENTO_ALTRO_OPTION];
+const interventoCustomMode = ref(false);
+
 function syncCostoInputMode() {
   const value = String(props.form.costo || '').trim();
   costoCustomMode.value = Boolean(value && !costoPresetOptions.includes(value));
@@ -188,12 +203,28 @@ function onCostoSelect(value) {
   props.form.costo = value;
 }
 
+function syncInterventoInputMode() {
+  const value = String(props.form.interventoDi || '').trim();
+  interventoCustomMode.value = Boolean(value && !interventoPresetOptions.includes(value));
+}
+
+function onInterventoSelect(value) {
+  if (value === INTERVENTO_ALTRO_OPTION) {
+    interventoCustomMode.value = true;
+    props.form.interventoDi = '';
+    return;
+  }
+  interventoCustomMode.value = false;
+  props.form.interventoDi = value;
+}
+
 watch(
   () => props.form.id,
   () => {
     formatDiopterFields(props.form);
     formatVisusFields(props.form);
     syncCostoInputMode();
+    syncInterventoInputMode();
   },
   { immediate: true },
 );
@@ -206,6 +237,17 @@ watch(
       return;
     }
     if (!costoCustomMode.value) syncCostoInputMode();
+  },
+);
+
+watch(
+  () => props.form.interventoDi,
+  () => {
+    if (interventoCustomMode.value && !String(props.form.interventoDi || '').trim()) {
+      interventoCustomMode.value = false;
+      return;
+    }
+    if (!interventoCustomMode.value) syncInterventoInputMode();
   },
 );
 
@@ -261,8 +303,14 @@ const displayAge = computed(() => {
 .intervento-field {
   min-width: 0;
 }
-.intervento-field :deep(.fm-select) {
+.intervento-field :deep(.fm-select),
+.intervento-field .intervento-input {
   max-width: 11rem;
+}
+.intervento-field .intervento-input {
+  padding: 4px 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
 }
 .costo-field .costo-input,
 .costo-field :deep(.fm-select) {

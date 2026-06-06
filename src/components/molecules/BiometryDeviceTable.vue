@@ -1,6 +1,10 @@
 <template>
   <div class="biometry-block">
     <table class="bio-table">
+      <colgroup>
+        <col class="col-label" />
+        <col v-for="n in 7" :key="n" class="col-metric" />
+      </colgroup>
       <thead>
         <tr>
           <th class="row-label">Dispositivo</th>
@@ -33,35 +37,64 @@
           <td class="row-label">CSO</td>
           <td class="ciltot-spacer"></td>
           <td>
-            <div class="ciltot-field">
-              <span class="ciltot-static">tot.</span>
+            <div class="metric-field">
+              <span class="metric-prefix">tot.</span>
               <BioCell v-model="form.cilTotal" :disabled="disabled" />
             </div>
           </td>
           <td>
-            <div class="ciltot-field">
-              <span class="ciltot-static">tot.</span>
+            <div class="metric-field">
+              <span class="metric-prefix">tot.</span>
               <BioCell v-model="form.axConclusion" :disabled="disabled" />
             </div>
           </td>
           <td class="ciltot-spacer"></td>
           <td class="ciltot-spacer" colspan="3"></td>
         </tr>
-        <tr v-for="device in deviceRows" :key="device.key">
+        <tr v-for="device in deviceRows" :key="device.key" class="device-row">
           <td class="row-label">{{ device.label }}</td>
           <td :class="{ 'alert-cell': metricWarnings.avgKm.alert }">
-            <BioCell v-model="form[device.avgKm]" :disabled="disabled" />
+            <div class="metric-field">
+              <span class="metric-prefix metric-prefix--spacer" aria-hidden="true">tot.</span>
+              <BioCell v-model="form[device.avgKm]" :disabled="disabled" />
+            </div>
           </td>
           <td :class="{ 'alert-cell': metricWarnings.cil.alert }">
-            <BioCell v-model="form[device.cil]" :disabled="disabled" />
+            <div class="metric-field">
+              <span class="metric-prefix metric-prefix--spacer" aria-hidden="true">tot.</span>
+              <BioCell v-model="form[device.cil]" :disabled="disabled" />
+            </div>
           </td>
           <td :class="{ 'alert-cell': metricWarnings.ax.alert }">
-            <BioCell v-model="form[device.ax]" :disabled="disabled" />
+            <div class="metric-field">
+              <span class="metric-prefix metric-prefix--spacer" aria-hidden="true">tot.</span>
+              <BioCell v-model="form[device.ax]" :disabled="disabled" />
+            </div>
           </td>
-          <td><BioCell v-model="form[device.cct]" :disabled="disabled" /></td>
-          <td><BioCell v-model="form[device.axl]" :disabled="disabled" /></td>
-          <td><BioCell v-model="form[device.acd]" :disabled="disabled" /></td>
-          <td><BioCell v-model="form[device.lt]" :disabled="disabled" /></td>
+          <td>
+            <div class="metric-field">
+              <span class="metric-prefix metric-prefix--spacer" aria-hidden="true">tot.</span>
+              <BioCell v-model="form[device.cct]" :disabled="disabled" />
+            </div>
+          </td>
+          <td>
+            <div class="metric-field">
+              <span class="metric-prefix metric-prefix--spacer" aria-hidden="true">tot.</span>
+              <BioCell v-model="form[device.axl]" :disabled="disabled" />
+            </div>
+          </td>
+          <td>
+            <div class="metric-field">
+              <span class="metric-prefix metric-prefix--spacer" aria-hidden="true">tot.</span>
+              <BioCell v-model="form[device.acd]" :disabled="disabled" />
+            </div>
+          </td>
+          <td>
+            <div class="metric-field">
+              <span class="metric-prefix metric-prefix--spacer" aria-hidden="true">tot.</span>
+              <BioCell v-model="form[device.lt]" :disabled="disabled" />
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -160,10 +193,25 @@ const metricWarnings = computed(() => {
   margin-top: 10px;
 }
 .bio-table {
+  --bio-input-width: 78px;
+  --bio-prefix-width: 2.25rem;
+  --bio-col-width: calc(var(--bio-prefix-width) + 6px + var(--bio-input-width));
   width: 100%;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 10px 8px;
   font-size: 13px;
+}
+.col-label {
+  width: auto;
+}
+.col-metric {
+  width: var(--bio-col-width);
+}
+.bio-table th:not(.row-label),
+.bio-table td:not(.row-label) {
+  width: var(--bio-col-width);
+  max-width: var(--bio-col-width);
 }
 .bio-table th {
   color: #1e40af;
@@ -192,22 +240,36 @@ const metricWarnings = computed(() => {
 .ciltot-spacer {
   border-bottom: 1px dashed #bfdbfe;
 }
-.ciltot-field {
+.device-row td {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+.device-row:not(:last-child) td {
+  padding-bottom: 12px;
+  border-bottom: 1px solid #d1d5db;
+}
+.metric-field {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: var(--bio-prefix-width) var(--bio-input-width);
   gap: 6px;
   align-items: center;
   min-width: 0;
 }
-.ciltot-static {
+.metric-prefix {
   font-size: 12px;
   font-weight: 600;
   color: #1e40af;
   font-style: italic;
   white-space: nowrap;
 }
-.ciltot-field :deep(.bio-cell) {
-  min-width: 0;
+.metric-prefix--spacer {
+  visibility: hidden;
+}
+.metric-field :deep(.bio-cell) {
+  width: var(--bio-input-width);
+  min-width: var(--bio-input-width);
+  max-width: var(--bio-input-width);
+  box-sizing: border-box;
 }
 .th-title {
   line-height: 1.1;

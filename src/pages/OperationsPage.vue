@@ -268,8 +268,7 @@ onMounted(async () => {
 <style scoped>
 .operations-page {
     display: grid;
-    /* Use rem so sidebar scales with --base-font-size (readable at 200% zoom) */
-    grid-template-columns: minmax(17.5rem, 22rem) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
     height: 100vh;
     background: #f5f6fa;
     overflow-x: hidden;
@@ -279,7 +278,7 @@ onMounted(async () => {
 
 @media (max-width: 1500px) {
     .operations-page {
-        grid-template-columns: minmax(11rem, 14rem) minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) minmax(0, 3fr);
     }
 }
 

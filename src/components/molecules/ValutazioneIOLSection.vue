@@ -1,17 +1,5 @@
 <template>
   <div class="iol-block">
-    <div class="iol-header">
-      <button
-        v-if="showReset"
-        type="button"
-        class="reset-btn"
-        :disabled="disabled"
-        @click="resetAll"
-      >
-        Reimposta IOL
-      </button>
-    </div>
-
     <div class="iol-panels">
       <div class="iol-panel" :class="{ 'panel-inactive': isPanelInactive('sferica') }">
         <div class="panel-title">IOL sferica</div>
@@ -110,12 +98,10 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 import BioCell from '@/components/atoms/BioCell.vue';
 import {
-  IOL_CALCULATION_FIELD_KEYS,
   inferActiveIolPanel,
-  iolPanelHasData,
 } from '@/utils/iolCalculationPanels.js';
 
 const props = defineProps({
@@ -149,14 +135,8 @@ const postLvc = [
   { label: 'CSO — Pearl DGS', resKey: 'iol_pearl_dgs_post_res' },
 ];
 
-const allFieldKeys = IOL_CALCULATION_FIELD_KEYS;
-
 /** @type {import('vue').Ref<'sferica' | 'torica' | 'postLvc' | null>} */
 const activePanel = ref(null);
-
-function panelHasData(panel) {
-  return iolPanelHasData(props.form, panel);
-}
 
 function syncActivePanelFromForm() {
   activePanel.value = inferActiveIolPanel(props.form);
@@ -167,13 +147,6 @@ watch(
   () => props.form.id,
   () => syncActivePanelFromForm(),
   { immediate: true },
-);
-
-const showReset = computed(
-  () => activePanel.value !== null || allFieldKeys.some((key) => {
-    const v = props.form[key];
-    return v != null && String(v).trim() !== '';
-  }),
 );
 
 function activatePanel(panel) {
@@ -189,15 +162,6 @@ function isCellDisabled(panel) {
 function isPanelInactive(panel) {
   return activePanel.value !== null && activePanel.value !== panel;
 }
-
-function resetAll() {
-  if (props.disabled) return;
-  for (const key of allFieldKeys) {
-    props.form[key] = '';
-  }
-  activePanel.value = null;
-  props.form.iolActivePanel = null;
-}
 </script>
 
 <style scoped>
@@ -206,31 +170,11 @@ function resetAll() {
   padding-top: 10px;
   margin-top: 10px;
 }
-.iol-header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 8px;
-}
-.reset-btn {
-  padding: 4px 12px;
-  font-size: 12px;
-  border: 1px solid #2563eb;
-  background: #fff;
-  color: #1e40af;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.reset-btn:hover:not(:disabled) {
-  background: #eff6ff;
-}
-.reset-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
 .iol-panels {
   display: grid;
-  grid-template-columns: 1fr 1.2fr 1fr;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 18px;
+  align-items: start;
 }
 .iol-panel {
   transition: opacity 0.15s ease;
@@ -245,10 +189,22 @@ function resetAll() {
   font-size: 13px;
 }
 .iol-table {
+  --iol-input-width: 4.875rem;
   width: 100%;
+  table-layout: fixed;
   border-collapse: separate;
   border-spacing: 10px 8px;
   font-size: 12px;
+}
+.iol-table th:not(:first-child),
+.iol-table td:not(.formula-name) {
+  width: var(--iol-input-width);
+}
+.iol-table :deep(.bio-cell) {
+  width: 100%;
+  min-width: 0;
+  max-width: var(--iol-input-width);
+  box-sizing: border-box;
 }
 .iol-table th {
   color: #6b7280;

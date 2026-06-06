@@ -1,7 +1,7 @@
 <template>
   <div class="admin-list-panel">
     <div class="panel-header no-print">
-      <h2>Lista amministrazioni</h2>
+      <h2>Lista per amministrazione</h2>
       <button type="button" class="btn-print" :disabled="!filteredOperations.length" @click="handlePrint">
         <SvgIcon name="print" :size="14" />
         <span>Stampa</span>
