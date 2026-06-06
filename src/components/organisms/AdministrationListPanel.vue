@@ -191,15 +191,14 @@ async function handlePrint() {
   align-items: center;
   justify-content: space-between;
   padding: 12px 20px;
-  background: var(--color-header-bg);
-  border-bottom: 1px solid var(--color-brand-darker);
+  border-bottom: 1px solid #e5e7eb;
   flex-shrink: 0;
 }
 
 .panel-header h2 {
   margin: 0;
   font-size: 17px;
-  color: var(--color-on-brand);
+  color: #1f2937;
 }
 
 .btn-print {
@@ -207,16 +206,16 @@ async function handlePrint() {
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
-  border: 1px solid var(--color-on-brand);
+  border: 1px solid var(--color-accent);
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--color-on-brand);
+  background: var(--color-accent-subtle-bg);
+  color: var(--color-label);
   font-size: 13px;
   font-weight: 600;
 }
 
 .btn-print:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--color-accent-muted-bg);
 }
 
 .btn-print:disabled {

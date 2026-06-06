@@ -6,16 +6,17 @@
 
 :root {
   /* Brand palette — change these to retheme the app */
-  --color-brand: #15803d;
-  --color-brand-dark: #166534;
-  --color-brand-darker: #14532d;
-  --color-brand-light: #22c55e;
-  --color-brand-muted: #dcfce7;
-  --color-brand-subtle: #f0fdf4;
-  --color-brand-border: #86efac;
-  --color-brand-border-soft: #bbf7d0;
+  --color-brand: #2563eb;
+  --color-brand-dark: #1e40af;
+  --color-brand-darker: #1e3a8a;
+  --color-brand-light: #4361ee;
+  --color-brand-muted: #dbeafe;
+  --color-brand-subtle: #f8faff;
+  --color-brand-border: #bfdbfe;
+  --color-brand-border-soft: #bfdbfe;
 
   --color-header-bg: linear-gradient(135deg, var(--color-brand-dark) 0%, var(--color-brand-darker) 100%);
+  --color-sidebar-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
   --color-section-divider: var(--color-brand);
   --color-label: var(--color-brand-dark);
   --color-accent: var(--color-brand);
@@ -24,8 +25,8 @@
   --color-accent-muted-bg: var(--color-brand-muted);
   --color-accent-border: var(--color-brand-border);
   --color-accent-border-soft: var(--color-brand-border-soft);
-  --color-accent-hover-bg: #ecfdf5;
-  --color-accent-ring: rgba(21, 128, 61, 0.15);
+  --color-accent-hover-bg: #eef2ff;
+  --color-accent-ring: rgba(67, 97, 238, 0.12);
   --color-on-brand: #ffffff;
 }
 

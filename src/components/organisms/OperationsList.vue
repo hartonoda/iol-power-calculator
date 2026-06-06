@@ -151,7 +151,7 @@ const handleLocaleChange = (event) => {
 /* App Branding */
 .app-branding {
     padding: 14px 20px 16px;
-    background: var(--color-header-bg);
+    background: var(--color-sidebar-bg);
     flex-shrink: 0;
 }
 

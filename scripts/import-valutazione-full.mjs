@@ -4,6 +4,9 @@
  *
  * Usage:
  *   node scripts/import-valutazione-full.mjs [csvPath] [dbPath]
+ *   node scripts/import-valutazione-full.mjs --incremental [csvPath] [dbPath]
+ *
+ * --incremental  Add only patients/interventi not already in the database (no delete).
  *
  * If dbPath is omitted, imports into:
  *   1) <project>/iol-calculator-patient-data.sqlite
@@ -23,8 +26,11 @@ const projectRoot = path.join(__dirname, '..');
 const DEFAULT_CSV_PATH =
   'c:\\Users\\hartono\\Documents\\hartonoda-project\\smartiol\\valutazione.csv';
 
-const csvPath = process.argv[2] || DEFAULT_CSV_PATH;
-const explicitDbPath = process.argv[3] || null;
+const cliArgs = process.argv.slice(2);
+const incremental = cliArgs.includes('--incremental');
+const positionalArgs = cliArgs.filter((arg) => !arg.startsWith('--'));
+const csvPath = positionalArgs[0] || DEFAULT_CSV_PATH;
+const explicitDbPath = positionalArgs[1] || null;
 
 if (!fs.existsSync(csvPath)) {
   console.error('CSV not found:', csvPath);
@@ -70,6 +76,11 @@ function formatPatientName(name) {
     .filter(Boolean)
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
     .join(' ');
+}
+
+/** FileMaker list exports sometimes prefix Cognome with a row number (e.g. "1 arcangioli mauro"). */
+function cleanCsvPatientName(name) {
+  return trimValue(name).replace(/^\d+\s+/, '');
 }
 
 function normalizeKeyName(name) {
@@ -374,7 +385,7 @@ function loadRows(filePath) {
 function buildPatientProfiles(rows) {
   const byNormName = new Map();
   for (const row of rows) {
-    const rawName = trimValue(row.Cognome);
+    const rawName = cleanCsvPatientName(row.Cognome);
     if (!rawName) continue;
 
     const normName = normalizeKeyName(rawName);
@@ -620,7 +631,41 @@ function normalizeBiometryDecimals(db) {
   }
 }
 
-function importIntoDatabase(dbPath, rows, profiles) {
+function loadExistingPatientsByNormName(db) {
+  const byNorm = new Map();
+  for (const patient of db.prepare(`
+    SELECT id, name, dateOfBirth
+    FROM patients
+    WHERE deletedAt IS NULL
+  `).all()) {
+    const normName = normalizeKeyName(patient.name);
+    if (!byNorm.has(normName)) byNorm.set(normName, []);
+    byNorm.get(normName).push(patient);
+  }
+  return byNorm;
+}
+
+function resolvePatientId(getPatientStmt, existingByNormName, formattedName, dateOfBirth, normName) {
+  const exact = getPatientStmt.get(formattedName, dateOfBirth);
+  if (exact?.id) return Number(exact.id);
+
+  const candidates = existingByNormName.get(normName) || [];
+  if (!candidates.length) return null;
+
+  const byDob = candidates.find((patient) => patient.dateOfBirth === dateOfBirth);
+  if (byDob) return Number(byDob.id);
+
+  if (candidates.length === 1) return Number(candidates[0].id);
+
+  const byFormattedName = candidates.find(
+    (patient) => formatPatientName(patient.name) === formattedName,
+  );
+  if (byFormattedName) return Number(byFormattedName.id);
+
+  return null;
+}
+
+function importIntoDatabase(dbPath, rows, profiles, { incremental: incrementalMode = false } = {}) {
   const db = new DatabaseSync(dbPath);
   db.exec('PRAGMA foreign_keys = ON');
 
@@ -687,38 +732,71 @@ function importIntoDatabase(dbPath, rows, profiles) {
     )
   `);
 
+  const getOperationStmt = db.prepare(`
+    SELECT id
+    FROM operations
+    WHERE patientId = ?
+      AND operationDate = ?
+      AND eye = ?
+      AND deletedAt IS NULL
+    LIMIT 1
+  `);
+
   const countPatientsStmt = db.prepare('SELECT COUNT(*) AS n FROM patients WHERE deletedAt IS NULL');
   const countOperationsStmt = db.prepare('SELECT COUNT(*) AS n FROM operations WHERE deletedAt IS NULL');
 
   const now = new Date().toISOString();
   let addedPatients = 0;
+  let skippedPatients = 0;
   let addedOperations = 0;
   let skippedOperations = 0;
 
   const patientIdByName = new Map();
+  const existingByNormName = incrementalMode ? loadExistingPatientsByNormName(db) : new Map();
 
   db.exec('BEGIN');
   try {
-    // Full refresh requested: replace current app data with CSV data.
-    db.exec('DELETE FROM operations');
-    db.exec('DELETE FROM patients');
+    if (!incrementalMode) {
+      db.exec('DELETE FROM operations');
+      db.exec('DELETE FROM patients');
+    }
 
     // Insert patients first
     for (const [normName, profile] of profiles.entries()) {
       const dateOfBirth = estimateBirthDate(profile.latestOperationDate, profile.age);
-      const existing = getPatientStmt.get(profile.formattedName, dateOfBirth);
-      let patientId = existing?.id;
+      let patientId = incrementalMode
+        ? resolvePatientId(getPatientStmt, existingByNormName, profile.formattedName, dateOfBirth, normName)
+        : null;
+
+      if (!patientId) {
+        const existing = getPatientStmt.get(profile.formattedName, dateOfBirth);
+        patientId = existing?.id ? Number(existing.id) : null;
+      }
+
       if (!patientId) {
         const res = insertPatientStmt.run(profile.formattedName, dateOfBirth, '', now, now);
         patientId = Number(res.lastInsertRowid);
+        addedPatients += 1;
+        if (incrementalMode) {
+          if (!existingByNormName.has(normName)) existingByNormName.set(normName, []);
+          existingByNormName.get(normName).push({
+            id: patientId,
+            name: profile.formattedName,
+            dateOfBirth,
+          });
+        }
+      } else if (incrementalMode) {
+        skippedPatients += 1;
+      } else {
+        addedPatients += 1;
       }
-      addedPatients += 1;
+
       patientIdByName.set(normName, patientId);
     }
 
     // Insert operations
     for (const row of rows) {
-      const rawName = trimValue(row.Cognome);
+      const rawName = cleanCsvPatientName(row.Cognome);
       if (!rawName) continue;
       const normName = normalizeKeyName(rawName);
       const patientId = patientIdByName.get(normName);
@@ -734,8 +812,12 @@ function importIntoDatabase(dbPath, rows, profiles) {
       const noteIntervento = buildInterventionNotes(read);
 
       for (const eye of eyes) {
-        const bio = mapBiometryFromCsv(read);
+        if (incrementalMode && getOperationStmt.get(patientId, opDate, eye)) {
+          skippedOperations += 1;
+          continue;
+        }
 
+        const bio = mapBiometryFromCsv(read);
         const iol = mapIolFromCsv(read);
 
         insertOperationStmt.run(
@@ -860,6 +942,7 @@ function importIntoDatabase(dbPath, rows, profiles) {
   return {
     dbPath,
     addedPatients,
+    skippedPatients,
     addedOperations,
     skippedOperations,
     totalPatients,
@@ -876,14 +959,18 @@ if (!dbPaths.length) {
   process.exit(1);
 }
 
+console.log(`Mode: ${incremental ? 'incremental (new only)' : 'full replace'}`);
 console.log(`CSV rows: ${rows.length}`);
 console.log(`Unique patient names: ${profiles.size}`);
 console.log('');
 
 for (const dbPath of dbPaths) {
-  const result = importIntoDatabase(dbPath, rows, profiles);
+  const result = importIntoDatabase(dbPath, rows, profiles, { incremental });
   console.log(`Database: ${result.dbPath}`);
   console.log(`  Added patients: ${result.addedPatients}`);
+  if (incremental) {
+    console.log(`  Skipped existing patients: ${result.skippedPatients}`);
+  }
   console.log(`  Added operations: ${result.addedOperations}`);
   console.log(`  Skipped existing operations: ${result.skippedOperations}`);
   console.log(`  Total patients: ${result.totalPatients}`);

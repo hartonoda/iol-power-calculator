@@ -118,14 +118,13 @@ async function handlePrint() {
     align-items: center;
     justify-content: space-between;
     padding: 12px 20px;
-    background: var(--color-header-bg);
-    border-bottom: 1px solid var(--color-brand-darker);
+    border-bottom: 1px solid #e5e7eb;
     flex-shrink: 0;
 }
 .panel-header h2 {
     margin: 0;
     font-size: 17px;
-    color: var(--color-on-brand);
+    color: #1f2937;
 }
 .header-actions {
     display: flex;
@@ -135,7 +134,7 @@ async function handlePrint() {
 .header-divider {
     width: 1px;
     height: 24px;
-    background: rgba(255, 255, 255, 0.35);
+    background: #e5e7eb;
 }
 .detail-form {
     flex: 1;
@@ -163,8 +162,8 @@ async function handlePrint() {
     display: flex;
     align-items: center;
     gap: 6px;
-    background: var(--color-on-brand);
-    color: var(--color-brand-dark);
+    background: var(--color-accent-light);
+    color: var(--color-on-brand);
     border: none;
     padding: 8px 16px;
     border-radius: 6px;
