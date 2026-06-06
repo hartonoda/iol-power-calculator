@@ -104,7 +104,7 @@
 <script setup>
 import { computed } from 'vue';
 import BioCell from '@/components/atoms/BioCell.vue';
-import { deviceDiff, axisDiff, toleranceLabel, AX_TOLERANCE_DEG } from '@/utils/biometryTolerance';
+import { computeMetricWarnings } from '@/utils/biometryTolerance';
 
 const props = defineProps({
   form: { type: Object, required: true },
@@ -147,43 +147,7 @@ const deviceRows = [
   },
 ];
 
-function maxDeviceDiff(a, b, c) {
-  return Math.max(
-    deviceDiff(props.form[a], props.form[b]) ?? 0,
-    deviceDiff(props.form[b], props.form[c]) ?? 0,
-    deviceDiff(props.form[a], props.form[c]) ?? 0,
-  ) || null;
-}
-
-function maxAxisDiff(a, b, c) {
-  const diffs = [
-    axisDiff(props.form[a], props.form[b]),
-    axisDiff(props.form[b], props.form[c]),
-    axisDiff(props.form[a], props.form[c]),
-  ].filter((d) => d !== null);
-  return diffs.length ? Math.max(...diffs) : null;
-}
-
-const metricWarnings = computed(() => {
-  const avgKmDiff = maxDeviceDiff('cso_avgKm', 'tomey_avgKm', 'argos_avgKm');
-  const cilDiff = maxDeviceDiff('cso_cil', 'tomey_cil', 'argos_cil');
-  const axDiff = maxAxisDiff('cso_ax', 'tomey_ax', 'argos_ax');
-
-  return {
-    avgKm: {
-      label: toleranceLabel(avgKmDiff, 0.3),
-      alert: avgKmDiff !== null && avgKmDiff > 0.3,
-    },
-    cil: {
-      label: toleranceLabel(cilDiff, 0.3),
-      alert: cilDiff !== null && cilDiff > 0.3,
-    },
-    ax: {
-      label: toleranceLabel(axDiff, AX_TOLERANCE_DEG, '°'),
-      alert: axDiff !== null && axDiff > AX_TOLERANCE_DEG,
-    },
-  };
-});
+const metricWarnings = computed(() => computeMetricWarnings(props.form));
 </script>
 
 <style scoped>

@@ -87,9 +87,36 @@
         <thead>
           <tr>
             <th class="col-device"></th>
-            <th>Avg Km</th>
-            <th>cil.</th>
-            <th>Ax</th>
+            <th>
+              <div class="th-title">Avg Km</div>
+              <div
+                v-if="metricWarnings.avgKm.label"
+                class="tol-hint"
+                :class="{ alert: metricWarnings.avgKm.alert }"
+              >
+                {{ metricWarnings.avgKm.label }}
+              </div>
+            </th>
+            <th>
+              <div class="th-title">cil.</div>
+              <div
+                v-if="metricWarnings.cil.label"
+                class="tol-hint"
+                :class="{ alert: metricWarnings.cil.alert }"
+              >
+                {{ metricWarnings.cil.label }}
+              </div>
+            </th>
+            <th>
+              <div class="th-title">Ax</div>
+              <div
+                v-if="metricWarnings.ax.label"
+                class="tol-hint"
+                :class="{ alert: metricWarnings.ax.alert }"
+              >
+                {{ metricWarnings.ax.label }}
+              </div>
+            </th>
             <th>CCT</th>
             <th>AXL</th>
             <th>ACD</th>
@@ -106,9 +133,9 @@
           </tr>
           <tr v-for="d in biometryDevices" :key="d.key">
             <td class="col-device">{{ d.label }}</td>
-            <td>{{ form[d.avgKm] || '—' }}</td>
-            <td>{{ form[d.cil] || '—' }}</td>
-            <td>{{ form[d.ax] ? form[d.ax] + '°' : '—' }}</td>
+            <td :class="{ 'alert-cell': metricWarnings.avgKm.alert }">{{ form[d.avgKm] || '—' }}</td>
+            <td :class="{ 'alert-cell': metricWarnings.cil.alert }">{{ form[d.cil] || '—' }}</td>
+            <td :class="{ 'alert-cell': metricWarnings.ax.alert }">{{ form[d.ax] ? form[d.ax] + '°' : '—' }}</td>
             <td>{{ form[d.cct] || '—' }}</td>
             <td>{{ form[d.axl] || '—' }}</td>
             <td>{{ form[d.acd] || '—' }}</td>
@@ -217,6 +244,7 @@
 <script setup>
 import { computed } from 'vue';
 import { shouldShowIolPanel } from '@/utils/iolCalculationPanels.js';
+import { computeMetricWarnings } from '@/utils/biometryTolerance';
 
 const props = defineProps({
   form: { type: Object, required: true },
@@ -268,6 +296,8 @@ const showPostLvcPanel = computed(() => shouldShowIolPanel(props.form, 'postLvc'
 const showAnyIolPanel = computed(
   () => showSfericaPanel.value || showToricaPanel.value || showPostLvcPanel.value,
 );
+
+const metricWarnings = computed(() => computeMetricWarnings(props.form));
 
 const patientName = computed(() => {
   const patient = props.patients.find((p) => p.id == props.form.patientId);
@@ -584,6 +614,30 @@ function formatCompatPercent(value) {
 .ciltot-row td {
   font-style: italic;
   background: #fafafa;
+}
+
+.bio-table .th-title {
+  line-height: 1.1;
+}
+
+.bio-table .tol-hint {
+  margin-top: 2px;
+  font-size: 7pt;
+  font-weight: 500;
+  color: #6b7280;
+  line-height: 1.2;
+  white-space: normal;
+}
+
+.bio-table .tol-hint.alert {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.bio-table .alert-cell {
+  color: #b91c1c;
+  font-weight: 600;
+  background: #fff1f2;
 }
 
 .iol-residuals {

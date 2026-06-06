@@ -172,7 +172,8 @@ function isPanelInactive(panel) {
 }
 .iol-panels {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* Torica has Residuo + T + Asse; give it roughly twice the width of sferica/post LVC. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
   gap: 18px;
   align-items: start;
 }
