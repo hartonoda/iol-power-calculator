@@ -453,6 +453,49 @@ function scaleIolResidual(v) {
   return scaledDecimal(v, 10);
 }
 
+/** Toric residuals: integers are hundredths (-61 → -0.61, 2 → 0.02); decimals are already diopters. */
+function scaleToricResidual(v) {
+  const raw = trimValue(v);
+  if (!raw) return null;
+  const n = parseNumberLoose(raw);
+  if (n === null) return null;
+  if (raw.includes('.') || raw.includes(',')) {
+    return formatNumberForDb(n, 2);
+  }
+  return formatNumberForDb(n / 100, 2);
+}
+
+function toricRes(read, key) {
+  const raw = trimValue(read(key));
+  return raw ? scaleToricResidual(raw) : null;
+}
+
+function isToricCalculationRow(read) {
+  return (
+    csvFieldPresent(read, 'residuo tomey toric')
+    || csvFieldPresent(read, 'residuo1')
+    || csvFieldPresent(read, 'res ref2')
+    || csvFieldPresent(read, 'res ref3')
+  );
+}
+
+/**
+ * FileMaker toric T columns mix diopters (e.g. 3.75) and axis-scale values (e.g. 225).
+ * arcangioli mauro: OD uses T Copia for Argos when T < 10; OS uses T (225).
+ */
+function toricArgosT(read) {
+  const t = parseNumberLoose(read('T'));
+  if (t !== null && Math.abs(t) >= 10) {
+    return toNullIfEmpty(read('T'));
+  }
+  return toNullIfEmpty(firstCsvValue(read, 'T Copia', 'T'));
+}
+
+/** Evo toric T: prefer T; T4 only when T is empty (arcangioli OD: T=3, T4=375 is not used). */
+function toricEvoT(read) {
+  return toNullIfEmpty(firstCsvValue(read, 'T', 'T4'));
+}
+
 function firstCsvValue(read, ...keys) {
   for (const key of keys) {
     const t = trimValue(read(key));
@@ -469,89 +512,126 @@ function mapCostoFromCsv(read) {
 
 /**
  * IOL calculation columns from valutazione.csv (FileMaker export).
- * Toric layout verified against genovesi maurizio OD sample.
+ * Toric layout verified against arcangioli mauro OS (lista pazienti export).
  */
 function csvFieldPresent(read, key) {
   return trimValue(read(key)) !== '';
 }
 
-/** FileMaker `residuo` as compact toric residual (e.g. 2 → +0.02), not large sferica-scale values. */
-function isCompactToricResidual(read, key = 'residuo') {
-  const n = parseNumberLoose(read(key));
-  if (n === null) return false;
-  const abs = Math.abs(n);
-  return abs > 0 && abs < 10;
+/** Post-LVC RR columns: integers are hundredths (-7 → -0.07); decimals are already diopters. */
+function scalePostLvcResidual(v) {
+  const raw = trimValue(v);
+  if (!raw) return null;
+  const n = parseNumberLoose(raw);
+  if (n === null) return null;
+  if (raw.includes('.') || raw.includes(',')) {
+    return formatNumberForDb(n, 2);
+  }
+  return formatNumberForDb(n / 100, 2);
 }
 
-/** `residuo` toric column stores hundredths when value is a small integer (2 → 0.02). */
-function scaleEvoToricResiduo(v) {
-  const n = parseNumberLoose(v);
-  if (n === null) return null;
-  const abs = Math.abs(n);
-  if (abs >= 1 && Number.isInteger(n)) {
-    return formatNumberForDb(n / 100, 2);
+function postLvcRes(read, ...keys) {
+  const v = firstCsvValue(read, ...keys);
+  return v ? scalePostLvcResidual(v) : null;
+}
+
+/** Post-LVC rows use RR Copia* columns (bondani giorgio) or Note "Pregressa chirurgia refrattiva" (sturma patrizia). */
+function isPostLvcRow(read) {
+  const noteFree = trimValue(read('Note')).toLowerCase();
+  const otherEyeOps = trimValue(read('altri interventi oculari')).toLowerCase();
+  const combined = `${noteFree} ${otherEyeOps}`;
+  if (/refratt|post.?lvc|\blvc\b|lasik|prk/i.test(combined)) return true;
+  return (
+    csvFieldPresent(read, 'RR Copia3')
+    || csvFieldPresent(read, 'RR Copia')
+    || csvFieldPresent(read, 'RR Copia4')
+  );
+}
+
+function mapPostLvcTomeyTk(read, postLvc) {
+  if (csvFieldPresent(read, 'res r Copia')) {
+    return postLvcRes(read, 'res r Copia');
   }
-  return formatNumberForDb(n, 2);
+  if (
+    postLvc
+    && csvFieldPresent(read, 'RR')
+    && (csvFieldPresent(read, 'RR Copia3') || /refratt|lasik|prk/i.test(trimValue(read('Note')).toLowerCase()))
+  ) {
+    return postLvcRes(read, 'RR');
+  }
+  return null;
 }
 
 function mapIolFromCsv(read) {
+  const postLvc = isPostLvcRow(read);
   const res = (...keys) => {
     const v = firstCsvValue(read, ...keys);
     return v ? scaleIolResidual(v) : null;
   };
   const raw = (...keys) => toNullIfEmpty(firstCsvValue(read, ...keys));
-  const resWhen = (trigger, ...keys) => (csvFieldPresent(read, trigger) ? res(...keys) : null);
-  const rawWhen = (trigger, ...keys) => (csvFieldPresent(read, trigger) ? raw(...keys) : null);
 
-  const evoToricFromResRef2 = csvFieldPresent(read, 'res ref2');
-  const evoToricFromResiduo = !evoToricFromResRef2 && isCompactToricResidual(read);
-  const evoToricActive = evoToricFromResRef2 || evoToricFromResiduo;
+  const toricRow = isToricCalculationRow(read);
+  const argosToric = csvFieldPresent(read, 'residuo tomey toric');
+  const tomeyToric = csvFieldPresent(read, 'residuo1');
+  const evoToric = toricRow && csvFieldPresent(read, 'residuo');
+  const hofferToric = csvFieldPresent(read, 'res ref2');
+  const kaneToric = csvFieldPresent(read, 'res ref3');
 
   return {
     // IOL sferica (e.g. 8 favali cristina OS): res r Copia → Argos, res r Copia2 → Tomey,
     // res ref Copia2 → Evo, res ref Copia4 → Hoffer, res ref Copia5 → Kane, res r → Pearl
     iol_argos_barrett_res: res('res r Copia'),
     iol_tomey_barrett_res: res('res r Copia2'),
-    iol_evo2_res: res('res ref Copia2', 'Evo 2.0 cso'),
+    iol_evo2_res: postLvc
+      ? (csvFieldPresent(read, 'res ref Copia2') ? res('res ref Copia2') : null)
+      : res('res ref Copia2', 'Evo 2.0 cso'),
     iol_hoffer_qst_res: res('res ref Copia4'),
     iol_kane_res: res('res ref Copia5'),
-    iol_pearl_dgs_res: res('res r', 'pearl cso'),
+    iol_pearl_dgs_res: postLvc
+      ? (csvFieldPresent(read, 'res r') ? res('res r') : null)
+      : res('res r', 'pearl cso'),
 
-    // Toric rows only when FileMaker toric residual columns exist (avoid biometry axes like Asse 2)
-    iol_argos_barrett_toric_res: resWhen('residuo tomey toric', 'residuo tomey toric'),
-    iol_argos_barrett_toric_t: rawWhen('residuo tomey toric', 'T Copia', 'T4'),
-    iol_argos_barrett_toric_axis: rawWhen('residuo tomey toric', 'asee t2', 'asse7'),
+    // IOL torica — FileMaker column map (arcangioli mauro OD/OS cross-check)
+    iol_argos_barrett_toric_res: argosToric ? toricRes(read, 'residuo tomey toric') : null,
+    iol_argos_barrett_toric_t: argosToric ? toricArgosT(read) : null,
+    iol_argos_barrett_toric_axis: argosToric ? raw('asse7') : null,
 
-    iol_tomey_barrett_toric_res: resWhen('residuo1', 'residuo1'),
-    iol_tomey_barrett_toric_t: rawWhen('residuo1', 'T4', 'T Copia'),
-    iol_tomey_barrett_toric_axis: rawWhen('residuo1', 'Asse 5 Copia', 'asse t3'),
+    iol_tomey_barrett_toric_res: tomeyToric ? toricRes(read, 'residuo1') : null,
+    iol_tomey_barrett_toric_t: tomeyToric ? raw('T Copia') : null,
+    iol_tomey_barrett_toric_axis: tomeyToric ? raw('Asse 5 Copia') : null,
 
-    iol_evo_toric_res: evoToricActive
-      ? (evoToricFromResRef2
-        ? res('res ref2')
-        : toNullIfEmpty(scaleEvoToricResiduo(firstCsvValue(read, 'residuo'))))
+    iol_evo_toric_res: evoToric ? toricRes(read, 'residuo') : null,
+    iol_evo_toric: evoToric ? toricEvoT(read) : null,
+    iol_evo_toric_rescyl: evoToric ? raw('Asse 5') : null,
+
+    iol_hoffer_qst_toric_res: hofferToric ? toricRes(read, 'res ref2') : null,
+    iol_hoffer_qst_toric: hofferToric ? raw('t2') : null,
+    iol_hoffer_qst_toric_rescyl: hofferToric ? raw('asee t2') : null,
+
+    iol_kane_toric_res: kaneToric ? toricRes(read, 'res ref3') : null,
+    iol_kane_toric: kaneToric ? raw('t3') : null,
+    iol_kane_toric_rescyl: kaneToric ? raw('asse t3') : null,
+
+    // IOL post LVC — bondani giorgio OS: RR Copia3 → Argos TK, res r Copia → Tomey TK,
+    // RR Copia → Oculix, RR Copia4 → Ray tracing.
+    // sturma patrizia OD: RR Copia3 → Argos TK, RR → Tomey TK, RR Copia4 → Ray tracing,
+    // Evo 2.0 cso → Evo 2 post, pearl cso → Pearl DGS post.
+    iol_argos_barrett_tk_res: csvFieldPresent(read, 'RR Copia3')
+      ? postLvcRes(read, 'RR Copia3')
       : null,
-    iol_evo_toric: evoToricActive ? raw('T') : null,
-    iol_evo_toric_rescyl: evoToricActive
-      ? (evoToricFromResRef2 ? raw('Asse 2', 'Asse 5') : raw('Asse 5', 'Asse 2'))
+    iol_tomey_barrett_tk_res: mapPostLvcTomeyTk(read, postLvc),
+    iol_tomey_oculix_res: csvFieldPresent(read, 'RR Copia')
+      ? postLvcRes(read, 'RR Copia')
       : null,
-
-    iol_hoffer_qst_toric_res: resWhen('res ref2', 'res ref2'),
-    iol_hoffer_qst_toric: rawWhen('res ref2', 't2'),
-    iol_hoffer_qst_toric_rescyl: rawWhen('res ref2', 'asee t2', 'asse7'),
-
-    iol_kane_toric_res: resWhen('res ref3', 'res ref3'),
-    iol_kane_toric: rawWhen('res ref3', 't3'),
-    iol_kane_toric_rescyl: rawWhen('res ref3', 'asse t3'),
-
-    // IOL post LVC (e.g. bondani giorgio OS): RR Copia3 → Argos TK, res r Copia → Tomey TK,
-    // RR Copia → Oculix, RR Copia4 → Ray tracing
-    iol_argos_barrett_tk_res: resWhen('RR Copia3', 'RR Copia3'),
-    iol_tomey_barrett_tk_res: resWhen('RR Copia3', 'res r Copia'),
-    iol_tomey_oculix_res: resWhen('RR Copia', 'RR Copia'),
-    iol_ray_tracing_res: resWhen('RR Copia4', 'RR Copia4'),
-    iol_evo2_post_res: null,
-    iol_pearl_dgs_post_res: null,
+    iol_ray_tracing_res: csvFieldPresent(read, 'RR Copia4')
+      ? postLvcRes(read, 'RR Copia4')
+      : null,
+    iol_evo2_post_res: postLvc && csvFieldPresent(read, 'Evo 2.0 cso')
+      ? postLvcRes(read, 'Evo 2.0 cso')
+      : null,
+    iol_pearl_dgs_post_res: postLvc && csvFieldPresent(read, 'pearl cso')
+      ? postLvcRes(read, 'pearl cso')
+      : null,
 
     tunnel: raw('Asse tunnel'),
     iolModelSelected: raw('modello iol', 'iol'),

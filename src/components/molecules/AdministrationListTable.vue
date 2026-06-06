@@ -9,6 +9,7 @@
       <col class="col-power" />
       <col class="col-tast" />
       <col class="col-cost" />
+      <col v-if="showOpenAction" class="col-action" />
     </colgroup>
     <thead>
       <tr>
@@ -20,6 +21,7 @@
         <th>Potere IOL</th>
         <th>T/Ast</th>
         <th>Costo</th>
+        <th v-if="showOpenAction" class="col-action"></th>
       </tr>
     </thead>
     <tbody>
@@ -35,6 +37,11 @@
         <td class="col-power">{{ op.iolPower || '—' }}</td>
         <td class="col-tast">{{ op.iolT || '—' }}</td>
         <td>{{ op.costo || '—' }}</td>
+        <td v-if="showOpenAction" class="col-action">
+          <button type="button" class="open-op-btn" @click="emit('open-operation', op)">
+            Apre intervento
+          </button>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -45,7 +52,10 @@ const props = defineProps({
   operations: { type: Array, default: () => [] },
   patients: { type: Array, default: () => [] },
   unknownPatientLabel: { type: String, default: '—' },
+  showOpenAction: { type: Boolean, default: false },
 });
+
+const emit = defineEmits(['open-operation']);
 
 function getPatientName(patientId) {
   const patient = props.patients.find((p) => p.id === patientId);
@@ -72,14 +82,15 @@ function formatDate(dateString) {
   font-size: 13px;
 }
 
-.col-date { width: 10%; }
-.col-patient { width: 20%; }
+.col-date { width: 9%; }
+.col-patient { width: 18%; }
 .col-eye { width: 5%; }
-.col-type { width: 14%; }
-.col-model { width: 22%; }
+.col-type { width: 13%; }
+.col-model { width: 20%; }
 .col-power { width: 7%; }
-.col-tast { width: 6%; }
-.col-cost { width: 16%; }
+.col-tast { width: 5%; }
+.col-cost { width: 10%; }
+.col-action { width: 13%; }
 
 .admin-list-table th,
 .admin-list-table td {
@@ -127,5 +138,27 @@ function formatDate(dateString) {
 .eye-badge.os {
   background: #dcfce7;
   color: var(--color-brand-dark);
+}
+
+.col-action {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.open-op-btn {
+  padding: 4px 8px;
+  border: 1px solid var(--color-accent);
+  border-radius: 6px;
+  background: var(--color-accent-subtle-bg);
+  color: var(--color-label);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.open-op-btn:hover {
+  background: var(--color-accent-muted-bg);
+  border-color: var(--color-accent-light);
 }
 </style>

@@ -1,21 +1,25 @@
 ﻿<template>
   <div class="print-view">
-    <div class="print-row print-row-3">
-      <span><strong>Data intervento:</strong> {{ formatDate(form.operationDate) }}</span>
-      <span><strong>Paziente:</strong> {{ patientName }}</span>
-      <span><strong>Età:</strong> {{ patientAge }}</span>
-    </div>
-
-    <div class="print-section print-highlight-section print-eye-section">
-      <div class="print-highlight-grid print-highlight-grid-eye">
-        <div class="highlight-field highlight-field-hero">
-          <span class="highlight-label">Occhio</span>
-          <span class="highlight-value-hero">{{ form.eye || '—' }}</span>
-        </div>
-        <div class="highlight-field">
-          <span class="highlight-label">Intervento di</span>
-          <span class="highlight-value highlight-value-intervento">{{ form.interventoDi || '—' }}</span>
-        </div>
+    <div class="print-row print-row-header">
+      <div class="print-meta print-meta-date">
+        <span class="print-meta-label">Data intervento</span>
+        <span class="print-meta-value">{{ formatDate(form.operationDate) }}</span>
+      </div>
+      <div class="print-meta print-meta-patient">
+        <span class="print-meta-label">Paziente</span>
+        <span class="print-meta-value">{{ patientName }}</span>
+      </div>
+      <div class="print-meta print-meta-age">
+        <span class="print-meta-label">Età</span>
+        <span class="print-meta-value">{{ patientAge }}</span>
+      </div>
+      <div class="print-meta print-meta-eye">
+        <span class="print-meta-label">Occhio</span>
+        <span class="print-meta-value">{{ form.eye || '—' }}</span>
+      </div>
+      <div class="print-meta print-meta-intervento">
+        <span class="print-meta-label">Intervento di</span>
+        <span class="print-meta-value">{{ form.interventoDi || '—' }}</span>
       </div>
     </div>
 
@@ -352,9 +356,65 @@ function formatCompatPercent(value) {
   border-bottom: 1px solid #e5e7eb;
 }
 
-.print-row-3 > span {
-  flex: 1 1 auto;
+.print-row-header {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 2fr)
+    minmax(0, 0.55fr)
+    minmax(0, 0.45fr)
+    minmax(0, 1.4fr);
+  gap: 10px 16px;
+  align-items: end;
+  padding: 8px 0 10px;
+  border-bottom: 2px solid var(--color-section-divider);
+}
+
+.print-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   min-width: 0;
+}
+
+.print-meta-label {
+  font-size: 9pt;
+  font-weight: 600;
+  color: var(--color-label);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.print-meta-date .print-meta-value,
+.print-meta-age .print-meta-value {
+  font-size: 14pt;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #111;
+}
+
+.print-meta-eye .print-meta-value {
+  font-size: 17pt;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #111;
+  letter-spacing: 0.04em;
+}
+
+.print-meta-patient .print-meta-value {
+  font-size: 16pt;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #111;
+  word-break: break-word;
+}
+
+.print-meta-intervento .print-meta-value {
+  font-size: 13pt;
+  font-weight: 600;
+  line-height: 1.25;
+  color: #111;
+  word-break: break-word;
 }
 
 .print-row-notes .print-label {
@@ -400,11 +460,6 @@ function formatCompatPercent(value) {
 
 .print-highlight-grid-refraction {
   grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
-.print-highlight-grid-eye {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2.5fr);
-  align-items: end;
 }
 
 .print-highlight-grid-endothelial {
@@ -457,28 +512,18 @@ function formatCompatPercent(value) {
   line-height: 1.1;
 }
 
-.print-eye-section .highlight-value-hero {
-  font-size: 34pt;
-  letter-spacing: 0.06em;
-}
-
-.print-eye-section .highlight-value-intervento {
-  font-size: 14pt;
-  font-weight: 600;
-}
-
 .print-endothelial-section .highlight-value-hero {
-  font-size: 24pt;
+  font-size: 18pt;
 }
 
 .print-endothelial-section .endothelial-unit {
-  font-size: 12pt;
+  font-size: 9pt;
   font-weight: 600;
   margin-left: 4px;
 }
 
 .print-endothelial-section .highlight-value-endothelial-note {
-  font-size: 14pt;
+  font-size: 12pt;
 }
 
 .print-iol-model-section .highlight-label {
@@ -490,6 +535,11 @@ function formatCompatPercent(value) {
   font-weight: 700;
   line-height: 1.2;
   word-break: break-word;
+}
+
+.print-iol-model-section .highlight-value-hero {
+  font-size: 20pt;
+  font-weight: 800;
 }
 
 .print-iol-model-section .highlight-value {

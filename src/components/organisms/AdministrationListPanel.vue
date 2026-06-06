@@ -63,7 +63,9 @@
         v-else
         :operations="filteredOperations"
         :patients="patients"
+        show-open-action
         unknown-patient-label="Paziente sconosciuto"
+        @open-operation="$emit('open-operation', $event)"
       />
     </div>
 
@@ -79,22 +81,50 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import SvgIcon from '@/components/atoms/SvgIcon.vue';
 import AdministrationListTable from '@/components/molecules/AdministrationListTable.vue';
 import AdministrationListPrintView from '@/components/organisms/AdministrationListPrintView.vue';
 import { printAsPdf } from '@/utils/exportUtils';
+
+const ADMIN_LIST_DATE_KEY = 'adminListOperationDate';
+
+function readStoredOperationDate() {
+  try {
+    return localStorage.getItem(ADMIN_LIST_DATE_KEY) || '';
+  } catch {
+    return '';
+  }
+}
+
+function storeOperationDate(value) {
+  try {
+    if (value) {
+      localStorage.setItem(ADMIN_LIST_DATE_KEY, value);
+    } else {
+      localStorage.removeItem(ADMIN_LIST_DATE_KEY);
+    }
+  } catch {
+    // ignore storage errors
+  }
+}
 
 const props = defineProps({
   operations: { type: Array, default: () => [] },
   patients: { type: Array, default: () => [] },
 });
 
-const operationDate = ref('');
+defineEmits(['open-operation']);
+
+const operationDate = ref(readStoredOperationDate());
 const operationDateInput = ref(null);
 const search = ref('');
 /** @type {import('vue').Ref<'name' | 'date'>} */
 const sortBy = ref('name');
+
+watch(operationDate, (value) => {
+  storeOperationDate(value);
+});
 
 const filteredOperations = computed(() => {
   let ops = [...props.operations];

@@ -23,6 +23,7 @@
             v-if="rightView === 'admin-list'"
             :operations="operations"
             :patients="patients"
+            @open-operation="handleSelectOperation"
         />
         <OperationDetail
             v-else
