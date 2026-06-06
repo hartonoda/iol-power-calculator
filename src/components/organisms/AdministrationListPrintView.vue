@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="print-view admin-list-print">
     <h1 class="print-title">Lista per amministrazione</h1>
 

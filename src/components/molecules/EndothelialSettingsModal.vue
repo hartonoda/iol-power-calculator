@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
             <div class="settings-modal">
@@ -448,8 +448,8 @@ async function saveChanges() {
 }
 
 .range-group.green {
-    background: #eff6ff;
-    border: 1px solid #93c5fd;
+    background: #ecfdf5;
+    border: 1px solid #86efac;
 }
 
 .range-group.yellow {
@@ -466,7 +466,7 @@ async function saveChanges() {
 }
 
 .range-group.green .range-label {
-    color: #1d4ed8;
+    color: #166534;
 }
 
 .range-group.yellow .range-label {
@@ -494,8 +494,8 @@ async function saveChanges() {
 
 .range-input:focus {
     outline: none;
-    border-color: #4361ee;
-    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.1);
+    border-color: #16a34a;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.1);
 }
 
 .range-separator {
@@ -526,7 +526,7 @@ async function saveChanges() {
 .btn-reset-all {
     padding: 8px 16px;
     border: 1px solid #fca5a5;
-    background: #fef2f2;
+    background: #f0fdf4;
     color: #dc2626;
     border-radius: 6px;
     font-size: 13px;
@@ -560,7 +560,7 @@ async function saveChanges() {
 }
 
 .btn-save {
-    background: #4361ee;
+    background: #16a34a;
     border: none;
     color: white;
 }

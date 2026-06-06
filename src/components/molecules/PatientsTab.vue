@@ -260,6 +260,15 @@ const formatAge = (dateString) => {
     display: flex;
     align-items: center;
     gap: 10px;
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.search-input-wrap:focus-within {
+    border-color: #4361ee;
+    box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.12);
 }
 
 .search-actions {

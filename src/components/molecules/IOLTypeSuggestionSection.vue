@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="section">
         <div class="section-header">
             <div class="section-title">
@@ -1151,7 +1151,7 @@ defineExpose({ expanded });
     align-items: center;
     justify-content: center;
     padding: 0.25rem 0.625rem;
-    background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+    background: linear-gradient(135deg, #052e16 0%, #2d2d44 100%);
     color: white;
     border-radius: 0.75rem;
     font-size: 0.8125rem;
@@ -1215,7 +1215,7 @@ defineExpose({ expanded });
 }
 
 .warnings-box.red .warnings-header {
-    color: #991b1b;
+    color: #166534;
 }
 
 .warnings-box.red .warnings-header svg {
@@ -1253,7 +1253,7 @@ defineExpose({ expanded });
 
 .warnings-box.red .warning-label,
 .warnings-box.red .warning-text {
-    color: #7f1d1d;
+    color: #166534;
 }
 
 .additional-info {

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="biometry-block">
     <table class="bio-table">
       <colgroup>

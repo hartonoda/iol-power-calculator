@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="interventi-tab">
         <!-- Date Filter -->
         <div class="filter-section">
@@ -162,8 +162,8 @@ const formatDate = (dateString) => {
 .operation-item:hover { background: #f9fafb; }
 
 .operation-item.selected {
-    background: #eef2ff;
-    border-left: 3px solid #4361ee;
+    background: #f0fdf4;
+    border-left: 3px solid #16a34a;
     padding-left: 13px;
 }
 
@@ -182,7 +182,7 @@ const formatDate = (dateString) => {
     flex-shrink: 0;
 }
 
-.op-eye.od { background: #dbeafe; color: #1e40af; }
+.op-eye.od { background: #bbf7d0; color: #166534; }
 .op-eye.os { background: #dcfce7; color: #166534; }
 .op-eye.ou { background: #fef3c7; color: #92400e; }
 
@@ -211,7 +211,7 @@ const formatDate = (dateString) => {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6366f1;
+    color: #16a34a;
     flex-shrink: 0;
 }
 

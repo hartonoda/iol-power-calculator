@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <button
     type="button"
     class="patient-item"
@@ -34,12 +34,12 @@ defineEmits(['select']);
   transition: all 0.12s;
 }
 .patient-item:hover {
-  border-color: #93c5fd;
+  border-color: #86efac;
   background: #f8fbff;
 }
 .patient-item.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
+  border-color: #15803d;
+  background: #ecfdf5;
 }
 .name {
   font-size: 13px;

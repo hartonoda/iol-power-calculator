@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="section">
         <div class="section-header-inline">
             <span class="section-title">

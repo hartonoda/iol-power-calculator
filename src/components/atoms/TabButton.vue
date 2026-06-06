@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <button 
         class="tab-button" 
         :class="{ active: isActive }"
@@ -41,8 +41,8 @@ defineEmits(['click']);
 }
 
 .tab-button.active {
-    color: #4361ee;
-    border-bottom-color: #4361ee;
+    color: #16a34a;
+    border-bottom-color: #16a34a;
 }
 
 .tab-count {
@@ -60,7 +60,7 @@ defineEmits(['click']);
 }
 
 .tab-button.active .tab-count {
-    background: #dbeafe;
-    color: #1e40af;
+    background: #bbf7d0;
+    color: #166534;
 }
 </style>

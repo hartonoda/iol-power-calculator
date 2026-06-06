@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="section">
         <div class="section-header">
             <div class="section-title">
@@ -82,7 +82,7 @@ defineExpose({ expanded });
 
 .section-content textarea:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #16a34a;
     background: #f5f3ff;
 }
 

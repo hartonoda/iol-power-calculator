@@ -49,14 +49,17 @@
             v-model:active-tab="activeTab"
         />
 
-        <button
-            type="button"
-            class="admin-list-btn"
-            :class="{ active: adminListActive }"
-            @click="$emit('open-admin-list')"
-        >
-            {{ t('sidebar.adminList') }}
-        </button>
+        <div class="admin-list-section">
+            <button
+                type="button"
+                class="admin-list-btn"
+                :class="{ active: adminListActive }"
+                @click="$emit('open-admin-list')"
+            >
+                <SvgIcon name="calendar" :size="16" />
+                <span>{{ t('sidebar.adminList') }}</span>
+            </button>
+        </div>
 
         <!-- Tab Content -->
         <PatientsTab
@@ -275,29 +278,41 @@ const handleLocaleChange = (event) => {
     flex-shrink: 0;
 }
 
-.admin-list-btn {
-    width: 100%;
-    padding: 10px 16px;
-    border: none;
+.admin-list-section {
+    padding: 12px 20px;
     border-bottom: 1px solid #e5e7eb;
-    background: #fff;
-    color: #374151;
-    font-size: 13px;
-    font-weight: 600;
-    text-align: left;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
     flex-shrink: 0;
 }
 
+.admin-list-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid #4361ee;
+    background: #f8faff;
+    color: #4361ee;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
 .admin-list-btn:hover {
-    background: #f3f4f6;
-    color: #1e40af;
+    background: #eef2ff;
+    border-color: #2563eb;
 }
 
 .admin-list-btn.active {
-    background: #eef2ff;
-    color: #1e40af;
-    box-shadow: inset 3px 0 0 #4361ee;
+    background: #4361ee;
+    color: #fff;
+    border-color: #4361ee;
+}
+
+.admin-list-btn svg {
+    flex-shrink: 0;
 }
 </style>

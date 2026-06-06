@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="compat-block">
     <div class="panel-title">Punteggi compatibilità SmartIOL</div>
     <div class="compat-row">

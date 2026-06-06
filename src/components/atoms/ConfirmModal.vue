@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <div v-if="show" class="modal-overlay" @click.self="$emit('cancel')">
             <div class="confirm-dialog">
@@ -105,13 +105,13 @@ defineEmits(['confirm', 'cancel']);
 }
 
 .dialog-icon.info {
-    background: #dbeafe;
-    color: #2563eb;
+    background: #bbf7d0;
+    color: #15803d;
 }
 
 .dialog-header h3 {
     margin: 0;
-    color: #1a1a2e;
+    color: #052e16;
     font-size: 18px;
     font-weight: 600;
 }
@@ -187,11 +187,11 @@ defineEmits(['confirm', 'cancel']);
 }
 
 .btn-confirm.info {
-    background: #3b82f6;
+    background: #dc2626;
     color: white;
 }
 
 .btn-confirm.info:hover {
-    background: #2563eb;
+    background: #15803d;
 }
 </style>

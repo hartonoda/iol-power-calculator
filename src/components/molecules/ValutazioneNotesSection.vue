@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="notes-block">
     <div class="notes-columns">
       <div class="note-col">

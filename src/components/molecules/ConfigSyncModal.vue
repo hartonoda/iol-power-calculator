@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <div v-if="show" class="modal-overlay" @click.self="handleCancel">
             <div class="config-sync-modal">
@@ -165,14 +165,14 @@ function handleCancel() {
 }
 
 .config-option:hover {
-    border-color: #4361ee;
+    border-color: #16a34a;
     background: #f0f4ff;
 }
 
 .config-option.selected {
-    border-color: #4361ee;
-    background: #eff6ff;
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    border-color: #16a34a;
+    background: #ecfdf5;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
 }
 
 .option-header {
@@ -237,7 +237,7 @@ function handleCancel() {
 
 .btn-confirm {
     padding: 10px 24px;
-    background: #4361ee;
+    background: #16a34a;
     color: white;
     border: none;
     border-radius: 6px;

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="iol-type-card">
         <div class="card-header" :class="typeClass">
             <div class="iol-type-name">
@@ -133,7 +133,7 @@ const totalDeduction = computed(() => {
     white-space: nowrap;
 }
 
-.suitability-score.excellent { background: #dbeafe; color: #1d4ed8; }
+.suitability-score.excellent { background: #bbf7d0; color: #166534; }
 .suitability-score.good { background: #e0f2fe; color: #0369a1; }
 .suitability-score.moderate { background: #fef3c7; color: #b45309; }
 .suitability-score.poor { background: #ffedd5; color: #c2410c; }
@@ -272,8 +272,8 @@ const totalDeduction = computed(() => {
 }
 
 .param-value.in-range {
-    color: #1d4ed8;
-    background: #eff6ff;
+    color: #166534;
+    background: #ecfdf5;
 }
 
 .param-value.out-range {

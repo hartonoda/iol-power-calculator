@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="eye-switcher" :class="{ 'both-eyes-mode': !isLinked }">
         <div class="switcher-label" v-if="!isLinked">
             <span class="both-eyes-badge">OU</span>
@@ -109,15 +109,15 @@ defineEmits(['switch']);
 }
 
 .eye-btn:hover:not(:disabled) {
-    border-color: #6366f1;
+    border-color: #16a34a;
     background: #f5f3ff;
 }
 
 .eye-btn.active {
-    border-color: #6366f1;
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    border-color: #16a34a;
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
     color: white;
-    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
 }
 
 .eye-btn:disabled {
@@ -156,11 +156,11 @@ defineEmits(['switch']);
     align-items: center;
     gap: 4px;
     padding: 4px 10px;
-    background: #dbeafe;
+    background: #bbf7d0;
     border-radius: 20px;
     font-size: 11px;
     font-weight: 500;
-    color: #1e40af;
+    color: #166534;
 }
 
 @media (max-width: 600px) {

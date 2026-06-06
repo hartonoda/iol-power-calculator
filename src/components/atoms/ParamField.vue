@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div 
         class="param-field" 
         :class="{ 
@@ -464,7 +464,7 @@ const labelStyle = computed(() => {
 
 .param-field input:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #16a34a;
     background: #f5f3ff;
 }
 
@@ -533,7 +533,7 @@ const labelStyle = computed(() => {
 }
 
 .range-marker.in-range {
-    background: #3b82f6;
+    background: #dc2626;
 }
 
 .range-marker.yellow-range {

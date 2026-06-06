@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <div v-if="show" class="modal-overlay" @click.self="handleCancel">
             <div class="modal-container">
@@ -189,7 +189,7 @@ const handleConfirm = () => {
 }
 
 .error-message {
-    background: #fef2f2;
+    background: #f0fdf4;
     color: #dc2626;
     padding: 10px 12px;
     border-radius: 6px;
@@ -225,7 +225,7 @@ const handleConfirm = () => {
 }
 
 .btn-submit {
-    background: #4361ee;
+    background: #16a34a;
     border: none;
     color: white;
 }

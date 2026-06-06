@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="date-filter">
         <label>{{ label }}</label>
         <div class="filter-inputs">
@@ -74,7 +74,7 @@ defineEmits(['update:fromDate', 'update:toDate', 'clear']);
 
 .filter-inputs input:focus {
     outline: none;
-    border-color: #4361ee;
+    border-color: #16a34a;
 }
 
 .separator {

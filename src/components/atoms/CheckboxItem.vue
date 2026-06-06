@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="checkbox-item-wrapper" :class="{ 'has-input': hasInput && isChecked }">
         <label 
             class="checkbox-item"
@@ -76,7 +76,7 @@ const handleChange = (event) => {
 }
 
 .checkbox-item.checked {
-    background: #eef2ff;
+    background: #f0fdf4;
     border-color: #c7d2fe;
 }
 
@@ -118,7 +118,7 @@ const handleChange = (event) => {
 
 .inline-input:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #16a34a;
     background: #f5f3ff;
 }
 

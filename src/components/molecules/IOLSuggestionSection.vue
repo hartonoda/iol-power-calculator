@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="section">
         <div class="section-header">
             <div class="section-title">
@@ -71,7 +71,7 @@ defineExpose({ expanded });
     align-items: center;
     justify-content: center;
     padding: 4px 10px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+    background: linear-gradient(135deg, #052e16 0%, #2d2d44 100%);
     color: white;
     border-radius: 12px;
     font-size: 11px;

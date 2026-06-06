@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <table class="admin-list-table">
     <colgroup>
       <col class="col-date" />

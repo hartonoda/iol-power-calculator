@@ -1,7 +1,7 @@
 {
   "name": "iol-power-calculator",
   "productName": "IOL Power Calculator",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Standalone IOL power evaluation for cataract surgery",
   "main": ".vite/build/main.js",
   "private": true,
@@ -12,7 +12,8 @@
     "make": "electron-forge make && node scripts/make-win-zip.mjs",
     "make:portable": "npm run package && node scripts/make-win-zip.mjs",
     "lint": "echo \"No linting configured\"",
-    "import:csv": "node scripts/import-valutazione-csv.mjs"
+    "import:csv": "node scripts/import-valutazione-csv.mjs",
+    "icons:generate": "node scripts/generate-app-icon.mjs"
   },
   "author": {
     "name": "David Hartono",
@@ -28,6 +29,8 @@
     "@electron/fuses": "^1.8.0",
     "@vitejs/plugin-vue": "^6.0.3",
     "electron": "^38.7.0",
+    "sharp": "^0.34.5",
+    "to-ico": "^1.1.5",
     "vite": "^5.4.21"
   },
   "dependencies": {

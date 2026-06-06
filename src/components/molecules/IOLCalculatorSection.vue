@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <!-- IOL Calculator Section - Currently hidden, reserved for future use -->
     <div v-if="visible" class="iol-calculator-section">
         <div class="iol-columns">
@@ -251,8 +251,8 @@ defineExpose({ totalFields, totalFilledCount });
 }
 
 .column-header.sferica {
-    background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
-    color: #1e40af;
+    background: linear-gradient(135deg, #bbf7d0 0%, #ecfdf5 100%);
+    color: #166534;
 }
 
 .column-header.torica {
@@ -339,7 +339,7 @@ defineExpose({ totalFields, totalFilledCount });
 
 .input-cell input:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #16a34a;
     background: #f5f3ff;
 }
 

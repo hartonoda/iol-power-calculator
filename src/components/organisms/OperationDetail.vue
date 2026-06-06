@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="operation-detail-panel">
         <div class="panel-header no-print">
             <h2>{{ headerTitle }}</h2>

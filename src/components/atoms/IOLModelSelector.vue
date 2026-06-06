@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="iol-model-selector">
         <label class="model-label">{{ t('iol.modelBrand') }}:</label>
         <div class="model-dropdown-wrapper">
@@ -259,7 +259,7 @@ watch(() => props.modelValue, (newVal) => {
 
 .model-select:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #16a34a;
 }
 
 .model-select:disabled {
@@ -337,7 +337,7 @@ watch(() => props.modelValue, (newVal) => {
 .manage-models-dialog .dialog-header h3 {
     margin: 0;
     font-size: 18px;
-    color: #1a1a2e;
+    color: #052e16;
 }
 
 .close-btn {
@@ -383,7 +383,7 @@ watch(() => props.modelValue, (newVal) => {
 
 .add-model-input:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #16a34a;
 }
 
 .add-model-input::placeholder {

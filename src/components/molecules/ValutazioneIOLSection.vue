@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="iol-block">
     <div class="iol-panels">
       <div class="iol-panel" :class="{ 'panel-inactive': isPanelInactive('sferica') }">

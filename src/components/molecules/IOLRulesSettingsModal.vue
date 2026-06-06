@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
             <div class="iol-rules-modal">
@@ -1322,7 +1322,7 @@ watch(() => props.show, (newVal) => {
     text-align: center;
     padding: 40px;
     color: #dc2626;
-    background: #fef2f2;
+    background: #f0fdf4;
     border-radius: 8px;
 }
 
@@ -1337,7 +1337,7 @@ watch(() => props.show, (newVal) => {
 }
 
 .retry-btn:hover {
-    background: #b91c1c;
+    background: #15803d;
 }
 
 .param-tabs {
@@ -1366,8 +1366,8 @@ watch(() => props.show, (newVal) => {
 }
 
 .param-tab.active {
-    background: #1a1a2e;
-    border-color: #1a1a2e;
+    background: #052e16;
+    border-color: #052e16;
     color: white;
 }
 
@@ -1384,7 +1384,7 @@ watch(() => props.show, (newVal) => {
     padding: 8px 12px;
     background: white;
     border-radius: 6px;
-    border-left: 3px solid #3b82f6;
+    border-left: 3px solid #dc2626;
 }
 
 .rules-table-wrapper {
@@ -1398,7 +1398,7 @@ watch(() => props.show, (newVal) => {
 }
 
 .rules-table th {
-    background: #1a1a2e;
+    background: #052e16;
     color: white;
     padding: 10px 8px;
     text-align: center;
@@ -1472,7 +1472,7 @@ watch(() => props.show, (newVal) => {
 }
 
 .row-action-btn.delete-btn:hover:not(:disabled) {
-    background: #fecaca;
+    background: #bbf7d0;
 }
 
 .row-action-btn.delete-btn:disabled {
@@ -1582,7 +1582,7 @@ watch(() => props.show, (newVal) => {
 
 .deduction-input-small:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: #dc2626;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
@@ -1603,7 +1603,7 @@ watch(() => props.show, (newVal) => {
 
 .deduction-input:focus {
     outline: none;
-    border-color: #3b82f6;
+    border-color: #dc2626;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
@@ -1641,23 +1641,23 @@ watch(() => props.show, (newVal) => {
 }
 
 .add-row-btn {
-    background: #dbeafe;
-    border: 1px solid #93c5fd;
-    color: #1d4ed8;
+    background: #bbf7d0;
+    border: 1px solid #86efac;
+    color: #166534;
 }
 
 .add-row-btn:hover {
-    background: #bfdbfe;
+    background: #bbf7d0;
 }
 
 .remove-row-btn {
     background: #fee2e2;
-    border: 1px solid #fecaca;
+    border: 1px solid #bbf7d0;
     color: #dc2626;
 }
 
 .remove-row-btn:hover {
-    background: #fecaca;
+    background: #bbf7d0;
 }
 
 .modal-footer {
@@ -1735,7 +1735,7 @@ watch(() => props.show, (newVal) => {
 
 .save-btn {
     padding: 8px 20px;
-    background: #1a1a2e;
+    background: #052e16;
     border: none;
     border-radius: 6px;
     font-size: 13px;
@@ -1754,7 +1754,7 @@ watch(() => props.show, (newVal) => {
 
 .save-close-btn {
     padding: 8px 20px;
-    background: #2563eb;
+    background: #15803d;
     border: none;
     border-radius: 6px;
     font-size: 13px;
@@ -1763,7 +1763,7 @@ watch(() => props.show, (newVal) => {
 }
 
 .save-close-btn:hover:not(:disabled) {
-    background: #1d4ed8;
+    background: #166534;
 }
 
 .save-close-btn:disabled {

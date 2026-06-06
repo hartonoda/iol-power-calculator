@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div v-if="show" class="overlay" @click.self="$emit('close')">
     <div class="modal">
       <div class="header">
@@ -286,9 +286,9 @@ async function importSelected() {
   color: #1f2937;
 }
 .action-btn {
-  border: 1px solid #2563eb;
-  background: #eff6ff;
-  color: #1d4ed8;
+  border: 1px solid #15803d;
+  background: #ecfdf5;
+  color: #166534;
   border-radius: 6px;
   padding: 8px 12px;
   font-weight: 600;
@@ -375,7 +375,7 @@ async function importSelected() {
 }
 .error {
   margin: 0 16px;
-  color: #b91c1c;
+  color: #15803d;
   font-size: 12px;
 }
 .footer {
@@ -397,8 +397,8 @@ async function importSelected() {
   background: #fff;
 }
 .primary-btn {
-  border: 1px solid #2563eb;
-  background: #2563eb;
+  border: 1px solid #15803d;
+  background: #15803d;
   color: #fff;
 }
 .primary-btn:disabled,

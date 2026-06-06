@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="form-input" :class="[colorClass, { disabled }]">
         <label v-if="label">{{ label }}</label>
         <div class="input-wrapper">
@@ -151,8 +151,8 @@ const colorClass = computed(() => {
 .form-input select:focus:not(:disabled),
 .form-input textarea:focus:not(:disabled) {
     outline: none;
-    border-color: #4361ee;
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
 }
 
 /* Color status styles */
@@ -171,7 +171,7 @@ const colorClass = computed(() => {
 .form-input.status-red input,
 .form-input.status-red select {
     border-color: #ef4444;
-    background: #fef2f2;
+    background: #f0fdf4;
 }
 
 .color-indicator {

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="range-chart">
         <div class="range-track" :class="{ 'highlight': highlight }">
             <!-- Greyscale background segments representing deduction levels -->
@@ -132,7 +132,7 @@ defineProps({
 }
 
 .value-marker.in-range .marker-line { 
-    background: #2563eb; 
+    background: #15803d; 
 }
 
 .value-marker.out-range .marker-line { 
@@ -179,7 +179,7 @@ defineProps({
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    color: #2563eb;
+    color: #15803d;
     font-weight: 500;
 }
 

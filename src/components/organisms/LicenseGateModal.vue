@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div v-if="show" class="license-overlay">
         <div class="license-modal">
             <div class="modal-top-row">
@@ -150,8 +150,8 @@ const handleLocaleChange = (event) => {
 }
 
 .language-select:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+    border-color: #16a34a;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
 }
 
 .sr-only {
@@ -201,13 +201,13 @@ h2 {
 
 .field-group input:focus {
     outline: none;
-    border-color: #6366f1;
-    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.15);
+    border-color: #16a34a;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
 }
 
 .error-message {
     margin: 6px 0 14px;
-    color: #b91c1c;
+    color: #15803d;
     font-size: 12px;
 }
 
@@ -217,7 +217,7 @@ h2 {
     border: none;
     border-radius: 8px;
     color: white;
-    background: #4f46e5;
+    background: #15803d;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;

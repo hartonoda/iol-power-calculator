@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
             <div class="modal-container">
@@ -240,8 +240,8 @@ watch(() => props.show, (val) => {
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
-    border-color: #4361ee;
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
 }
 
 .error-message {
@@ -281,7 +281,7 @@ watch(() => props.show, (val) => {
 }
 
 .btn-submit {
-    background: #4361ee;
+    background: #16a34a;
     border: none;
     color: white;
 }

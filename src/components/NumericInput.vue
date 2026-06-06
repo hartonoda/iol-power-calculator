@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <input
     :value="modelValue"
     :placeholder="placeholder"
@@ -35,7 +35,7 @@ input {
 }
 input:focus {
   outline: none;
-  border-color: #4f46e5;
+  border-color: #15803d;
   background: #f5f3ff;
 }
 input:disabled {

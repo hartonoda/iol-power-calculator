@@ -1,4 +1,4 @@
-<template>
+﻿<template>
 
   <div class="iol-model-section">
 

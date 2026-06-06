@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="section">
         <div class="section-content">
             <!-- View Mode: Simple text summary -->
@@ -857,9 +857,9 @@ defineExpose({ expanded });
 }
 
 .checkbox-item.checked {
-    background: #dbeafe;
-    border-color: #3b82f6;
-    color: #1e40af;
+    background: #bbf7d0;
+    border-color: #dc2626;
+    color: #166534;
 }
 
 .checkbox-item.is-nessuna.checked {
@@ -873,7 +873,7 @@ defineExpose({ expanded });
     height: 12px;
     margin: 0;
     cursor: pointer;
-    accent-color: #3b82f6;
+    accent-color: #dc2626;
 }
 
 .checkbox-item input[type="checkbox"]:disabled {
@@ -910,7 +910,7 @@ defineExpose({ expanded });
 
 .allergy-input:focus {
     outline: none;
-    border-color: #6366f1;
+    border-color: #16a34a;
     background: #f5f3ff;
 }
 
@@ -938,7 +938,7 @@ defineExpose({ expanded });
 
 .additional-notes:focus {
     outline: none;
-    border-color: #4361ee;
+    border-color: #16a34a;
 }
 
 .additional-notes:disabled {
@@ -988,7 +988,7 @@ defineExpose({ expanded });
     height: 13px;
     flex-shrink: 0;
     cursor: pointer;
-    accent-color: #6366f1;
+    accent-color: #16a34a;
 }
 
 .condition-checkbox span {
@@ -1052,7 +1052,7 @@ defineExpose({ expanded });
 /* Red for Grave */
 .severity-btn.grave {
     border-color: #fca5a5;
-    color: #991b1b;
+    color: #166534;
 }
 .severity-btn.grave:hover:not(:disabled) {
     background: #fee2e2;

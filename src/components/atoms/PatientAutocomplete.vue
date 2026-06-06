@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <div class="patient-autocomplete" ref="containerRef">
         <label v-if="label">{{ label }}</label>
         <div class="input-wrapper">
@@ -198,8 +198,8 @@ onUnmounted(() => {
 
 .patient-autocomplete input:focus {
     outline: none;
-    border-color: #4361ee;
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
 }
 
 .patient-autocomplete input:disabled {
@@ -284,18 +284,18 @@ onUnmounted(() => {
     width: 100%;
     padding: 10px 12px;
     background: #f0f9ff;
-    border: 1px dashed #60a5fa;
+    border: 1px dashed #4ade80;
     border-radius: 6px;
     font-size: 13px;
     font-weight: 500;
-    color: #2563eb;
+    color: #15803d;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .btn-add-new:hover {
-    background: #dbeafe;
-    border-color: #3b82f6;
+    background: #bbf7d0;
+    border-color: #dc2626;
 }
 
 .btn-add-new svg {

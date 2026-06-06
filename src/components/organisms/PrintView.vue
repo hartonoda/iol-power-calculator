@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="print-view">
     <div class="print-row print-row-3">
       <span><strong>Data intervento:</strong> {{ formatDate(form.operationDate) }}</span>

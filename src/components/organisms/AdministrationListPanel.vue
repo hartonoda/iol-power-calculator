@@ -14,9 +14,19 @@
         <div class="date-input-wrap">
           <input
             id="admin-op-date"
+            ref="operationDateInput"
             v-model="operationDate"
             type="date"
+            @click="openDatePicker"
           />
+          <button
+            type="button"
+            class="calendar-btn"
+            title="Seleziona data"
+            @click="openDatePicker"
+          >
+            <SvgIcon name="calendar" :size="16" />
+          </button>
           <button
             v-if="operationDate"
             type="button"
@@ -81,6 +91,7 @@ const props = defineProps({
 });
 
 const operationDate = ref('');
+const operationDateInput = ref(null);
 const search = ref('');
 /** @type {import('vue').Ref<'name' | 'date'>} */
 const sortBy = ref('name');
@@ -140,6 +151,21 @@ function formatFilterDate(value) {
     month: '2-digit',
     year: 'numeric',
   });
+}
+
+function openDatePicker() {
+  const input = operationDateInput.value;
+  if (!input) return;
+  input.focus();
+  if (typeof input.showPicker === 'function') {
+    try {
+      input.showPicker();
+      return;
+    } catch {
+      // showPicker can throw if not triggered by user gesture in some builds
+    }
+  }
+  input.click();
 }
 
 async function handlePrint() {
@@ -220,6 +246,7 @@ async function handlePrint() {
 }
 
 .date-input-wrap {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -228,11 +255,21 @@ async function handlePrint() {
 .date-input-wrap input {
   flex: 1;
   min-width: 0;
-  padding: 6px 8px;
+  padding: 6px 72px 6px 8px;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   font-size: 12px;
   background: #fff;
+  cursor: pointer;
+}
+
+.date-input-wrap input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: 36px;
+  width: 28px;
+  height: 100%;
+  cursor: pointer;
 }
 
 .date-input-wrap input:focus {
@@ -240,7 +277,30 @@ async function handlePrint() {
   border-color: #4361ee;
 }
 
+.calendar-btn {
+  position: absolute;
+  right: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  color: #1e40af;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.calendar-btn:hover {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
 .clear-date-btn {
+  position: absolute;
+  right: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -264,10 +324,15 @@ async function handlePrint() {
   align-items: center;
   gap: 8px;
   padding: 6px 10px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
   background: #fff;
   align-self: end;
+}
+
+.search-box:focus-within {
+  border-color: #4361ee;
+  box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.12);
 }
 
 .search-box input {

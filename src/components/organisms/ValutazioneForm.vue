@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="valutazione-form">
     <!-- Header -->
     <div class="header-grid">

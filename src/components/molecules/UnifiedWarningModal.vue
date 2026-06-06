@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
             <div class="warning-modal">
@@ -346,16 +346,16 @@ const hasWarnings = computed(() => {
 }
 
 .warning-item.spherical {
-    background: #dbeafe;
-    border-color: #93c5fd;
+    background: #bbf7d0;
+    border-color: #86efac;
 }
 
 .warning-item.spherical .warning-header {
-    color: #1e40af;
+    color: #166534;
 }
 
 .warning-item.spherical .warning-header svg {
-    color: #3b82f6;
+    color: #dc2626;
 }
 
 .warning-item.spherical .warning-content {
@@ -368,7 +368,7 @@ const hasWarnings = computed(() => {
 }
 
 .warning-item.zero-compatibility .warning-header {
-    color: #991b1b;
+    color: #166534;
 }
 
 .warning-item.zero-compatibility .warning-header svg {
@@ -376,7 +376,7 @@ const hasWarnings = computed(() => {
 }
 
 .warning-item.zero-compatibility .warning-content {
-    color: #7f1d1d;
+    color: #166534;
 }
 
 .warning-item.endothelial {

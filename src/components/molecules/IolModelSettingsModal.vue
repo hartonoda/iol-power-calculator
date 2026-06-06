@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <Teleport to="body">
     <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
       <div class="settings-dialog">

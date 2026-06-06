@@ -1,4 +1,4 @@
-<template>
+﻿<template>
     <Teleport to="body">
         <div v-if="show" class="modal-overlay" @click.self="$emit('close')">
             <div class="modal-container">
@@ -192,15 +192,15 @@ watch(() => props.show, (val) => {
 }
 
 .drop-zone {
-    border: 2px dashed #3b82f6;
-    background: #eff6ff;
+    border: 2px dashed #dc2626;
+    background: #ecfdf5;
     border-radius: 10px;
     padding: 16px;
     text-align: center;
 }
 
 .drop-zone.dragging {
-    background: #dbeafe;
+    background: #bbf7d0;
 }
 
 .drop-zone input {
@@ -273,9 +273,9 @@ th {
 }
 
 .btn-submit {
-    background: #2563eb;
+    background: #15803d;
     color: white;
-    border-color: #2563eb;
+    border-color: #15803d;
 }
 
 .btn-submit:disabled, .btn-primary:disabled {
