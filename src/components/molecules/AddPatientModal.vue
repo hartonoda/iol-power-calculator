@@ -26,11 +26,10 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>{{ t('patients.dateOfBirth') }} *</label>
+                            <label>{{ t('patients.dateOfBirth') }}</label>
                             <input 
                                 v-model="form.dateOfBirth" 
-                                type="date" 
-                                required
+                                type="date"
                             />
                         </div>
                     </div>
@@ -86,8 +85,8 @@ const handleSubmit = async () => {
         if (editPatient.value) {
             const result = await window.api.patient.update({
                 id: props.patient.id,
-                name: form.value.name,
-                dateOfBirth: form.value.dateOfBirth,
+                name: form.value.name.trim(),
+                dateOfBirth: form.value.dateOfBirth?.trim() || '',
                 gender: props.patient.gender || '-'
             });
             
@@ -99,8 +98,8 @@ const handleSubmit = async () => {
             }
         } else {
             const result = await window.api.patient.add({
-                name: form.value.name,
-                dateOfBirth: form.value.dateOfBirth,
+                name: form.value.name.trim(),
+                dateOfBirth: form.value.dateOfBirth?.trim() || '',
                 gender: '-'
             });
             

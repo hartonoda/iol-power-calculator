@@ -11,7 +11,14 @@ class PatientRepository {
   }
 
   add(patient) {
-    const { name, dateOfBirth, gender } = patient;
+    const name = String(patient.name || '').trim();
+    const dateOfBirth = patient.dateOfBirth ? String(patient.dateOfBirth).trim() : '';
+    const gender = patient.gender || '';
+
+    if (!name) {
+      return { success: false, error: 'Il nome è obbligatorio.' };
+    }
+
     const existing = this.checkPatientExists(name, dateOfBirth);
     if (existing) {
       return { success: false, error: 'Esiste già un paziente con lo stesso nome e data di nascita.' };
@@ -21,14 +28,17 @@ class PatientRepository {
     const info = this.db.prepare(`
       INSERT INTO patients (name, dateOfBirth, gender, createdAt, updatedAt, deletedAt)
       VALUES (?, ?, ?, ?, ?, NULL)
-    `).run(name, dateOfBirth, gender || '', now, now);
+    `).run(name, dateOfBirth, gender, now, now);
 
     return { success: true, id: info.lastInsertRowid };
   }
 
   update(patient) {
-    const { id, name, dateOfBirth, gender } = patient;
-    if (!id || !name || !dateOfBirth) {
+    const { id, gender } = patient;
+    const name = String(patient.name || '').trim();
+    const dateOfBirth = patient.dateOfBirth ? String(patient.dateOfBirth).trim() : '';
+
+    if (!id || !name) {
       return { success: false, error: 'Campi obbligatori mancanti.' };
     }
 

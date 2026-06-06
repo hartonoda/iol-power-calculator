@@ -23,7 +23,12 @@
             v-if="rightView === 'admin-list'"
             :operations="operations"
             :patients="patients"
+            :iol-models="iolModels"
+            :new-patient-id="adminNewPatientId"
             @open-operation="handleSelectOperation"
+            @add-new-patient="openAddPatientModal"
+            @operation-created="handleAdminInterventoCreated"
+            @clear-new-patient-id="adminNewPatientId = null"
         />
         <OperationDetail
             v-else
@@ -118,6 +123,7 @@ const modals = reactive({
 });
 const smartiolAvailable = ref(false);
 const rightView = ref('valutazione');
+const adminNewPatientId = ref(null);
 
 // Clear form errors on field changes
 watch(() => form.value.patientId, (val) => {
@@ -145,6 +151,10 @@ const handleAddOperationForPatient = (patient) => {
 
 const handleRefreshFromDatabase = async () => {
     await Promise.all([loadPatients(), loadOperations()]);
+};
+
+const handleAdminInterventoCreated = async () => {
+    await handleRefreshFromDatabase();
 };
 
 const handleSubmit = async () => {
@@ -194,7 +204,11 @@ const openSmartIolImportModal = () => {
 const handlePatientAdded = async (newPatient) => {
     await loadPatients();
     if (newPatient?.id) {
-        form.value.patientId = newPatient.id;
+        if (rightView.value === 'admin-list') {
+            adminNewPatientId.value = newPatient.id;
+        } else {
+            form.value.patientId = newPatient.id;
+        }
     }
 };
 

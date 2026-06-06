@@ -147,6 +147,7 @@ import SmartIolCompatibilitySection from '@/components/molecules/SmartIolCompati
 import ValutazioneIOLSection from '@/components/molecules/ValutazioneIOLSection.vue';
 import IolModelSection from '@/components/molecules/IolModelSection.vue';
 import dropdownOptions from '@/config/dropdownOptions.json';
+import { costoOptions, interventoDiOptions } from '@/config/valutazioneDropdowns';
 
 const props = defineProps({
   form: { type: Object, required: true },
@@ -158,8 +159,7 @@ const props = defineProps({
 
 defineEmits(['add-new-patient', 'iol-models-changed']);
 
-const interventoOptions = dropdownOptions.interventoDi.filter((o) => o !== 'Altro');
-const costoOptions = dropdownOptions.costo.filter((o) => o !== 'Edit...');
+const interventoOptions = interventoDiOptions;
 
 watch(
   () => props.form.id,

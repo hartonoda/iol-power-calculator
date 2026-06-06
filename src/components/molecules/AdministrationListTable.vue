@@ -59,6 +59,9 @@
         </td>
       </tr>
     </tbody>
+    <tbody v-if="$slots.footer">
+      <slot name="footer" />
+    </tbody>
   </table>
 </template>
 

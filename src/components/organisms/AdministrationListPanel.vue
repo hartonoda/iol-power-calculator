@@ -54,13 +54,13 @@
     </div>
 
     <div class="list-container no-print">
-      <div v-if="filteredOperations.length === 0" class="empty-list">
+      <div v-if="filteredOperations.length === 0 && !operationDate" class="empty-list">
         <SvgIcon name="calendar" :size="40" :stroke-width="1.5" />
         <p>Nessun intervento trovato</p>
       </div>
 
       <AdministrationListTable
-        v-else
+        v-else-if="filteredOperations.length > 0 || operationDate"
         :operations="filteredOperations"
         :patients="patients"
         show-open-action
@@ -69,7 +69,20 @@
         unknown-patient-label="Paziente sconosciuto"
         @open-operation="$emit('open-operation', $event)"
         @reorder="setOperationOrder($event.operationId, $event.order)"
-      />
+      >
+        <template v-if="operationDate" #footer>
+          <AdministrationListNewInterventoRow
+            :operation-date="operationDate"
+            :patients="patients"
+            :iol-models="iolModels"
+            :select-patient-id="newPatientId"
+            show-open-action
+            @add-new-patient="$emit('add-new-patient')"
+            @created="$emit('operation-created', $event)"
+            @patient-selected="$emit('clear-new-patient-id')"
+          />
+        </template>
+      </AdministrationListTable>
     </div>
 
     <Teleport to="body">
@@ -88,6 +101,7 @@
 import { ref, computed, watch } from 'vue';
 import SvgIcon from '@/components/atoms/SvgIcon.vue';
 import AdministrationListTable from '@/components/molecules/AdministrationListTable.vue';
+import AdministrationListNewInterventoRow from '@/components/molecules/AdministrationListNewInterventoRow.vue';
 import AdministrationListPrintView from '@/components/organisms/AdministrationListPrintView.vue';
 import { printAsPdf } from '@/utils/exportUtils';
 import {
@@ -125,9 +139,11 @@ function storeOperationDate(value) {
 const props = defineProps({
   operations: { type: Array, default: () => [] },
   patients: { type: Array, default: () => [] },
+  iolModels: { type: Array, default: () => [] },
+  newPatientId: { type: [Number, String], default: null },
 });
 
-defineEmits(['open-operation']);
+defineEmits(['open-operation', 'add-new-patient', 'operation-created', 'clear-new-patient-id']);
 
 const operationDate = ref(readStoredOperationDate());
 const operationDateInput = ref(null);
