@@ -942,7 +942,12 @@ class AppDatabase {
 
     getSmartIolDbPath() {
         const smartIolDir = path.join(app.getPath('appData'), 'SmartIOL', 'database');
-        const names = [DB_NAME, ...LEGACY_DB_NAMES];
+        // Prefer canonical SmartIOL DB first.
+        // In some machines both DBs can coexist:
+        // - patient_data.sqlite (SmartIOL source of truth)
+        // - iol-calculator-patient-data.sqlite (our backup/copy)
+        // Import must read SmartIOL data first.
+        const names = ['patient_data.sqlite', DB_NAME, ...LEGACY_DB_NAMES];
         for (const name of names) {
             const p = path.join(smartIolDir, name);
             if (fs.existsSync(p)) return p;
