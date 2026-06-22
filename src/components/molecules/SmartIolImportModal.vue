@@ -62,12 +62,11 @@
               <input
                 type="checkbox"
                 :checked="selectedOperationKeys.includes(operation.key)"
-                :disabled="operation.duplicate"
                 @change="toggleOperationSelection(operation.key, $event.target.checked)"
               />
               <span class="op-main">{{ operation.operationDate }} - {{ operation.eye }}</span>
               <span class="op-note">{{ operation.noteIntervento || 'Intervento senza note' }}</span>
-              <span v-if="operation.duplicate" class="dup-badge">Gia presente</span>
+              <span v-if="operation.duplicate" class="dup-badge">Aggiorna esistente</span>
             </label>
             <div v-if="selected && !loadingOperations && operations.length === 0" class="empty">
               Nessun intervento disponibile
@@ -106,9 +105,10 @@ const loadingPatients = ref(false);
 const loadingOperations = ref(false);
 const importing = ref(false);
 const error = ref('');
+let searchDebounceTimer = null;
 
 const selectableOperationsCount = computed(
-  () => operations.value.filter((item) => !item.duplicate).length,
+  () => operations.value.length,
 );
 const canImport = computed(() => !!selected.value && !importing.value && !loadingOperations.value);
 
@@ -123,6 +123,18 @@ watch(
     selectedOperationKeys.value = [];
     error.value = '';
     await loadPatients();
+  },
+);
+
+watch(
+  () => search.value,
+  (newValue, oldValue) => {
+    if (!props.show) return;
+    if (newValue === oldValue) return;
+    if (searchDebounceTimer) clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      loadPatients();
+    }, 180);
   },
 );
 
@@ -156,9 +168,7 @@ async function loadOperationsForPatient(patient) {
       return;
     }
     operations.value = response.operations || [];
-    selectedOperationKeys.value = operations.value
-      .filter((item) => !item.duplicate)
-      .map((item) => item.key);
+    selectedOperationKeys.value = operations.value.map((item) => item.key);
   } catch (err) {
     error.value = err?.message || 'Errore nel caricamento interventi SmartIOL';
     operations.value = [];
@@ -182,9 +192,7 @@ function toggleOperationSelection(key, checked) {
 }
 
 function selectAllOperations() {
-  selectedOperationKeys.value = operations.value
-    .filter((item) => !item.duplicate)
-    .map((item) => item.key);
+  selectedOperationKeys.value = operations.value.map((item) => item.key);
 }
 
 function clearOperationsSelection() {

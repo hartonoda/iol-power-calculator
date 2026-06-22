@@ -49,14 +49,21 @@ const SHARED_SMARTIOL_OPERATION_FIELDS = new Set([
   'iolModelSelected',
 ]);
 
+const DUPLICATE_PERCENTAGE_FIELDS = [
+  'compat_monofocale_standard',
+  'compat_monofocale_plus',
+  'compat_edof',
+  'compat_multifocal',
+];
+
 function normalizeEye(eye) {
   const v = String(eye || '').trim().toUpperCase();
   if (v === 'OD' || v === 'OS' || v === 'OU') return v;
   return '';
 }
 
-function operationExists(operationRepo, patientId, operationDate, eye) {
-  if (!patientId || !operationDate || !eye) return false;
+function findOperationId(operationRepo, patientId, operationDate, eye) {
+  if (!patientId || !operationDate || !eye) return null;
   const row = operationRepo.db.prepare(`
     SELECT id
     FROM operations
@@ -66,7 +73,29 @@ function operationExists(operationRepo, patientId, operationDate, eye) {
       AND deletedAt IS NULL
     LIMIT 1
   `).get(patientId, operationDate, eye);
-  return !!row;
+  return row?.id ? Number(row.id) : null;
+}
+
+function updateDuplicatePercentageOnly(operationRepo, operationId, mapped) {
+  if (!operationId) return { success: false };
+  const sets = [];
+  const values = [];
+  for (const field of DUPLICATE_PERCENTAGE_FIELDS) {
+    const value = mapped[field];
+    if (value == null || value === '') continue;
+    sets.push(`${field} = ?`);
+    values.push(value);
+  }
+  if (!sets.length) return { success: true, updated: 0 };
+
+  sets.push('updatedAt = ?');
+  values.push(new Date().toISOString(), operationId);
+  operationRepo.db.prepare(`
+    UPDATE operations
+    SET ${sets.join(', ')}
+    WHERE id = ?
+  `).run(...values);
+  return { success: true, updated: 1 };
 }
 
 function mapSmartIolOperation(source, patientId) {
@@ -108,6 +137,21 @@ function mapSmartIolOperation(source, patientId) {
     if (vaMatch) mapped.bcdva_va = vaMatch[1];
   }
 
+  const compatKeys = [
+    'compat_monofocale_standard',
+    'compat_monofocale_plus',
+    'compat_edof',
+    'compat_multifocal',
+  ];
+  const compatValues = compatKeys.map((k) => source[k]);
+  const allCompatMissing = compatValues.every((v) => v == null || String(v).trim() === '');
+  const compatCalculatedAt = String(source.compat_calculated_at || '').trim();
+  if (allCompatMissing && compatCalculatedAt) {
+    for (const key of compatKeys) {
+      mapped[key] = 'non valutabile';
+    }
+  }
+
   return mapped;
 }
 
@@ -122,7 +166,13 @@ function buildOperationCandidates(operationRepo, smartIolOperations, localPatien
     for (const targetEye of targetEyes) {
       const key = `${smartOp.id}:${targetEye}`;
       const selected = !selectedSet || selectedSet.has(key);
-      const duplicate = operationExists(operationRepo, localPatientId, operationDate, targetEye);
+      const existingOperationId = findOperationId(
+        operationRepo,
+        localPatientId,
+        operationDate,
+        targetEye,
+      );
+      const duplicate = !!existingOperationId;
       const mapped = mapSmartIolOperation(smartOp, localPatientId);
       mapped.eye = targetEye;
       candidates.push({
@@ -132,6 +182,7 @@ function buildOperationCandidates(operationRepo, smartIolOperations, localPatien
         operationDate,
         eye: targetEye,
         sourceOperationId: smartOp.id,
+        existingOperationId,
         noteIntervento: mapped.noteIntervento || '',
         mapped,
       });
@@ -223,9 +274,10 @@ export function registerPatientHandlers(patientRepo, operationRepo, appDatabase)
     const smartIolOperations = appDatabase?.listSmartIolOperationsByPatientId(patient.id) || [];
     const candidates = buildOperationCandidates(operationRepo, smartIolOperations, patientId, selectedKeys);
     let importedOperations = 0;
+    let updatedOperations = 0;
     let skippedOperations = 0;
     let notSelectedOperations = 0;
-    const importedMeta = [];
+    const touchedMeta = [];
 
     for (const candidate of candidates) {
       if (!candidate.selected) {
@@ -233,13 +285,30 @@ export function registerPatientHandlers(patientRepo, operationRepo, appDatabase)
         continue;
       }
       if (candidate.duplicate) {
-        skippedOperations += 1;
+        if (candidate.existingOperationId) {
+          const updateResult = updateDuplicatePercentageOnly(
+            operationRepo,
+            candidate.existingOperationId,
+            candidate.mapped,
+          );
+          if (updateResult.success) {
+            updatedOperations += updateResult.updated || 0;
+            touchedMeta.push({
+              id: Number(candidate.existingOperationId),
+              operationDate: String(candidate.operationDate || ''),
+            });
+          } else {
+            skippedOperations += 1;
+          }
+        } else {
+          skippedOperations += 1;
+        }
         continue;
       }
       const opResult = operationRepo.add(candidate.mapped);
       if (opResult.success) {
         importedOperations += 1;
-        importedMeta.push({
+        touchedMeta.push({
           id: Number(opResult.id),
           operationDate: String(candidate.operationDate || ''),
         });
@@ -247,7 +316,7 @@ export function registerPatientHandlers(patientRepo, operationRepo, appDatabase)
       else skippedOperations += 1;
     }
 
-    const latestImportedOperationId = importedMeta
+    const latestImportedOperationId = touchedMeta
       .sort((a, b) => {
         if (a.operationDate === b.operationDate) return b.id - a.id;
         return b.operationDate.localeCompare(a.operationDate);
@@ -259,9 +328,10 @@ export function registerPatientHandlers(patientRepo, operationRepo, appDatabase)
       id: patientId,
       patientAdded,
       importedOperations,
+      updatedOperations,
       skippedOperations,
       notSelectedOperations,
-      lastImportedOperationId: importedMeta.length ? importedMeta[importedMeta.length - 1].id : null,
+      lastImportedOperationId: touchedMeta.length ? touchedMeta[touchedMeta.length - 1].id : null,
       latestImportedOperationId,
     };
   });
