@@ -8,6 +8,7 @@ import IolModelRepository from './iolModelRepository.js';
 const DB_NAME = 'iol-calculator-patient-data.sqlite';
 const LEGACY_DB_NAMES = ['patient_data.sqlite', 'operation-eye.sqlite'];
 const DB_VERSION = 13; // Increment this when adding new migrations
+const MAX_BACKUP_STEPS = 50;
 
 // Legacy folder for backward compatibility (old app used operation-eye)
 const LEGACY_APP_DATA = 'operation-eye';
@@ -17,6 +18,7 @@ class AppDatabase {
         // AppData\Roaming\SmartIOL\database - backup location (userData = SmartIOL from productName)
         this.appDataPath = path.join(app.getPath('userData'), 'database');
         this.appDataDbPath = path.join(this.appDataPath, DB_NAME);
+        this.snapshotBackupPath = path.join(this.appDataPath, 'snapshots');
         this.appDataLegacyDbPaths = LEGACY_DB_NAMES.map((name) => path.join(this.appDataPath, name));
 
         // Exe folder path (Program Files is read-only - we must use AppData there)
@@ -73,6 +75,10 @@ class AppDatabase {
             fs.mkdirSync(this.appDataPath, { recursive: true });
             console.log('Created AppData database directory:', this.appDataPath);
         }
+        if (!fs.existsSync(this.snapshotBackupPath)) {
+            fs.mkdirSync(this.snapshotBackupPath, { recursive: true });
+            console.log('Created snapshot backup directory:', this.snapshotBackupPath);
+        }
     }
 
     copyDbFamily(src, dst) {
@@ -107,6 +113,12 @@ class AppDatabase {
         return paths.find((p) => fs.existsSync(p)) || null;
     }
 
+    hasCanonicalAppDataDb() {
+        // IMPORTANT: Only the main DB file controls startup restore logic.
+        // Snapshot files under /snapshots must never affect first-run behavior.
+        return fs.existsSync(this.appDataDbPath);
+    }
+
     normalizeLegacyDbNames() {
         const appDataLegacy = this.firstExisting(this.appDataLegacyDbPaths);
         if (!fs.existsSync(this.appDataDbPath) && appDataLegacy) {
@@ -126,7 +138,7 @@ class AppDatabase {
         this.normalizeLegacyDbNames();
 
         let primaryExists = fs.existsSync(this.primaryDbPath);
-        const appDataExists = fs.existsSync(this.appDataDbPath);
+        const appDataExists = this.hasCanonicalAppDataDb();
 
         console.log('Database check:', {
             primaryExists,
@@ -168,7 +180,7 @@ class AppDatabase {
         }
 
         primaryExists = fs.existsSync(this.primaryDbPath);
-        const appDataNowExists = fs.existsSync(this.appDataDbPath);
+        const appDataNowExists = this.hasCanonicalAppDataDb();
 
         if (this.exeFolderWritable && primaryExists) {
             console.log('Using existing primary database at', this.primaryDbPath);
@@ -347,8 +359,42 @@ class AppDatabase {
                 fs.copyFileSync(this.primaryDbPath, this.appDataDbPath);
                 console.log('Database backed up using file copy');
             }
+            this.createRollingSnapshotBackup();
         } catch (err) {
             console.error('Fallback backup failed:', err);
+        }
+    }
+
+    createRollingSnapshotBackup() {
+        const sourcePath = fs.existsSync(this.primaryDbPath) ? this.primaryDbPath : this.appDataDbPath;
+        if (!sourcePath || !fs.existsSync(sourcePath)) return;
+
+        const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const snapshotName = `backup-${stamp}-${Date.now()}.sqlite`;
+        const snapshotPath = path.join(this.snapshotBackupPath, snapshotName);
+        fs.copyFileSync(sourcePath, snapshotPath);
+        this.pruneSnapshotBackups();
+    }
+
+    pruneSnapshotBackups() {
+        const entries = fs.readdirSync(this.snapshotBackupPath, { withFileTypes: true })
+            .filter((entry) => entry.isFile() && entry.name.endsWith('.sqlite'))
+            .map((entry) => {
+                const fullPath = path.join(this.snapshotBackupPath, entry.name);
+                const stat = fs.statSync(fullPath);
+                return { fullPath, mtimeMs: stat.mtimeMs };
+            })
+            .sort((a, b) => b.mtimeMs - a.mtimeMs);
+
+        if (entries.length <= MAX_BACKUP_STEPS) return;
+
+        const obsolete = entries.slice(MAX_BACKUP_STEPS);
+        for (const item of obsolete) {
+            try {
+                fs.unlinkSync(item.fullPath);
+            } catch (err) {
+                console.warn('Failed removing old snapshot backup:', item.fullPath, err.message);
+            }
         }
     }
 
@@ -890,7 +936,7 @@ class AppDatabase {
             smartIolDbFound: !!smartIolDbPath,
             version: this.getCurrentVersion(),
             primaryExists: fs.existsSync(this.primaryDbPath),
-            backupExists: fs.existsSync(this.appDataDbPath)
+            backupExists: this.hasCanonicalAppDataDb()
         };
     }
 
