@@ -15,11 +15,13 @@ const LEGACY_APP_DATA = 'operation-eye';
 
 class AppDatabase {
     constructor() {
-        // AppData\Roaming\SmartIOL\database - backup location (userData = SmartIOL from productName)
-        this.appDataPath = path.join(app.getPath('userData'), 'database');
+        // Keep app backups in our own app folder, not SmartIOL folder.
+        this.ownAppDataRoot = path.join(app.getPath('appData'), 'IOL Power Calculator');
+        this.appDataPath = path.join(this.ownAppDataRoot, 'database');
         this.appDataDbPath = path.join(this.appDataPath, DB_NAME);
         this.snapshotBackupPath = path.join(this.appDataPath, 'snapshots');
         this.appDataLegacyDbPaths = LEGACY_DB_NAMES.map((name) => path.join(this.appDataPath, name));
+        this.legacySmartIolBackupDir = path.join(app.getPath('appData'), 'SmartIOL', 'database');
 
         // Exe folder path (Program Files is read-only - we must use AppData there)
         const isDev = !app.isPackaged;
@@ -55,7 +57,7 @@ class AppDatabase {
 
         console.log('Database initialized successfully');
         console.log('Primary DB:', this.primaryDbPath);
-        console.log('Backup DB (SmartIOL):', this.appDataDbPath);
+        console.log('Backup DB (IOL Power Calculator):', this.appDataDbPath);
     }
 
     checkExeFolderWritable() {
@@ -120,6 +122,18 @@ class AppDatabase {
     }
 
     normalizeLegacyDbNames() {
+        // One-time migration: if older versions stored our backup under SmartIOL folder,
+        // bring it into our own folder before startup logic runs.
+        if (!fs.existsSync(this.appDataDbPath)) {
+            const legacySmartIolCandidates = [DB_NAME, ...LEGACY_DB_NAMES]
+                .map((name) => path.join(this.legacySmartIolBackupDir, name));
+            const legacySmartIolDb = this.firstExisting(legacySmartIolCandidates);
+            if (legacySmartIolDb) {
+                console.log('Migrating backup DB from legacy SmartIOL folder:', legacySmartIolDb);
+                this.copyDbFamily(legacySmartIolDb, this.appDataDbPath);
+            }
+        }
+
         const appDataLegacy = this.firstExisting(this.appDataLegacyDbPaths);
         if (!fs.existsSync(this.appDataDbPath) && appDataLegacy) {
             console.log('Migrating legacy AppData DB name:', appDataLegacy);
@@ -336,13 +350,13 @@ class AppDatabase {
     backupToAppData() {
         // When primary is already in AppData, no need to backup to same path
         if (this.primaryDbPath === this.appDataDbPath) return;
-        // Run sync backup first to ensure backup exists immediately in AppData\Roaming\SmartIOL
+        // Run sync backup first to ensure backup exists immediately in our app data folder.
         this.fallbackBackup();
         // Then run async backup for a clean copy (handles WAL properly)
         try {
             this.db.backup(this.appDataDbPath)
                 .then(() => {
-                    console.log('Database backed up to AppData (SmartIOL) successfully');
+                    console.log('Database backed up to AppData (IOL Power Calculator) successfully');
                 })
                 .catch((err) => {
                     console.error('Async backup failed (sync backup already done):', err);
