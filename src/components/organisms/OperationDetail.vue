@@ -1,7 +1,23 @@
 ﻿<template>
     <div class="operation-detail-panel">
         <div class="panel-header no-print">
-            <h2>{{ headerTitle }}</h2>
+            <div class="header-main">
+                <h2>{{ headerTitle }}</h2>
+                <div class="header-meta">
+                    <label class="meta-field">
+                        <span>Data intervento</span>
+                        <input v-model="form.operationDate" type="date" />
+                    </label>
+                    <label class="meta-field">
+                        <span>Occhio</span>
+                        <select v-model="form.eye" :disabled="!!selectedId">
+                            <option value="">—</option>
+                            <option value="OD">OD</option>
+                            <option value="OS">OS</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
             <div class="header-actions">
                 <template v-if="selectedId">
                     <button type="button" class="btn-export" @click="handlePrint" title="Stampa">
@@ -126,6 +142,38 @@ async function handlePrint() {
     font-size: 17px;
     color: #1f2937;
 }
+.header-main {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-width: 0;
+}
+.header-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.meta-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #1e40af;
+    font-weight: 600;
+}
+.meta-field input,
+.meta-field select {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 12px;
+    color: #111827;
+    background: #fff;
+}
+.meta-field select:disabled {
+    background: #f3f4f6;
+    color: #6b7280;
+}
 .header-actions {
     display: flex;
     align-items: center;
@@ -186,5 +234,16 @@ async function handlePrint() {
 .error-message {
     color: #b91c1c;
     padding: 8px 20px;
+}
+@media (max-width: 1200px) {
+    .panel-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+    .header-main {
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
 }
 </style>

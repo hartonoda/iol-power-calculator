@@ -2,10 +2,6 @@
   <div class="valutazione-form">
     <!-- Header -->
     <div class="header-grid">
-      <label class="field">
-        <span class="lbl">Data intervento:</span>
-        <input v-model="form.operationDate" type="date" :disabled="disabled" />
-      </label>
       <div class="field patient-field">
         <PatientAutocomplete
           v-model="form.patientId"
@@ -18,14 +14,6 @@
       <label class="field narrow">
         <span class="lbl">Età:</span>
         <input :value="displayAge" type="text" disabled class="readonly" />
-      </label>
-      <label class="field narrow">
-        <span class="lbl">Occhio:</span>
-        <select v-model="form.eye" :disabled="disabled || isExisting">
-          <option value="">—</option>
-          <option value="OD">OD</option>
-          <option value="OS">OS</option>
-        </select>
       </label>
       <label class="field intervento-field">
         <span class="lbl">Intervento di:</span>
@@ -213,7 +201,7 @@ const displayAge = computed(() => {
 }
 .header-grid {
   display: grid;
-  grid-template-columns: 140px 1fr 60px 70px minmax(130px, 11rem) minmax(100px, 8.5rem);
+  grid-template-columns: 1fr 70px minmax(130px, 11rem) minmax(100px, 8.5rem);
   gap: 10px 12px;
   align-items: end;
   border-bottom: 2px solid var(--color-section-divider);
