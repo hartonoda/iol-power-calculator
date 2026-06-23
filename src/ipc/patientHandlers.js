@@ -137,15 +137,40 @@ function mapSmartIolOperation(source, patientId) {
     if (vaMatch) mapped.bcdva_va = vaMatch[1];
   }
 
+  // Compatibility columns can come from different SmartIOL schema variants:
+  // - compat_monofocale_standard / ...
+  // - iol_compat_monofocale_standard / ...
+  // Also handle multifocale vs multifocal naming.
+  const compatSource = {
+    compat_monofocale_standard:
+      source.compat_monofocale_standard ?? source.iol_compat_monofocale_standard,
+    compat_monofocale_plus:
+      source.compat_monofocale_plus ?? source.iol_compat_monofocale_plus,
+    compat_edof:
+      source.compat_edof ?? source.iol_compat_edof,
+    compat_multifocal:
+      source.compat_multifocal
+      ?? source.compat_multifocale
+      ?? source.iol_compat_multifocal
+      ?? source.iol_compat_multifocale,
+  };
+  Object.entries(compatSource).forEach(([key, value]) => {
+    if (value != null && String(value).trim() !== '') {
+      mapped[key] = value;
+    }
+  });
+
   const compatKeys = [
     'compat_monofocale_standard',
     'compat_monofocale_plus',
     'compat_edof',
     'compat_multifocal',
   ];
-  const compatValues = compatKeys.map((k) => source[k]);
+  const compatValues = compatKeys.map((k) => mapped[k]);
   const allCompatMissing = compatValues.every((v) => v == null || String(v).trim() === '');
-  const compatCalculatedAt = String(source.compat_calculated_at || '').trim();
+  const compatCalculatedAt = String(
+    source.compat_calculated_at || source.iol_compat_calculated_at || '',
+  ).trim();
   if (allCompatMissing && compatCalculatedAt) {
     for (const key of compatKeys) {
       mapped[key] = 'non valutabile';
