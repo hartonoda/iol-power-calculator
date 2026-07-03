@@ -62,6 +62,175 @@ function normalizeEye(eye) {
   return '';
 }
 
+function splitNoteParts(raw) {
+  return String(raw || '')
+    .replace(/\r/g, '\n')
+    .split(/[;\n]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function extractAfterKeyword(part, keywordRegex) {
+  const match = part.match(keywordRegex);
+  if (!match) return '';
+  const tail = part.slice(match.index + match[0].length).replace(/^[:\s-]+/, '').trim();
+  return tail;
+}
+
+function formatCompatibilityPercent(value) {
+  if (value == null) return '';
+  const raw = String(value).trim();
+  if (!raw) return '';
+  if (/valut/i.test(raw)) return raw;
+  const normalized = raw.replace('%', '').trim().replace(',', '.');
+  const n = Number(normalized);
+  if (!Number.isFinite(n)) return raw;
+  return `${n.toFixed(1)} %`;
+}
+
+function mapSystemicNoteFromSmartIol(raw) {
+  const parts = splitNoteParts(raw);
+  if (!parts.length) return '';
+  const mapped = [];
+  const other = [];
+  const addUnique = (value) => {
+    if (value && !mapped.includes(value)) mapped.push(value);
+  };
+
+  for (const part of parts) {
+    const lower = part.toLowerCase();
+    if (lower === 'nessuna' || lower === 'none') {
+      addUnique('Nessuna');
+      continue;
+    }
+    if (lower.includes('allerg')) {
+      const detail = extractAfterKeyword(part, /allerg(y|ia)?\s*(a)?/i);
+      addUnique(detail ? `Allergia a: ${detail}` : 'Allergia a:');
+      continue;
+    }
+    if (lower.includes('diabet')) {
+      addUnique('Diabete');
+      continue;
+    }
+    if (lower.includes('neuropsich') || lower.includes('neuropsychi')) {
+      const detail = extractAfterKeyword(part, /(neuropsichiatrici?|neuropsychiatric)/i);
+      addUnique(detail ? `Disordini neuropsichiatrici: ${detail}` : 'Disordini neuropsichiatrici:');
+      continue;
+    }
+    if (lower.includes('autoimmun') || lower.includes('infiamm')) {
+      const detail = extractAfterKeyword(part, /(autoimmune|infiammatori[ao]?)/i);
+      addUnique(detail ? `Patologia autoimmune/infiammatoria: ${detail}` : 'Patologia autoimmune/infiammatoria:');
+      continue;
+    }
+    if (lower.includes('neurolog')) {
+      const detail = extractAfterKeyword(part, /neurologic[ao]?/i);
+      addUnique(detail ? `Patologia neurologica: ${detail}` : 'Patologia neurologica:');
+      continue;
+    }
+    if (lower.includes('respirat')) {
+      const detail = extractAfterKeyword(part, /respiratori[ao]?/i);
+      addUnique(detail ? `Patologia respiratoria: ${detail}` : 'Patologia respiratoria:');
+      continue;
+    }
+    if (lower.includes('ansios')) {
+      addUnique('Paziente molto ansioso');
+      continue;
+    }
+    if (lower.includes('alfa') || lower.includes('alpha')) {
+      addUnique('Uso di alfa-agonisti');
+      continue;
+    }
+    if (lower.includes('antiaggreg') || lower.includes('anticoag')) {
+      addUnique('Uso di antiaggreganti-anticoagulanti');
+      continue;
+    }
+    other.push(part);
+  }
+
+  if (other.length) {
+    addUnique(`Altro: ${other.join(' / ')}`);
+  }
+  return mapped.join('; ');
+}
+
+function mapEyeNoteFromSmartIol(raw) {
+  const parts = splitNoteParts(raw);
+  if (!parts.length) return '';
+  const mapped = [];
+  const other = [];
+  const addUnique = (value) => {
+    if (value && !mapped.includes(value)) mapped.push(value);
+  };
+
+  for (const part of parts) {
+    const lower = part.toLowerCase();
+    if (lower === 'nessuna' || lower === 'none') {
+      addUnique('Nessuna');
+      continue;
+    }
+    if (lower.includes('trauma')) {
+      addUnique('Pregresso trauma oculare');
+      continue;
+    }
+    if (lower.includes('refratt') || lower.includes('refractive')) {
+      addUnique('Pregressa chirurgia refrattiva');
+      continue;
+    }
+    if (lower.includes('chirurgia corne') || lower.includes('corneal surg')) {
+      addUnique('Pregressa chirurgia corneale');
+      continue;
+    }
+    if (lower.includes('vitreo') || lower.includes('retin') && lower.includes('surg')) {
+      addUnique('Pregressa chirurgia vitreo-retinica');
+      continue;
+    }
+    if (lower.includes('motilit')) {
+      const detail = extractAfterKeyword(part, /motilit[aà]|motility/i);
+      addUnique(detail ? `Problema di motilità: ${detail}` : 'Problema di motilità:');
+      continue;
+    }
+    if (lower.includes('palpebr') || lower.includes('eyelid')) {
+      const detail = extractAfterKeyword(part, /palpebral[e]?|eyelid/i);
+      addUnique(detail ? `Problema palpebrale: ${detail}` : 'Problema palpebrale:');
+      continue;
+    }
+    if (lower.includes('cornea') || lower.includes('corneal')) {
+      const detail = extractAfterKeyword(part, /corneal|corneal[e]?/i);
+      addUnique(detail ? `Problema corneale: ${detail}` : 'Problema corneale:');
+      continue;
+    }
+    if (lower.includes('iride') || lower.includes('pupil')) {
+      const detail = extractAfterKeyword(part, /iride|pupilla|pupil/i);
+      addUnique(detail ? `Problema iride/pupilla: ${detail}` : 'Problema iride/pupilla:');
+      continue;
+    }
+    if (lower.includes('cristall') || lower.includes('lens')) {
+      const detail = extractAfterKeyword(part, /cristallino|lens/i);
+      addUnique(detail ? `Problema cristallino: ${detail}` : 'Problema cristallino:');
+      continue;
+    }
+    if (lower.includes('retin')) {
+      const detail = extractAfterKeyword(part, /retinic[oa]?|retinal/i);
+      addUnique(detail ? `Problema retinico: ${detail}` : 'Problema retinico:');
+      continue;
+    }
+    if (lower.includes('glaucoma')) {
+      addUnique('Glaucoma');
+      continue;
+    }
+    if (lower.includes('osd')) {
+      addUnique('OSD');
+      continue;
+    }
+    other.push(part);
+  }
+
+  if (other.length) {
+    addUnique(`Altro: ${other.join(' / ')}`);
+  }
+  return mapped.join('; ');
+}
+
 function findOperationId(operationRepo, patientId, operationDate, eye) {
   if (!patientId || !operationDate || !eye) return null;
   const row = operationRepo.db.prepare(`
@@ -78,6 +247,11 @@ function findOperationId(operationRepo, patientId, operationDate, eye) {
 
 function updateDuplicatePercentageOnly(operationRepo, operationId, mapped) {
   if (!operationId) return { success: false };
+  const existing = operationRepo.db.prepare(`
+    SELECT noteSistemic, noteEye
+    FROM operations
+    WHERE id = ?
+  `).get(operationId);
   const sets = [];
   const values = [];
   for (const field of DUPLICATE_PERCENTAGE_FIELDS) {
@@ -85,6 +259,16 @@ function updateDuplicatePercentageOnly(operationRepo, operationId, mapped) {
     if (value == null || value === '') continue;
     sets.push(`${field} = ?`);
     values.push(value);
+  }
+  // Preserve existing clinical data for duplicates, but if notes are empty locally
+  // we can safely hydrate them from SmartIOL import.
+  if (mapped.noteSistemic && !(existing?.noteSistemic || '').trim()) {
+    sets.push('noteSistemic = ?');
+    values.push(mapped.noteSistemic);
+  }
+  if (mapped.noteEye && !(existing?.noteEye || '').trim()) {
+    sets.push('noteEye = ?');
+    values.push(mapped.noteEye);
   }
   if (!sets.length) return { success: true, updated: 0 };
 
@@ -156,7 +340,7 @@ function mapSmartIolOperation(source, patientId) {
   };
   Object.entries(compatSource).forEach(([key, value]) => {
     if (value != null && String(value).trim() !== '') {
-      mapped[key] = value;
+      mapped[key] = formatCompatibilityPercent(value);
     }
   });
 
@@ -176,6 +360,13 @@ function mapSmartIolOperation(source, patientId) {
       mapped[key] = 'non valutabile';
     }
   }
+
+  const systemicRaw = source.noteSistemic ?? source.noteSystemic ?? '';
+  const eyeRaw = source.noteEye ?? source.noteOcular ?? '';
+  const mappedSystemic = mapSystemicNoteFromSmartIol(systemicRaw);
+  const mappedEye = mapEyeNoteFromSmartIol(eyeRaw);
+  if (mappedSystemic) mapped.noteSistemic = mappedSystemic;
+  if (mappedEye) mapped.noteEye = mappedEye;
 
   return mapped;
 }

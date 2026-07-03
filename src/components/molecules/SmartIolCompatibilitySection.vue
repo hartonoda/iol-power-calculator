@@ -11,7 +11,9 @@
 </template>
 
 <script setup>
-defineProps({
+import { watch } from 'vue';
+
+const props = defineProps({
   form: { type: Object, required: true },
   disabled: { type: Boolean, default: false },
 });
@@ -22,6 +24,29 @@ const compatibilityScores = [
   { label: 'EDOF', key: 'compat_edof' },
   { label: 'Multifocal', key: 'compat_multifocal' },
 ];
+
+function formatCompatibility(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw) return '';
+  if (/valut/i.test(raw)) return raw;
+  const normalized = raw.replace('%', '').replace(',', '.').trim();
+  const n = Number(normalized);
+  if (!Number.isFinite(n)) return raw;
+  return `${n.toFixed(1)} %`;
+}
+
+watch(
+  () => compatibilityScores.map(({ key }) => props.form[key]),
+  () => {
+    compatibilityScores.forEach(({ key }) => {
+      const formatted = formatCompatibility(props.form[key]);
+      if (formatted !== props.form[key]) {
+        props.form[key] = formatted;
+      }
+    });
+  },
+  { immediate: true },
+);
 </script>
 
 <style scoped>

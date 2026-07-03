@@ -68,6 +68,7 @@
             :operations="operations"
             :selected-id="selectedId"
             :smartiol-available="smartiolAvailable"
+            :patient-focus-request="patientFocusRequest"
             :search-placeholder="t('operations.searchPlaceholder')"
             :empty-message="t('empty.noPatients')"
             @select="$emit('select', $event)"
@@ -109,6 +110,7 @@ const props = defineProps({
     selectedId: { type: [Number, null], default: null },
     smartiolAvailable: { type: Boolean, default: false },
     adminListActive: { type: Boolean, default: false },
+    patientFocusRequest: { type: Object, default: null },
 });
 
 defineEmits([

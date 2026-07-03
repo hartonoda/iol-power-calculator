@@ -7,6 +7,7 @@
             :selected-id="selectedId"
             :smartiol-available="smartiolAvailable"
             :admin-list-active="rightView === 'admin-list'"
+            :patient-focus-request="patientFocusRequest"
             @select="handleSelectOperation"
             @add="handleAddOperation"
             @add-operation-for-patient="handleAddOperationForPatient"
@@ -124,6 +125,7 @@ const modals = reactive({
 const smartiolAvailable = ref(false);
 const rightView = ref('valutazione');
 const adminNewPatientId = ref(null);
+const patientFocusRequest = ref(null);
 
 // Clear form errors on field changes
 watch(() => form.value.patientId, (val) => {
@@ -147,6 +149,23 @@ const handleAddOperation = () => {
 const handleAddOperationForPatient = (patient) => {
     rightView.value = 'valutazione';
     formActions.resetForm(patient.id);
+    const lastPatientOperation = operations.value
+        .filter((op) => Number(op.patientId) === Number(patient.id))
+        .sort((a, b) => {
+            const dateA = String(a.operationDate || '');
+            const dateB = String(b.operationDate || '');
+            if (dateA !== dateB) return dateB.localeCompare(dateA);
+
+            const updatedA = String(a.updatedAt || '');
+            const updatedB = String(b.updatedAt || '');
+            if (updatedA !== updatedB) return updatedB.localeCompare(updatedA);
+
+            return Number(b.id || 0) - Number(a.id || 0);
+        })[0];
+
+    if (lastPatientOperation?.noteSistemic && String(lastPatientOperation.noteSistemic).trim()) {
+        form.value.noteSistemic = String(lastPatientOperation.noteSistemic);
+    }
 };
 
 const handleRefreshFromDatabase = async () => {
@@ -221,6 +240,15 @@ const handleSmartIolPatientImported = async (result) => {
     rightView.value = 'valutazione';
     await loadPatients();
     await loadOperations();
+    if (result?.id) {
+        patientFocusRequest.value = {
+            patientId: Number(result.id),
+            operationId: Number(
+                result?.latestImportedOperationId || result?.lastImportedOperationId || 0,
+            ) || null,
+            at: Date.now(),
+        };
+    }
     const importedOpId = Number(
         result?.latestImportedOperationId || result?.lastImportedOperationId || 0,
     );

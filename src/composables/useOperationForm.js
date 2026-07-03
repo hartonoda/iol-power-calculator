@@ -3,7 +3,7 @@
  */
 
 import { ref, computed } from 'vue';
-import { getEmptyForm, getTodayDate } from '@/config/formSchema';
+import { getEmptyForm } from '@/config/formSchema';
 import { formatDiopterFields, formatVisusFields } from '@/utils/numberUtils';
 import { useBothEyesMode } from './useBothEyesMode';
 
@@ -165,7 +165,7 @@ export function useOperationForm() {
         
         const sharedFields = {
             patientId: form.value.patientId,
-            operationDate: form.value.operationDate || getTodayDate(),
+            operationDate: form.value.operationDate || '',
             age: form.value.age || null,
             noteSistemic: form.value.noteSistemic || null,
             interventoDi: form.value.interventoDi || null,

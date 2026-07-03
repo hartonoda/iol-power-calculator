@@ -28,7 +28,7 @@
         </div>
 
         <!-- List -->
-        <div class="list-container">
+        <div ref="listContainerRef" class="list-container">
             <div v-if="filteredPatients.length === 0" class="empty-list">
                 <SvgIcon name="user" :size="40" :stroke-width="1.5" />
                 <p>{{ emptyMessage }}</p>
@@ -38,10 +38,12 @@
                 v-for="patient in filteredPatients" 
                 :key="patient.id" 
                 class="patient-group"
+                :data-patient-id="patient.id"
                 :class="{ 'has-selection': hasSelectedOperation(patient) }"
             >
                 <div 
                     class="patient-header"
+                    :ref="(el) => setPatientHeaderRef(el, patient.id)"
                     :class="{ expanded: expandedPatients.has(patient.id) }"
                     @click="togglePatient(patient.id)"
                 >
@@ -118,7 +120,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, nextTick } from 'vue';
 import SvgIcon from '@/components/atoms/SvgIcon.vue';
 import { useI18n } from '@/composables/useI18n';
 
@@ -131,6 +133,7 @@ const props = defineProps({
     searchPlaceholder: { type: String, default: 'Cerca pazienti...' },
     emptyMessage: { type: String, default: 'Nessun paziente trovato' },
     smartiolAvailable: { type: Boolean, default: false },
+    patientFocusRequest: { type: Object, default: null },
 });
 
 const emit = defineEmits([
@@ -146,6 +149,8 @@ const emit = defineEmits([
 const search = ref('');
 const sortByName = ref(false);
 const expandedPatients = ref(new Set());
+const listContainerRef = ref(null);
+const patientHeaderRefs = new Map();
 
 // Group operations by patient - include all patients
 const patientsWithOperations = computed(() => {
@@ -205,6 +210,27 @@ const toggleSortByName = () => {
     sortByName.value = !sortByName.value;
 };
 
+const setPatientHeaderRef = (el, patientId) => {
+    if (!patientId) return;
+    if (el) patientHeaderRefs.set(Number(patientId), el);
+    else patientHeaderRefs.delete(Number(patientId));
+};
+
+const scrollPatientHeaderIntoView = (patientId) => {
+    const header = patientHeaderRefs.get(Number(patientId));
+    const container = listContainerRef.value;
+    if (!header || !container) return;
+
+    const headerRect = header.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const targetTop = container.scrollTop + (headerRect.top - containerRect.top) - 8;
+
+    container.scrollTo({
+        top: Math.max(0, targetTop),
+        behavior: 'smooth',
+    });
+};
+
 const hasSelectedOperation = (patient) => {
     return patient.operations.some(op => op.id === props.selectedId);
 };
@@ -221,6 +247,37 @@ watch(() => props.selectedId, (newId) => {
         }
     }
 }, { immediate: true });
+
+watch(
+    () => props.patientFocusRequest,
+    async (request) => {
+        const patientId = Number(request?.patientId || 0);
+        if (!patientId) return;
+
+        search.value = '';
+        sortByName.value = false;
+
+        if (!expandedPatients.value.has(patientId)) {
+            expandedPatients.value.add(patientId);
+            expandedPatients.value = new Set(expandedPatients.value);
+        }
+
+        await nextTick();
+
+        const patient = patientsWithOperations.value.find((p) => Number(p.id) === patientId);
+        const preferredOperationId = Number(request?.operationId || 0);
+        if (patient?.operations?.length) {
+            const operationToOpen = preferredOperationId
+                ? patient.operations.find((op) => Number(op.id) === preferredOperationId) || patient.operations[0]
+                : patient.operations[0];
+            if (operationToOpen) emit('select', operationToOpen);
+        }
+
+        await nextTick();
+        requestAnimationFrame(() => scrollPatientHeaderIntoView(patientId));
+    },
+    { deep: true },
+);
 
 const formatDate = (dateString) => {
     if (!dateString) return '-';

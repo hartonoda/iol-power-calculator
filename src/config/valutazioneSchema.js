@@ -35,7 +35,7 @@ export const perEyeFields = VALUTAZIONE_DB_FIELDS.filter(
 export const getEmptyForm = () => {
   const form = { patientId: '', linkedOperationId: null };
   for (const key of VALUTAZIONE_DB_FIELDS) {
-    if (key === 'operationDate') form[key] = getTodayDate();
+    if (key === 'operationDate') form[key] = '';
     else if (key === 'interventoDi') form[key] = 'Faco + IOL';
     else form[key] = '';
   }
