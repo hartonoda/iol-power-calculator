@@ -1,8 +1,10 @@
 import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
+import { costoOptions as defaultCostoOptions } from '../config/valutazioneDropdowns.js';
 
 const CONFIG_FILENAME = 'ocularParameterRules.json';
+const COSTO_OPTIONS_FILENAME = 'costoOptions.json';
 
 // Embedded default config as fallback when file cannot be found
 const DEFAULT_CONFIG = {
@@ -36,6 +38,7 @@ class ConfigRepository {
         // AppData config path - SmartIOL folder (userData = SmartIOL from productName)
         this.appDataPath = path.join(app.getPath('userData'), 'config');
         this.appDataConfigPath = path.join(this.appDataPath, CONFIG_FILENAME);
+        this.appDataCostoOptionsPath = path.join(this.appDataPath, COSTO_OPTIONS_FILENAME);
         
         // Bundled config path - try multiple locations
         const isDev = !app.isPackaged;
@@ -347,6 +350,44 @@ class ConfigRepository {
             return { success: true };
         }
         return { success: false, error: 'No user config found' };
+    }
+
+    sanitizeCostoOptions(options) {
+        if (!Array.isArray(options)) return [];
+        const seen = new Set();
+        const out = [];
+        for (const item of options) {
+            const value = String(item ?? '').trim();
+            if (!value || value === 'Edit...' || seen.has(value)) continue;
+            seen.add(value);
+            out.push(value);
+        }
+        return out;
+    }
+
+    getCostoOptions() {
+        try {
+            if (fs.existsSync(this.appDataCostoOptionsPath)) {
+                const content = fs.readFileSync(this.appDataCostoOptionsPath, 'utf8');
+                const parsed = JSON.parse(content);
+                const sanitized = this.sanitizeCostoOptions(parsed);
+                if (sanitized.length) return sanitized;
+            }
+        } catch (error) {
+            console.error('Error reading costo options:', error);
+        }
+        return this.sanitizeCostoOptions(defaultCostoOptions);
+    }
+
+    saveCostoOptions(options) {
+        try {
+            const sanitized = this.sanitizeCostoOptions(options);
+            fs.writeFileSync(this.appDataCostoOptionsPath, JSON.stringify(sanitized, null, 2));
+            return { success: true, data: sanitized };
+        } catch (error) {
+            console.error('Error saving costo options:', error);
+            return { success: false, error: error.message };
+        }
     }
 }
 

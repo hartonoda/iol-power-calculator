@@ -25,13 +25,19 @@
         />
       </label>
       <label class="field costo-field">
-        <span class="lbl">Costo:</span>
-        <FmComboBox
-          v-model="form.costo"
-          :options="costoOptions"
-          :disabled="disabled"
-          placeholder="—"
-        />
+        <span class="lbl costo-label-row">
+          <span>Costo:</span>
+          <button
+            type="button"
+            class="costo-settings-btn"
+            :disabled="disabled"
+            @click="showCostoSettings = true"
+            title="Gestione prezzi interventi"
+          >
+            <SvgIcon name="settings" :size="14" />
+          </button>
+        </span>
+        <FmComboBox v-model="form.costo" :options="runtimeCostoOptions" :disabled="disabled" placeholder="—" />
       </label>
     </div>
 
@@ -114,12 +120,18 @@
     />
 
     <ValutazioneIOLSection :form="form" :disabled="disabled" />
+    <InterventoCostiSettingsModal
+      :show="showCostoSettings"
+      @close="showCostoSettings = false"
+      @saved="handleCostoOptionsSaved"
+    />
   </div>
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import PatientAutocomplete from '@/components/atoms/PatientAutocomplete.vue';
+import SvgIcon from '@/components/atoms/SvgIcon.vue';
 import {
   normalizeDecimal,
   formatDiopter,
@@ -134,6 +146,7 @@ import BiometryDeviceTable from '@/components/molecules/BiometryDeviceTable.vue'
 import SmartIolCompatibilitySection from '@/components/molecules/SmartIolCompatibilitySection.vue';
 import ValutazioneIOLSection from '@/components/molecules/ValutazioneIOLSection.vue';
 import IolModelSection from '@/components/molecules/IolModelSection.vue';
+import InterventoCostiSettingsModal from '@/components/molecules/InterventoCostiSettingsModal.vue';
 import dropdownOptions from '@/config/dropdownOptions.json';
 import { costoOptions, interventoDiOptions } from '@/config/valutazioneDropdowns';
 
@@ -148,6 +161,8 @@ const props = defineProps({
 defineEmits(['add-new-patient', 'iol-models-changed']);
 
 const interventoOptions = interventoDiOptions;
+const runtimeCostoOptions = ref([...costoOptions]);
+const showCostoSettings = ref(false);
 
 watch(
   () => props.form.id,
@@ -164,6 +179,43 @@ function visusOptionLabel(opt) {
   if (opt === 'PL' || opt === 'CD') return opt;
   return opt.replace('/10', '');
 }
+
+function sanitizeCostoOptions(values) {
+  const seen = new Set();
+  return (values || [])
+    .map((value) => String(value ?? '').trim())
+    .filter((value) => {
+      if (!value || value === 'Edit...' || seen.has(value)) return false;
+      seen.add(value);
+      return true;
+    });
+}
+
+async function loadCostoOptions() {
+  try {
+    const result = await window.api.config.getCostoOptions();
+    if (result?.success && Array.isArray(result.data)) {
+      const values = sanitizeCostoOptions(result.data);
+      runtimeCostoOptions.value = values.length ? values : [...costoOptions];
+      return;
+    }
+  } catch (error) {
+    console.error('Error loading costo options:', error);
+  }
+  runtimeCostoOptions.value = [...costoOptions];
+}
+
+function handleCostoOptionsSaved(values) {
+  const sanitized = sanitizeCostoOptions(values);
+  runtimeCostoOptions.value = sanitized.length ? sanitized : [...costoOptions];
+  if (props.form.costo && !runtimeCostoOptions.value.includes(props.form.costo)) {
+    props.form.costo = '';
+  }
+}
+
+onMounted(() => {
+  loadCostoOptions();
+});
 
 const displayAge = computed(() => {
   const patient = props.patients.find((p) => p.id === Number(props.form.patientId));
@@ -222,6 +274,32 @@ const displayAge = computed(() => {
   padding: 4px 6px;
   border: 1px solid #cbd5e1;
   font-size: 13px;
+}
+.costo-label-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.costo-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  border-radius: 4px;
+  color: #475569;
+  cursor: pointer;
+  padding: 0;
+}
+.costo-settings-btn:hover:not(:disabled) {
+  background: #eef6ff;
+  border-color: #93c5fd;
+}
+.costo-settings-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 .field {
   display: flex;

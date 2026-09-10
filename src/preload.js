@@ -48,6 +48,8 @@ contextBridge.exposeInMainWorld('api', {
     resetToDefaults: () => ipcRenderer.invoke('config:resetToDefaults'),
     resetFieldToDefault: (section, field) =>
       ipcRenderer.invoke('config:resetFieldToDefault', { section, field }),
+    getCostoOptions: () => ipcRenderer.invoke('config:getCostoOptions'),
+    saveCostoOptions: (options) => ipcRenderer.invoke('config:saveCostoOptions', options),
   },
   iolRules: {
     get: () => ipcRenderer.invoke('iolRules:get'),

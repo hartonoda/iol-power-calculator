@@ -74,6 +74,26 @@ export function registerConfigHandlers(configRepo) {
             return { success: false, error: error.message };
         }
     });
+
+    ipcMain.handle('config:getCostoOptions', async () => {
+        try {
+            return { success: true, data: configRepo.getCostoOptions() };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    });
+
+    ipcMain.handle('config:saveCostoOptions', async (event, options) => {
+        try {
+            const result = configRepo.saveCostoOptions(options);
+            if (result.success) {
+                broadcast('config:costoOptionsUpdated', {});
+            }
+            return result;
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    });
     
     console.log('Config IPC handlers registered');
 }
